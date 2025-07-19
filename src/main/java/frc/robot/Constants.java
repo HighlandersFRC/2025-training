@@ -18,6 +18,15 @@ public final class Constants {
         public static double x = 0;
         public static double y = 0;
         public static double angle = 0;
+        public static boolean lastPoint = false;
+
+        public static final class Swerve {
+
+                public static final double TURN_kP = 1;
+                public static final double TURN_kI = 0;
+                public static final double TURN_kD = 0;
+
+        }
 
         public static final class Autonomous {
                 // lookahead distance is a function:
@@ -4037,6 +4046,7 @@ public final class Constants {
                 // drive
                 public static final double DRIVE_GEAR_RATIO = 6.12;
                 public static final double STEER_GEAR_RATIO = 21.43;
+                public static final double MAX_WHEEL_RPS = 6380.0 / 60.0 / 6.12;
 
                 // elevator
                 public static final double ELEVATOR_FIRST_STAGE = Constants.inchesToMeters(23.25);

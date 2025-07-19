@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.tools.math.Vector;
+import frc.robot.OI;
 import frc.robot.tools.SwerveModule;
 import frc.robot.tools.math.PID;
 
@@ -63,15 +64,24 @@ public class Drive extends SubsystemBase {
     }
 
     public double getX() {
-        return m_pose.getX() * 0.82;
+        return m_pose.getX() * -0.82;
     }
 
     public double getY() {
-        return m_pose.getY() * 0.78;
+        return m_pose.getY() * -0.78;
     }
 
     public double getAngle() {
         return m_pose.getRotation().getDegrees();
+    }
+
+    public Rotation2d getRotation2D() {
+        return peripherals.getRotation2d();
+    }
+
+    public Pose2d getPose2D() {
+        Pose2d pose = new Pose2d(getX(), getY(), getRotation2D());
+        return pose;
     }
 
     public void stop() {
@@ -94,10 +104,26 @@ public class Drive extends SubsystemBase {
         Logger.recordOutput("Robot X", m_pose.getX());
         Logger.recordOutput("Robot Y", m_pose.getY());
         Logger.recordOutput("Robot Angle", m_pose.getRotation().getDegrees());
-        Logger.recordOutput("Robot Pose", m_pose);
+        Logger.recordOutput("Robot Pose", getPose2D());
     }
 
-    public void drive(Vector driveVector, double turn) {
+    public void drive(double leftx, double lefty, double rightx, double yaw) {
+        double leftX = lefty;
+        double leftY = -leftX;
+        double rightX = rightx;
+
+        Vector driveVector = new Vector(leftX, leftY);
+        if (driveVector.magnitude() > 1.0) {
+            driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
+        }
+
+        // swerve1.drive(driveVector, rightX, yaw);
+        // swerve2.drive(driveVector, rightX, yaw);
+        // swerve3.drive(driveVector, rightX, yaw);
+        // swerve4.drive(driveVector, rightX, yaw);
+    }
+
+    public void driveAuto(Vector driveVector, double turn) {
         swerve1.drive(driveVector, turn);
         swerve2.drive(driveVector, turn);
         swerve3.drive(driveVector, turn);
@@ -117,7 +143,7 @@ public class Drive extends SubsystemBase {
 
         Vector robotVector = new Vector(rx, ry);
 
-        drive(robotVector, targetYawDegrees);
+        driveAuto(robotVector, targetYawDegrees);
     }
 
 }

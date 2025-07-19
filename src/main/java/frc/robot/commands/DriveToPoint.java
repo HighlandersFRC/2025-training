@@ -9,9 +9,9 @@ import frc.robot.tools.math.PID;
 public class DriveToPoint extends Command {
   private final Drive driveSubsystem;
 
-  private final PID xPID = new PID(4, 0.0, 1.2);
-  private final PID yPID = new PID(4, 0.0, 1.2);
-  private final PID yawPID = new PID(2.9, 0.0, 2.0);
+  private final PID xPID = new PID(4, 0.0, 2.1);
+  private final PID yPID = new PID(4, 0.0, 2.1);
+  private final PID yawPID = new PID(2, 0.0, 2.9);
 
   public DriveToPoint(Drive drive) {
     System.out.println("started");
@@ -26,6 +26,9 @@ public class DriveToPoint extends Command {
 
     yPID.setMinOutput(-3.0);
     yPID.setMaxOutput(3.0);
+
+    yawPID.setMinInput(-0.5);
+    yawPID.setMaxOutput(0.5);
     //
     addRequirements(driveSubsystem);
   }
@@ -45,8 +48,8 @@ public class DriveToPoint extends Command {
     double currentY = driveSubsystem.getY();
     double currentTheta = driveSubsystem.getAngle();
 
-    double xOut = xPID.updatePID(currentX);
-    double yOut = -yPID.updatePID(currentY);
+    double xOut = -xPID.updatePID(currentX) / 2;
+    double yOut = yPID.updatePID(currentY) / 2;
     double turnOut = -yawPID.updatePID(currentTheta) / 8;
 
     Vector relativeVector = new Vector(xOut, yOut);
@@ -60,10 +63,9 @@ public class DriveToPoint extends Command {
 
   @Override
   public boolean isFinished() {
-    // boolean posClose = Math.abs(xPID.getError()) < 0.03 &&
-    // Math.abs(yPID.getError()) < 0.03;
-    // boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
-    // return posClose && angleClose;
-    return false;
+    boolean posClose = Math.abs(xPID.getError()) < 0.03 &&
+        Math.abs(yPID.getError()) < 0.03;
+    boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
+    return posClose && angleClose && Constants.lastPoint;
   }
 }

@@ -29,9 +29,10 @@ public class FollowPath extends Command {
 
     @Override
     public void execute() {
-        double now = timer.get();
+        double now = timer.get() - 0.25;
 
         while (currentIndex < points.size() && now >= points.get(currentIndex).time) {
+
             PathLoader.PosePoint point = points.get(currentIndex);
 
             org.littletonrobotics.junction.Logger.recordOutput("Points X", point.x);
@@ -53,6 +54,10 @@ public class FollowPath extends Command {
 
     @Override
     public boolean isFinished() {
-        return currentIndex >= points.size();
+        boolean allPoints = currentIndex >= points.size();
+        if (allPoints) {
+            Constants.lastPoint = true;
+        }
+        return allPoints;
     }
 }

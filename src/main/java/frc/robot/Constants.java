@@ -4117,8 +4117,8 @@ public final class Constants {
         public static final class OperatorConstants {
                 public static final double RIGHT_TRIGGER_DEADZONE = 0.1;
                 public static final double LEFT_TRIGGER_DEADZONE = 0.1;
-                public static final double LEFT_STICK_DEADZONE = 0.05;
-                public static final double RIGHT_STICK_DEADZONE = 0.1;
+                public static final double LEFT_STICK_DEADZONE = 0.03;
+                public static final double RIGHT_STICK_DEADZONE = 0.05;
         }
 
         /**

@@ -25,6 +25,7 @@ public class Drive extends SubsystemBase {
     public static Pose2d m_pose = new Pose2d();
     private final PID xPID = new PID(0.01, 0.0, 0.0);
     private final PID yPID = new PID(0.01, 0.0, 0.0);
+    private final double offset = 0.6096 / 2;
 
     public Drive() {
         driveMotor1 = new TalonFX(1, "Canivore");
@@ -46,10 +47,10 @@ public class Drive extends SubsystemBase {
         swerve4 = new SwerveModule(driveMotor4, turnMotor4, encoder4, 4);
 
         var kinematics = new SwerveDriveKinematics(
-                new Translation2d(0.6096, 0.6096),
-                new Translation2d(0.6096, -0.6096),
-                new Translation2d(-0.6096, 0.6096),
-                new Translation2d(-0.6096, -0.6096));
+                new Translation2d(offset, offset),
+                new Translation2d(offset, -offset),
+                new Translation2d(-offset, offset),
+                new Translation2d(-offset, -offset));
         odometry = new SwerveDriveOdometry(
                 kinematics,
                 peripherals.getRotation2d(),
@@ -64,11 +65,11 @@ public class Drive extends SubsystemBase {
     }
 
     public double getX() {
-        return m_pose.getX() * -0.82;
+        return m_pose.getX();
     }
 
     public double getY() {
-        return m_pose.getY() * -0.78;
+        return m_pose.getY();
     }
 
     public double getAngle() {
@@ -151,34 +152,44 @@ public class Drive extends SubsystemBase {
             peripherals.zeroPigeon();
         }
 
-        double leftX = OI.getDriverLeftY();
-        double leftY = -OI.getDriverLeftX();
-        double rightX = OI.getDriverRightX() * 0.65;
+        double leftX = -OI.getDriverLeftY();
+        double leftY = OI.getDriverLeftX();
+        double rightX = OI.getDriverRightX() * 0.3;
 
-        if (Math.abs(leftX) < 0.1) {
+        double originalY = -(Math.copySign(leftY * leftY, leftY));
+        double originalX = -(Math.copySign(leftX * leftX, leftX));
+
+        if (Math.abs(leftX) < 0.03) {
             leftX = 0;
         }
-        if (Math.abs(leftY) < 0.1) {
+
+        if (Math.abs(leftY) < 0.03) {
             leftY = 0;
         }
-        if (Math.abs(rightX) < 0.1) {
+
+        if (Math.abs(rightX) < 0.03) {
             rightX = 0;
         }
 
-        Vector driveVector = new Vector(leftX, leftY);
+        Vector driveVector = new Vector(originalX, originalY);
         if (driveVector.magnitude() > 1.0) {
             driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
         }
 
-        double angleDeg = peripherals.getPigeonAngle();
-        double angleRad = Math.toRadians(angleDeg);
-        double cosA = Math.cos(angleRad);
-        double sinA = Math.sin(angleRad);
+        Vector fieldCentricVector;
+        if (driveVector.magnitude() > 0) {
+            double angleDeg = peripherals.getPigeonAngle();
+            double angleRad = Math.toRadians(angleDeg);
+            double cosA = Math.cos(angleRad);
+            double sinA = Math.sin(angleRad);
 
-        double fieldX = driveVector.getI() * cosA - driveVector.getJ() * sinA;
-        double fieldY = driveVector.getI() * sinA + driveVector.getJ() * cosA;
+            double fieldX = driveVector.getI() * cosA - driveVector.getJ() * sinA;
+            double fieldY = driveVector.getI() * sinA + driveVector.getJ() * cosA;
 
-        Vector fieldCentricVector = new Vector(fieldX, fieldY);
+            fieldCentricVector = new Vector(fieldX, fieldY);
+        } else {
+            fieldCentricVector = new Vector(0, 0);
+        }
 
         driveAuto(fieldCentricVector, rightX);
     }

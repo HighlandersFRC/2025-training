@@ -93,7 +93,7 @@ public class SwerveModule {
         angleMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
         angleMotorConfig.Feedback.RotorToSensorRatio = Constants.Ratios.STEER_GEAR_RATIO;
 
-        driveMotorConfig.Slot0.kP = 8.0;
+        driveMotorConfig.Slot0.kP = 9.6;
         driveMotorConfig.Slot0.kI = 0.0;
         driveMotorConfig.Slot0.kD = 0.0;
         driveMotorConfig.Slot0.kV = 0.0;
@@ -104,6 +104,8 @@ public class SwerveModule {
         driveMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         driveMotorConfig.CurrentLimits.StatorCurrentLimit = 120;
         driveMotorConfig.CurrentLimits.SupplyCurrentLimit = 120;
+        driveMotorConfig.Feedback.RotorToSensorRatio = 1;
+        driveMotorConfig.Feedback.SensorToMechanismRatio = Constants.Ratios.DRIVE_GEAR_RATIO;
 
         driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -124,11 +126,6 @@ public class SwerveModule {
 
     }
 
-    public double findClosestAngle(double angleA, double angleB) {
-        double diff = angleB - angleA;
-        return (diff + Math.PI) % (2 * Math.PI) - Math.PI;
-    }
-
     public void drive(Vector driveVector, double turnInput, double navxAngle) {
         double vx = driveVector.getI();
         double vy = driveVector.getJ();
@@ -146,8 +143,10 @@ public class SwerveModule {
         double targetRad;
 
         if (speed > minSpeed) {
-            if (angle < 0)
+            while (angle < 0)
                 angle += 2 * Math.PI;
+            while (angle >= 2 * Math.PI)
+                angle -= 2 * Math.PI;
 
             double noFlip = findClosestAngle(absAngleRad, angle);
             double flip = findClosestAngle(absAngleRad, angle + Math.PI);
@@ -166,12 +165,30 @@ public class SwerveModule {
         }
 
         setSpeed(speed * Constants.Physical.TOP_SPEED);
-
+        org.littletonrobotics.junction.Logger.recordOutput("Speed", speed * Constants.Physical.TOP_SPEED);
+        org.littletonrobotics.junction.Logger.recordOutput("Current Speed",
+                motorDrive.getVelocity().getValueAsDouble());
         double currentRevs = motorTurn.getPosition().getValueAsDouble();
         double diffRad = findClosestAngle(absAngleRad, targetRad);
         double deltaRevs = diffRad / (2 * Math.PI);
 
+        final double MAX_DELTA_REVS = 0.5;
+        if (Math.abs(deltaRevs) > MAX_DELTA_REVS) {
+            deltaRevs = Math.signum(deltaRevs) * MAX_DELTA_REVS;
+        }
+
         motorTurn.setControl(positionTorqueFOCRequest.withPosition(currentRevs + deltaRevs));
+    }
+
+    private double findClosestAngle(double currentAngle, double targetAngle) {
+        double diff = targetAngle - currentAngle;
+
+        while (diff > Math.PI)
+            diff -= 2 * Math.PI;
+        while (diff < -Math.PI)
+            diff += 2 * Math.PI;
+
+        return diff;
     }
 
     // public void drive(Vector vector, double turnValue, double navxAngle) {
@@ -231,6 +248,13 @@ public class SwerveModule {
         // convert meters per second to motor revolutions per second
         double wheelCirc = Constants.Physical.WHEEL_CIRCUMFERENCE;
         double wheelRPS = mps / wheelCirc;
+        return wheelRPS * Constants.Ratios.DRIVE_GEAR_RATIO;
+    }
+
+    private double RPSToMPS(double rps) {
+
+        double wheelCirc = Constants.Physical.WHEEL_CIRCUMFERENCE;
+        double wheelRPS = rps / wheelCirc;
         return wheelRPS * Constants.Ratios.DRIVE_GEAR_RATIO;
     }
 

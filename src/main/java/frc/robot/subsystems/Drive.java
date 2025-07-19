@@ -124,10 +124,10 @@ public class Drive extends SubsystemBase {
     }
 
     public void driveAuto(Vector driveVector, double turn) {
-        swerve1.drive(driveVector, turn);
-        swerve2.drive(driveVector, turn);
-        swerve3.drive(driveVector, turn);
-        swerve4.drive(driveVector, turn);
+        swerve1.drive(driveVector, turn, getAngle());
+        swerve2.drive(driveVector, turn, getAngle());
+        swerve3.drive(driveVector, turn, getAngle());
+        swerve4.drive(driveVector, turn, getAngle());
     }
 
     public void autoDrive(Vector fieldVector, double targetYawDegrees) {
@@ -146,4 +146,40 @@ public class Drive extends SubsystemBase {
         driveAuto(robotVector, targetYawDegrees);
     }
 
+    public void teleopDrive() {
+        if (OI.getDriverA()) {
+            peripherals.zeroPigeon();
+        }
+
+        double leftX = OI.getDriverLeftY();
+        double leftY = -OI.getDriverLeftX();
+        double rightX = OI.getDriverRightX() * 0.65;
+
+        if (Math.abs(leftX) < 0.1) {
+            leftX = 0;
+        }
+        if (Math.abs(leftY) < 0.1) {
+            leftY = 0;
+        }
+        if (Math.abs(rightX) < 0.1) {
+            rightX = 0;
+        }
+
+        Vector driveVector = new Vector(leftX, leftY);
+        if (driveVector.magnitude() > 1.0) {
+            driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
+        }
+
+        double angleDeg = peripherals.getPigeonAngle();
+        double angleRad = Math.toRadians(angleDeg);
+        double cosA = Math.cos(angleRad);
+        double sinA = Math.sin(angleRad);
+
+        double fieldX = driveVector.getI() * cosA - driveVector.getJ() * sinA;
+        double fieldY = driveVector.getI() * sinA + driveVector.getJ() * cosA;
+
+        Vector fieldCentricVector = new Vector(fieldX, fieldY);
+
+        driveAuto(fieldCentricVector, rightX);
+    }
 }

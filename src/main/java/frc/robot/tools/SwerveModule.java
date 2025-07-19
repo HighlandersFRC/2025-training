@@ -19,17 +19,19 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 public class SwerveModule {
-    private static final double SPEED_DEADBAND = 1e-3;
+    private static final double minSpeed = 1e-3;
     private final TalonFX motorDrive;
     private final TalonFX motorTurn;
     private final CANcoder motorEncoder;
     private final Vector turnVector;
     private final double wheelCircumference = Constants.Physical.WHEEL_CIRCUMFERENCE;
-    private final PID turnPID = new PID(0.01, 0.0, 0.0);
     private final PositionTorqueCurrentFOC positionTorqueFOCRequest = new PositionTorqueCurrentFOC(0);
     private final VelocityTorqueCurrentFOC velocityTorqueFOCRequest = new VelocityTorqueCurrentFOC(0);
     private int moduleIndex;
     private double lastTargetRad = 0.0;
+    private double moduleOffsetX;
+    private double moduleOffsetY;
+    private double offset = 0.6096 / 2;
 
     public SwerveModule(TalonFX driveMotor, TalonFX turnMotor, CANcoder encoder, int index) {
         this.motorDrive = driveMotor;
@@ -41,26 +43,30 @@ public class SwerveModule {
         double c = 1.0 / Math.sqrt(2);
         switch (index) {
             case 1:
+                moduleOffsetX = offset;
+                moduleOffsetY = offset;
                 turnVector.setI(c);
                 turnVector.setJ(c);
                 break;
             case 2:
+                moduleOffsetX = -offset;
+                moduleOffsetY = offset;
                 turnVector.setI(-c);
                 turnVector.setJ(c);
                 break;
             case 3:
+                moduleOffsetX = -offset;
+                moduleOffsetY = -offset;
                 turnVector.setI(-c);
                 turnVector.setJ(-c);
                 break;
             case 4:
+                moduleOffsetX = offset;
+                moduleOffsetY = -offset;
                 turnVector.setI(c);
                 turnVector.setJ(-c);
                 break;
         }
-
-        turnPID.setContinuous(true);
-        turnPID.setMinInput(0);
-        turnPID.setMaxInput(360);
 
         TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
         TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
@@ -123,26 +129,34 @@ public class SwerveModule {
         return (diff + Math.PI) % (2 * Math.PI) - Math.PI;
     }
 
-    public void drive(Vector driveVector, double turnInput) {
-        double vx = driveVector.getI() + turnInput * turnVector.getI();
-        double vy = driveVector.getJ() + turnInput * turnVector.getJ();
-        double speed = Math.hypot(vx, vy);
-        double targetRad;
-        if (speed > SPEED_DEADBAND) {
-            double deg = Math.toDegrees(Math.atan2(vy, vx));
-            if (deg < 0)
-                deg += 360;
-            double desiredRad = Math.toRadians(deg);
-            double currentAbsRad = motorEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
+    public void drive(Vector driveVector, double turnInput, double navxAngle) {
+        double vx = driveVector.getI();
+        double vy = driveVector.getJ();
 
-            double noFlip = findClosestAngle(currentAbsRad, desiredRad);
-            double flip = findClosestAngle(currentAbsRad, desiredRad + Math.PI);
+        double rotationalVx = turnInput * turnVector.getI();
+        double rotationalVy = turnInput * turnVector.getJ();
+
+        double totalVx = vx + rotationalVx;
+        double totalVy = vy + rotationalVy;
+
+        double speed = Math.hypot(totalVx, totalVy);
+        double angle = Math.atan2(totalVy, totalVx);
+
+        double absAngleRad = motorEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
+        double targetRad;
+
+        if (speed > minSpeed) {
+            if (angle < 0)
+                angle += 2 * Math.PI;
+
+            double noFlip = findClosestAngle(absAngleRad, angle);
+            double flip = findClosestAngle(absAngleRad, angle + Math.PI);
 
             if (Math.abs(flip) < Math.abs(noFlip)) {
-                targetRad = currentAbsRad + flip;
+                targetRad = absAngleRad + flip;
                 speed = -speed;
             } else {
-                targetRad = currentAbsRad + noFlip;
+                targetRad = absAngleRad + noFlip;
             }
 
             lastTargetRad = targetRad;
@@ -153,15 +167,71 @@ public class SwerveModule {
 
         setSpeed(speed * Constants.Physical.TOP_SPEED);
 
-        double desiredRevs = targetRad / (2 * Math.PI);
-        double currentMotorRevs = motorTurn.getPosition().getValueAsDouble();
+        double currentRevs = motorTurn.getPosition().getValueAsDouble();
+        double diffRad = findClosestAngle(absAngleRad, targetRad);
+        double deltaRevs = diffRad / (2 * Math.PI);
 
-        double diffRevs = findClosestAngle(
-                motorEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI,
-                desiredRevs * 2 * Math.PI) / (2 * Math.PI);
+        motorTurn.setControl(positionTorqueFOCRequest.withPosition(currentRevs + deltaRevs));
+    }
 
-        double targetRevs = currentMotorRevs + diffRevs;
-        motorTurn.setControl(positionTorqueFOCRequest.withPosition(targetRevs));
+    // public void drive(Vector vector, double turnValue, double navxAngle) {
+    // if (Math.abs(vector.getI()) < 0.001 && Math.abs(vector.getJ()) < 0.001 &&
+    // Math.abs(turnValue) < 0.01) {
+    // // stop both motors
+    // motorDrive.setControl(velocityTorqueFOCRequest.withVelocity(0.0));
+    // motorTurn.setControl(velocityTorqueFOCRequest.withVelocity(0.0));
+    // } else {
+    // // desired translation
+    // double angleWanted = Math.atan2(vector.getJ(), vector.getI());
+    // double wheelPower = Math.hypot(vector.getI(), vector.getJ());
+
+    // // field-centric adjustment
+    // double angleWithNavx = angleWanted + navxAngle;
+    // double xWithNavx = wheelPower * Math.cos(angleWithNavx);
+    // double yWithNavx = wheelPower * Math.sin(angleWithNavx);
+
+    // // rotation component (torqueAngle assumed to be current wheel angle)
+    // double torqueAng = getEncoder();
+    // double turnX = turnValue * Constants.angleToUnitVectorI(torqueAng);
+    // double turnY = turnValue * Constants.angleToUnitVectorJ(torqueAng);
+
+    // // combine translation + rotation
+    // Vector finalVector = new Vector(xWithNavx + turnX, yWithNavx + turnY);
+
+    // double finalAngle = -Math.atan2(finalVector.getJ(), finalVector.getI());
+    // double finalVelocity = Math.hypot(finalVector.getI(), finalVector.getJ());
+
+    // // cap speed
+    // if (finalVelocity > Constants.Physical.TOP_SPEED) {
+    // finalVelocity = Constants.Physical.TOP_SPEED;
+    // }
+
+    // double velocityRPS = MPSToRPS(finalVelocity);
+
+    // // optimize wheel movement
+    // double currentAngle = getEncoder() % (2 * Math.PI);
+    // double setpoint = findClosestAngle(currentAngle, finalAngle);
+    // double setpointFlipped = findClosestAngle(currentAngle, finalAngle +
+    // Math.PI);
+
+    // double angleDiff = Math.abs(currentAngle - finalAngle);
+    // double adjustedVelocity = Math.cos(angleDiff) * velocityRPS;
+
+    // if (Math.abs(setpoint) <= Math.abs(setpointFlipped)) {
+    // motorTurn.setControl(positionTorqueFOCRequest.withPosition(currentAngle +
+    // setpoint));
+    // } else {
+    // motorTurn.setControl(positionTorqueFOCRequest.withPosition(currentAngle +
+    // setpointFlipped));
+    // }
+    // }
+    // }
+
+    private double MPSToRPS(double mps) {
+        // convert meters per second to motor revolutions per second
+        double wheelCirc = Constants.Physical.WHEEL_CIRCUMFERENCE;
+        double wheelRPS = mps / wheelCirc;
+        return wheelRPS * Constants.Ratios.DRIVE_GEAR_RATIO;
     }
 
     private void setSpeed(double velocity) {
@@ -205,7 +275,6 @@ public class SwerveModule {
     public void stop() {
         motorDrive.set(0);
         motorTurn.stopMotor();
-        turnPID.setSetPoint(getAngle());
     }
 
     public void periodic() {

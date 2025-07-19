@@ -11,11 +11,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.FollowPath;
 import frc.robot.subsystems.Drive;
@@ -98,43 +96,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopPeriodic() {
-        if (OI.getDriverA()) {
-            peripherals.zeroPigeon();
-        }
-
-        double leftX = OI.getDriverLeftY();
-        double leftY = -OI.getDriverLeftX();
-        double rightX = OI.getDriverRightX() * 0.65;
-
-        if (Math.abs(leftX) < 0.1) {
-            leftX = 0;
-        }
-        if (Math.abs(leftY) < 0.1) {
-            leftY = 0;
-        }
-        if (Math.abs(rightX) < 0.1) {
-            rightX = 0;
-        }
-
-        Vector driveVector = new Vector(leftX, leftY);
-        if (driveVector.magnitude() > 1.0) {
-            driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
-        }
-        double angleDeg = peripherals.getPigeonAngle();
-        double angleRad = Math.toRadians(angleDeg);
-        double cosA = Math.cos(angleRad);
-        double sinA = Math.sin(angleRad);
-
-        double fieldX = driveVector.getI() * cosA - driveVector.getJ() * sinA;
-        double fieldY = driveVector.getI() * sinA + driveVector.getJ() * cosA;
-
-        Vector fieldCentricVector = new Vector(fieldX, fieldY);
-
-        drive.driveAuto(fieldCentricVector, rightX);
-
-        // drive.drive(leftX, leftY, rightX, peripherals.getPigeonAngle());
-
-        // System.out.println(angleDeg);
+        drive.teleopDrive();
     }
 
     @Override

@@ -29,6 +29,7 @@ public final class Constants {
         }
 
         public static final class Autonomous {
+
                 // lookahead distance is a function:
                 // LOOKAHEAD = AUTONOMOUS_LOOKAHEAD_DISTANCE * velocity + MIN_LOOKAHEAD_DISTANCE
                 // their constants

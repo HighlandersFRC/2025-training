@@ -60,4 +60,5 @@ public class FollowPath extends Command {
         }
         return allPoints;
     }
+
 }

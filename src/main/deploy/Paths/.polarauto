@@ -1,0 +1,53 @@
+{
+    "meta_data": {
+        "auto_name": "",
+        "robot_name": "Default Robot",
+        "field_name": "reefscape-updated"
+    },
+    "schedule": [
+        {
+            "branched": true,
+            "condition": "",
+            "branched_path": {
+                "on_true": [
+                    {
+                        "branched": false,
+                        "path": 0
+                    }
+                ],
+                "on_false": [
+                    {
+                        "branched": false,
+                        "path": 1
+                    }
+                ]
+            }
+        }
+    ],
+    "paths": [
+        {
+            "meta_data": {
+                "path_name": "j"
+            },
+            "key_points": [],
+            "commands": []
+        },
+        {
+            "meta_data": {
+                "path_name": "kh"
+            },
+            "key_points": [],
+            "commands": [
+                {
+                    "start": 0.0,
+                    "end": 1.0,
+                    "command": {
+                        "start": 0.0,
+                        "end": 1.0,
+                        "name": "Command"
+                    }
+                }
+            ]
+        }
+    ]
+}

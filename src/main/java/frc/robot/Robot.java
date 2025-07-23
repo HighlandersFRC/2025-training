@@ -18,6 +18,9 @@ import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.FollowPath;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Peripherals;
+import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Drive.DriveState;
+import frc.robot.subsystems.Superstructure.SuperState;
 import frc.robot.tools.PathLoader;
 import frc.robot.tools.PathLoader.PosePoint;
 import frc.robot.tools.math.Vector;
@@ -26,7 +29,7 @@ public class Robot extends LoggedRobot {
     private final RobotContainer m_robotContainer;
     private final Drive drive;
     private final Peripherals peripherals;
-    private final TalonFX testMotor;
+    private final Superstructure superstructure;
     private double setAngle = 0;
     private Command m_autonomousCommand;
     PathLoader path = new PathLoader();
@@ -49,7 +52,7 @@ public class Robot extends LoggedRobot {
         m_robotContainer = new RobotContainer();
         drive = m_robotContainer.drive;
         peripherals = m_robotContainer.peripherals;
-        testMotor = new TalonFX(4);
+        superstructure = m_robotContainer.superstructure;
 
     }
 
@@ -92,11 +95,16 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        superstructure.setWantedState(SuperState.DEFAULT);
+
     }
 
     @Override
     public void teleopPeriodic() {
-        drive.teleopDrive();
+        superstructure.periodic();
+        if (OI.driverB.getAsBoolean()) {
+            superstructure.setWantedState(SuperState.PATH_TO_POINT);
+        }
     }
 
     @Override

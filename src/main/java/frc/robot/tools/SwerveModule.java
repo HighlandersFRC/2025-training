@@ -93,10 +93,17 @@ public class SwerveModule {
         angleMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
         angleMotorConfig.Feedback.RotorToSensorRatio = Constants.Ratios.STEER_GEAR_RATIO;
 
-        driveMotorConfig.Slot0.kP = 9.6;
-        driveMotorConfig.Slot0.kI = 0.0;
-        driveMotorConfig.Slot0.kD = 0.0;
-        driveMotorConfig.Slot0.kV = 0.0;
+        if (index == 2 || index == 3) {
+            driveMotorConfig.Slot0.kP = 9.4;
+            driveMotorConfig.Slot0.kI = 0.0;
+            driveMotorConfig.Slot0.kD = 0.0;
+            driveMotorConfig.Slot0.kV = 0.0;
+        } else {
+            driveMotorConfig.Slot0.kP = 8.0;
+            driveMotorConfig.Slot0.kI = 0.0;
+            driveMotorConfig.Slot0.kD = 0.0;
+            driveMotorConfig.Slot0.kV = 0.0;
+        }
 
         driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
         driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -120;
@@ -298,7 +305,6 @@ public class SwerveModule {
 
     public void stop() {
         motorDrive.set(0);
-        motorTurn.stopMotor();
     }
 
     public void periodic() {

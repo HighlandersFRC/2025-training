@@ -3559,7 +3559,7 @@ public final class Constants {
 
                 public static final double ROBOT_LENGTH = inchesToMeters(26);
                 public static final double ROBOT_WIDTH = inchesToMeters(26);
-                public static final double MODULE_OFFSET = inchesToMeters(2.5);
+                public static final double MODULE_OFFSET = inchesToMeters(2.625);
                 public static final double ROBOT_RADIUS = Math.hypot(ROBOT_LENGTH / 2 - WHEEL_TO_FRAME_DISTANCE,
                                 ROBOT_WIDTH / 2 - WHEEL_TO_FRAME_DISTANCE);
                 public static double INTAKE_X_OFFSET_FRONT = inchesToMeters(23.8);

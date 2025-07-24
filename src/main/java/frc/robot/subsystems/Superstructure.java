@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import javax.lang.model.util.ElementScanner14;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drive.DriveState;
@@ -18,7 +20,7 @@ public class Superstructure extends SubsystemBase {
 
   private SuperState wantedSuperState = SuperState.IDLE;
   private SuperState currentSuperState = SuperState.IDLE;
-  private boolean pathCompleted = false; 
+  private boolean pathCompleted = false;
 
   Drive drive;
   Peripherals peripherals;
@@ -72,8 +74,11 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.DEFAULT;
         break;
       case PATH_TO_POINT:
-        if (currentSuperState == SuperState.PATH_TO_POINT && drive.getAtPosition()) {
-          pathCompleted = true;
+        if (currentSuperState != SuperState.PATH_TO_POINT) {
+          drive.atPosition = false;
+          currentSuperState = SuperState.PATH_TO_POINT;
+        } else if (drive.atPosition) {
+          wantedSuperState = SuperState.DEFAULT;
           currentSuperState = SuperState.DEFAULT;
         } else {
           currentSuperState = SuperState.PATH_TO_POINT;

@@ -31,11 +31,11 @@ public class Drive extends SubsystemBase {
     private final double offset = 0.6096 / 2;
     public boolean atPosition = false;
 
-    private boolean startedPathToPoint = false;
+    public boolean startedPathToPoint = false;
 
     private PID xPID = new PID(1.5, 0, 3);
     private PID yPID = new PID(1.5, 0, 3);
-    private PID yawPID = new PID(2, 0, 2.9);
+    private PID yawPID = new PID(0.001, 0, 0.00);
 
     double targetX = 0;
     double targetY = 0;
@@ -51,10 +51,6 @@ public class Drive extends SubsystemBase {
     private DriveState systemState = DriveState.IDLE;
 
     public Drive() {
-        // xPID.setPID(0.9, 0, 0);
-        // yPID.setPID(0.9, 0, 0);
-        // yawPID.setPID(2.9, 0, 2);
-
         driveMotor1 = new TalonFX(1, "Canivore");
         driveMotor2 = new TalonFX(4, "Canivore");
         driveMotor3 = new TalonFX(6, "Canivore");
@@ -108,7 +104,7 @@ public class Drive extends SubsystemBase {
             case IDLE:
                 return DriveState.IDLE;
             case PATH_TO_POINT:
-                if (systemState != DriveState.PATH_TO_POINT) {
+                if (systemState == DriveState.DEFAULT) {
                     startedPathToPoint = false;
                     atPosition = false;
                 }
@@ -138,7 +134,7 @@ public class Drive extends SubsystemBase {
     }
 
     public double getAngle() {
-        return m_pose.getRotation().getDegrees();
+        return peripherals.getPigeonAngle();
     }
 
     public Rotation2d getRotation2D() {
@@ -166,11 +162,6 @@ public class Drive extends SubsystemBase {
         if (driveVector.magnitude() > 1.0) {
             driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
         }
-
-        // swerve1.drive(driveVector, rightX, yaw);
-        // swerve2.drive(driveVector, rightX, yaw);
-        // swerve3.drive(driveVector, rightX, yaw);
-        // swerve4.drive(driveVector, rightX, yaw);
     }
 
     public void driveAuto(Vector driveVector, double turn) {
@@ -184,7 +175,7 @@ public class Drive extends SubsystemBase {
         double vx = fieldVector.getI();
         double vy = -fieldVector.getJ();
 
-        double headingRad = Math.toRadians(m_pose.getRotation().getDegrees());
+        double headingRad = Math.toRadians(getAngle());
         double cosA = Math.cos(-headingRad);
         double sinA = Math.sin(-headingRad);
 
@@ -197,6 +188,7 @@ public class Drive extends SubsystemBase {
     }
 
     public void teleopDrive() {
+        startedPathToPoint = false;
         if (OI.getDriverA()) {
             peripherals.zeroPigeon();
         }
@@ -284,9 +276,9 @@ public class Drive extends SubsystemBase {
             case PATH_TO_POINT:
                 if (!startedPathToPoint) {
 
-                    targetX = getX() + 0.3;
-                    targetY = getY() + 0.3;
-                    targetAngle = getAngle();
+                    targetX = getX();
+                    targetY = getY();
+                    targetAngle = 90;
 
                     yawPID.setMinInput(-180);
                     yawPID.setMaxInput(180);
@@ -310,7 +302,7 @@ public class Drive extends SubsystemBase {
 
                 double xOut = xPID.updatePID(getX()) / 2.0;
                 double yOut = -yPID.updatePID(getY()) / 2.0;
-                double turnOut = -yawPID.updatePID(getAngle()) / 8.0;
+                double turnOut = -yawPID.updatePID(getAngle());
 
                 Logger.recordOutput("xPID Error", xPID.getError());
                 Logger.recordOutput("yPID Error", yPID.getError());
@@ -320,11 +312,11 @@ public class Drive extends SubsystemBase {
                         && Math.abs(yPID.getError()) < 0.03;
                 boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
 
+                Logger.recordOutput("YawPID Input", getAngle());
                 Logger.recordOutput("Pos Close", posClose);
                 Logger.recordOutput("Angle Close", angleClose);
 
                 if (posClose && angleClose) {
-                    System.out.println("Path to point complete - switching to DEFAULT state");
                 } else {
                     atPosition = false;
                     autoDrive(new Vector(xOut, yOut), turnOut);

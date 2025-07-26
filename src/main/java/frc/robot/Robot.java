@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.FollowPath;
@@ -26,6 +27,13 @@ import frc.robot.subsystems.Superstructure.SuperState;
 import frc.robot.tools.PathLoader;
 import frc.robot.tools.PathLoader.PosePoint;
 import frc.robot.tools.math.Vector;
+import frc.robot.commands.autos.PolarPathFollower;
+import frc.robot.commands.autos.DoNothingFollower;
+import frc.robot.commands.autos.PolarAutoFollower;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import org.json.JSONObject;
 
 public class Robot extends LoggedRobot {
     private final RobotContainer m_robotContainer;
@@ -82,15 +90,15 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-      
-     try {
-        List<PathLoader.PosePoint> pathPoints = PathLoader.loadPath("square.polarpath");
-        new PurePursuitAutoFollower(pathPoints, drive).schedule();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-
-       
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        m_autonomousCommand.schedule();
+        // try {
+        // List<PathLoader.PosePoint> pathPoints =
+        // PathLoader.loadPath("square.polarpath");
+        // new PurePursuitAutoFollower(pathPoints, drive).schedule();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
 
     }
 

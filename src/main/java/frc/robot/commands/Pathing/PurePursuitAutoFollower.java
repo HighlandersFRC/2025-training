@@ -5,12 +5,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drive;
 import frc.robot.tools.PathLoader.PosePoint;
 import frc.robot.tools.math.Vector;
+import frc.robot.tools.wrappers.AutoFollower;
 import frc.robot.tools.math.PID;
+
+import org.json.JSONObject;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.List;
 
-public class PIDFollow extends Command {
+public class PurePursuitAutoFollower extends AutoFollower {
     private final Drive driveSubsystem;
     private final List<PosePoint> points;
     private final Timer timer = new Timer();
@@ -22,7 +25,7 @@ public class PIDFollow extends Command {
     private final PID yPID = new PID(3.6, 0.0, 2.1);
     private final PID thetaPID = new PID(2, 0.0, 2.9);
 
-    public PIDFollow(List<PosePoint> points, Drive driveSubsystem) {
+    public PurePursuitAutoFollower(List<PosePoint> points, Drive driveSubsystem) {
         this.points = points;
         this.driveSubsystem = driveSubsystem;
 
@@ -128,5 +131,15 @@ public class PIDFollow extends Command {
     @Override
     public boolean isFinished() {
         return lastClosestIndex >= points.size() - 1;
+    }
+
+    @Override
+    public int getPathPointIndex() {
+        return lastClosestIndex;
+    }
+
+    @Override
+    public void from(int pointIndex, JSONObject pathJSON, int toIndex) {
+        
     }
 }

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public final class Constants {
         public static double x = 0;
         public static double y = 0;
-        public static double angle = 0;
+        public static double angle = 90;
         public static boolean lastPoint = false;
 
         public static final class Swerve {

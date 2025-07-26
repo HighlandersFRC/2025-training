@@ -16,6 +16,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.FollowPath;
+import frc.robot.commands.turn;
+import frc.robot.commands.Pathing.FollowTest;
+import frc.robot.commands.Pathing.PIDFollow;
+import frc.robot.commands.Pathing.PurePursuit;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Superstructure;
@@ -64,7 +68,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         try {
-            autoPath = PathLoader.loadPath("test.polarpath");
+            autoPath = PathLoader.loadPath("square.polarpath");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,9 +84,15 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        new ParallelCommandGroup(new FollowPath(autoPath, drive),
-                new DriveToPoint(drive))
-                .schedule();
+      
+     try {
+        List<PathLoader.PosePoint> pathPoints = PathLoader.loadPath("square.polarpath");
+        new PIDFollow(pathPoints, drive).schedule();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+       
 
     }
 

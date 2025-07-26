@@ -173,7 +173,7 @@ public class Drive extends SubsystemBase {
 
     public void autoDrive(Vector fieldVector, double targetYawDegrees) {
         double vx = fieldVector.getI();
-        double vy = -fieldVector.getJ();
+        double vy = fieldVector.getJ();
 
         double headingRad = Math.toRadians(getAngle());
         double cosA = Math.cos(-headingRad);

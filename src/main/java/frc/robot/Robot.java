@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.FollowPath;
+import frc.robot.commands.ZeroPigeon;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Superstructure;
@@ -80,6 +81,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
+        superstructure.setWantedState(SuperState.PATH_TO_POINT);
         new ParallelCommandGroup(new FollowPath(autoPath, drive),
                 new DriveToPoint(drive))
                 .schedule();
@@ -101,6 +103,9 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopPeriodic() {
+        if (OI.getDriverA()) {
+            CommandScheduler.getInstance().schedule(new ZeroPigeon(peripherals));
+        }
         superstructure.periodic();
         if (OI.driverB.getAsBoolean()) {
             superstructure.setWantedState(SuperState.PATH_TO_POINT);

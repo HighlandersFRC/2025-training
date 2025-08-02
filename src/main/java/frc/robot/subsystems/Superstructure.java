@@ -74,15 +74,7 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.DEFAULT;
         break;
       case PATH_TO_POINT:
-        if (currentSuperState != SuperState.PATH_TO_POINT) {
-          drive.atPosition = false;
-          currentSuperState = SuperState.PATH_TO_POINT;
-        } else if (drive.atPosition) {
-          wantedSuperState = SuperState.DEFAULT;
-          currentSuperState = SuperState.DEFAULT;
-        } else {
-          currentSuperState = SuperState.PATH_TO_POINT;
-        }
+        currentSuperState = SuperState.PATH_TO_POINT;
         break;
       default:
         currentSuperState = SuperState.IDLE;

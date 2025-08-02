@@ -4,7 +4,7 @@ import frc.robot.Constants;
 import frc.robot.tools.math.PID;
 import frc.robot.tools.math.Vector;
 
-import java.util.logging.Logger;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -93,17 +93,13 @@ public class SwerveModule {
         angleMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
         angleMotorConfig.Feedback.RotorToSensorRatio = Constants.Ratios.STEER_GEAR_RATIO;
 
-        if (index == 2 || index == 3) {
-            driveMotorConfig.Slot0.kP = 9.4;
-            driveMotorConfig.Slot0.kI = 0.0;
-            driveMotorConfig.Slot0.kD = 0.0;
-            driveMotorConfig.Slot0.kV = 0.0;
-        } else {
-            driveMotorConfig.Slot0.kP = 8.0;
-            driveMotorConfig.Slot0.kI = 0.0;
-            driveMotorConfig.Slot0.kD = 0.0;
-            driveMotorConfig.Slot0.kV = 0.0;
-        }
+        driveMotorConfig.Slot0.kP = 8.0;
+        driveMotorConfig.Slot0.kI = 0.0;
+        driveMotorConfig.Slot0.kD = 0.0;
+        driveMotorConfig.Slot0.kV = 0.0;
+        driveMotorConfig.Slot0.kP = 8.0;
+        driveMotorConfig.Slot0.kI = 0.0;
+        driveMotorConfig.Slot0.kD = 0.0;
 
         driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
         driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -120;
@@ -172,8 +168,8 @@ public class SwerveModule {
         }
 
         setSpeed(speed * Constants.Physical.TOP_SPEED);
-        org.littletonrobotics.junction.Logger.recordOutput("Speed", speed * Constants.Physical.TOP_SPEED);
-        org.littletonrobotics.junction.Logger.recordOutput("Current Speed",
+        Logger.recordOutput("Speed", speed * Constants.Physical.TOP_SPEED);
+        Logger.recordOutput("Current Speed",
                 motorDrive.getVelocity().getValueAsDouble());
         double currentRevs = motorTurn.getPosition().getValueAsDouble();
         double diffRad = findClosestAngle(absAngleRad, targetRad);

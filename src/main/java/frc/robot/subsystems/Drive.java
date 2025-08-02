@@ -33,9 +33,9 @@ public class Drive extends SubsystemBase {
 
     public boolean startedPathToPoint = false;
 
-    private PID xPID = new PID(1.5, 0, 3);
-    private PID yPID = new PID(1.5, 0, 3);
-    private PID yawPID = new PID(0.001, 0, 0.00);
+    private PID xPID = new PID(1.5, 0, 4.2);
+    private PID yPID = new PID(1.5, 0, 4.2);
+    private PID yawPID = new PID(0.004, 0, 0.011);
 
     double targetX = 0;
     double targetY = 0;
@@ -87,6 +87,19 @@ public class Drive extends SubsystemBase {
                 },
                 new Pose2d());
 
+        yawPID.setMinInput(-180);
+        yawPID.setMaxInput(180);
+        yawPID.setContinuous(true);
+
+        xPID.setMinOutput(-3.0);
+        xPID.setMaxOutput(3.0);
+
+        yPID.setMinOutput(-3.0);
+        yPID.setMaxOutput(3.0);
+
+        yawPID.setMinOutput(-1);
+        yawPID.setMaxOutput(1);
+
     }
 
     public void setWantedState(DriveState wantedState) {
@@ -134,7 +147,7 @@ public class Drive extends SubsystemBase {
     }
 
     public double getAngle() {
-        return peripherals.getPigeonAngle();
+        return Math.toRadians(peripherals.getPigeonAngle());
     }
 
     public Rotation2d getRotation2D() {
@@ -164,18 +177,18 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    public void driveAuto(Vector driveVector, double turn) {
-        swerve1.drive(driveVector, turn, getAngle());
-        swerve2.drive(driveVector, turn, getAngle());
-        swerve3.drive(driveVector, turn, getAngle());
-        swerve4.drive(driveVector, turn, getAngle());
+    public void driveSwerve(Vector driveVector, double turn) {
+        swerve1.drive(driveVector, turn, Math.toDegrees(getAngle()));
+        swerve2.drive(driveVector, turn, Math.toDegrees(getAngle()));
+        swerve3.drive(driveVector, turn, Math.toDegrees(getAngle()));
+        swerve4.drive(driveVector, turn, Math.toDegrees(getAngle()));
     }
 
     public void autoDrive(Vector fieldVector, double targetYawDegrees) {
         double vx = fieldVector.getI();
         double vy = -fieldVector.getJ();
 
-        double headingRad = Math.toRadians(getAngle());
+        double headingRad = getAngle();
         double cosA = Math.cos(-headingRad);
         double sinA = Math.sin(-headingRad);
 
@@ -184,21 +197,15 @@ public class Drive extends SubsystemBase {
 
         Vector robotVector = new Vector(rx, ry);
 
-        driveAuto(robotVector, targetYawDegrees);
+        driveSwerve(robotVector, targetYawDegrees);
     }
 
     public void teleopDrive() {
         startedPathToPoint = false;
-        if (OI.getDriverA()) {
-            peripherals.zeroPigeon();
-        }
 
         double leftX = OI.getDriverLeftY();
         double leftY = -OI.getDriverLeftX();
         double rightX = Math.abs(OI.getDriverRightX()) < 0.03 ? 0 : OI.getDriverRightX() * 0.15;
-
-        double originalY = -(Math.copySign(leftY * leftY, leftY));
-        double originalX = -(Math.copySign(leftX * leftX, leftX));
 
         if (Math.abs(leftX) < 0.03) {
             leftX = 0;
@@ -211,6 +218,9 @@ public class Drive extends SubsystemBase {
         if (Math.abs(rightX) < 0.03) {
             rightX = 0;
         }
+
+        double originalY = -(Math.copySign(leftY * leftY, leftY));
+        double originalX = -(Math.copySign(leftX * leftX, leftX));
 
         Vector driveVector = new Vector(originalX, originalY);
         if (driveVector.magnitude() > 1.0) {
@@ -232,7 +242,7 @@ public class Drive extends SubsystemBase {
             fieldCentricVector = new Vector(0, 0);
         }
 
-        driveAuto(fieldCentricVector, -rightX);
+        driveSwerve(fieldCentricVector, -rightX);
     }
 
     public void updateOdometry() {
@@ -244,9 +254,9 @@ public class Drive extends SubsystemBase {
                         swerve3.getPosition(),
                         swerve4.getPosition()
                 });
-        Logger.recordOutput("Robot X", m_pose.getX());
-        Logger.recordOutput("Robot Y", m_pose.getY());
-        Logger.recordOutput("Robot Angle", m_pose.getRotation().getDegrees());
+        Logger.recordOutput("Robot X", getX());
+        Logger.recordOutput("Robot Y", getY());
+        Logger.recordOutput("Robot Angle", getAngle());
         Logger.recordOutput("Robot Pose", getPose2D());
 
     }
@@ -257,6 +267,66 @@ public class Drive extends SubsystemBase {
 
     public boolean getAtPosition() {
         return atPosition;
+    }
+
+    public void moveToPoint(double targetX, double targetY, double targetAngle) {
+        xPID.setSetPoint(targetX);
+        yPID.setSetPoint(targetY);
+        yawPID.setSetPoint(targetAngle);
+
+        startedPathToPoint = true;
+
+        double xOut = xPID.updatePID(getX()) / 1.0;
+        double yOut = -yPID.updatePID(getY()) / 1.0;
+        double turnOut = -yawPID.updatePID(Math.toDegrees(getAngle()));
+
+        Logger.recordOutput("xPID Error", xPID.getError());
+        Logger.recordOutput("yPID Error", yPID.getError());
+        Logger.recordOutput("Yaw Error", yawPID.getError());
+
+        boolean posClose = Math.abs(xPID.getError()) < 0.03
+                && Math.abs(yPID.getError()) < 0.03;
+        boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
+
+        Logger.recordOutput("YawPID Input", Math.toDegrees(getAngle()));
+        Logger.recordOutput("Pos Close", posClose);
+        Logger.recordOutput("Angle Close", angleClose);
+
+        if (posClose && angleClose) {
+        } else {
+            atPosition = false;
+            autoDrive(new Vector(xOut, yOut), turnOut);
+        }
+    }
+
+    public void moveToPoint() {
+        xPID.setSetPoint(Constants.x);
+        yPID.setSetPoint(Constants.y);
+        yawPID.setSetPoint(Constants.angle);
+
+        startedPathToPoint = true;
+
+        double xOut = xPID.updatePID(getX()) / 1.0;
+        double yOut = -yPID.updatePID(getY()) / 1.0;
+        double turnOut = -yawPID.updatePID(Math.toDegrees(getAngle()));
+
+        Logger.recordOutput("xPID Error", xPID.getError());
+        Logger.recordOutput("yPID Error", yPID.getError());
+        Logger.recordOutput("Yaw Error", yawPID.getError());
+
+        boolean posClose = Math.abs(xPID.getError()) < 0.03
+                && Math.abs(yPID.getError()) < 0.03;
+        boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
+
+        Logger.recordOutput("YawPID Input", Math.toDegrees(getAngle()));
+        Logger.recordOutput("Pos Close", posClose);
+        Logger.recordOutput("Angle Close", angleClose);
+
+        if (posClose && angleClose) {
+        } else {
+            atPosition = false;
+            autoDrive(new Vector(xOut, yOut), turnOut);
+        }
     }
 
     @Override
@@ -274,53 +344,7 @@ public class Drive extends SubsystemBase {
                 teleopDrive();
                 break;
             case PATH_TO_POINT:
-                if (!startedPathToPoint) {
-
-                    targetX = getX();
-                    targetY = getY();
-                    targetAngle = 90;
-
-                    yawPID.setMinInput(-180);
-                    yawPID.setMaxInput(180);
-                    yawPID.setContinuous(true);
-
-                    xPID.setMinOutput(-3.0);
-                    xPID.setMaxOutput(3.0);
-
-                    yPID.setMinOutput(-3.0);
-                    yPID.setMaxOutput(3.0);
-
-                    yawPID.setMinOutput(-0.5);
-                    yawPID.setMaxOutput(0.5);
-
-                    xPID.setSetPoint(targetX);
-                    yPID.setSetPoint(targetY);
-                    yawPID.setSetPoint(targetAngle);
-
-                    startedPathToPoint = true;
-                }
-
-                double xOut = xPID.updatePID(getX()) / 2.0;
-                double yOut = -yPID.updatePID(getY()) / 2.0;
-                double turnOut = -yawPID.updatePID(getAngle());
-
-                Logger.recordOutput("xPID Error", xPID.getError());
-                Logger.recordOutput("yPID Error", yPID.getError());
-                Logger.recordOutput("Yaw Error", yawPID.getError());
-
-                boolean posClose = Math.abs(xPID.getError()) < 0.03
-                        && Math.abs(yPID.getError()) < 0.03;
-                boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
-
-                Logger.recordOutput("YawPID Input", getAngle());
-                Logger.recordOutput("Pos Close", posClose);
-                Logger.recordOutput("Angle Close", angleClose);
-
-                if (posClose && angleClose) {
-                } else {
-                    atPosition = false;
-                    autoDrive(new Vector(xOut, yOut), turnOut);
-                }
+                moveToPoint(0, 0, 90);
                 break;
             case IDLE:
                 break;

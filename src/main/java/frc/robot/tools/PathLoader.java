@@ -41,4 +41,12 @@ public class PathLoader {
         }
         return points;
     }
+
+    public static JSONObject getJSON(String relativePath) throws IOException {
+        File file = new File(Filesystem.getDeployDirectory() + "/" + "Paths/" + relativePath);
+        String content = Files.readString(file.toPath());
+        JSONObject root = new JSONObject(content);
+        System.out.println(root);
+        return root;
+    }
 }

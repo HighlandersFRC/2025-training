@@ -93,13 +93,23 @@ public class SwerveModule {
         angleMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
         angleMotorConfig.Feedback.RotorToSensorRatio = Constants.Ratios.STEER_GEAR_RATIO;
 
+        // if (index == 1 || index == 4) {
+        // driveMotorConfig.Slot0.kP = 9.2;
+        // driveMotorConfig.Slot0.kI = 0.0;
+        // driveMotorConfig.Slot0.kD = 0.0;
+        // driveMotorConfig.Slot0.kV = 0.0;
+        // } else {
+
+        // driveMotorConfig.Slot0.kP = 8.0;
+        // driveMotorConfig.Slot0.kI = 0.0;
+        // driveMotorConfig.Slot0.kD = 0.0;
+        // driveMotorConfig.Slot0.kV = 0.0;
+        // }
+
         driveMotorConfig.Slot0.kP = 8.0;
         driveMotorConfig.Slot0.kI = 0.0;
         driveMotorConfig.Slot0.kD = 0.0;
         driveMotorConfig.Slot0.kV = 0.0;
-        driveMotorConfig.Slot0.kP = 8.0;
-        driveMotorConfig.Slot0.kI = 0.0;
-        driveMotorConfig.Slot0.kD = 0.0;
 
         driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
         driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -120;

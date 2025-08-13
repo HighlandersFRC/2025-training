@@ -3,170 +3,214 @@ package frc.robot.commands;
 import java.util.HashMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.littletonrobotics.junction.Logger;
 
-import java.util.ArrayList;
-
-import com.ctre.phoenix6.controls.Follower;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.tools.wrappers.AutoFollower;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.commands.TriggerCommand;
 
 public class PolarPathFollower extends ParallelCommandGroup {
-        double time = 0;
-        AutoFollower autoFollower;
-        double startTime = 0;
-        double endTime = 0;
-        boolean timerStarted = false;
-        JSONObject path;
+        private final JSONObject path;
+        private final AutoFollower autoFollower;
+        private volatile Double pathStartWallTimestamp = null;
+        private volatile Double pathFinishWallTimestamp = null;
+        private volatile double finalPathTime = -1.0;
 
-        public PolarPathFollower(JSONObject path, HashMap<String, Supplier<Command>> commandMap,
+        public PolarPathFollower(JSONObject path,
+                        HashMap<String, Supplier<Command>> commandMap,
                         HashMap<String, BooleanSupplier> conditionMap) {
-                startTime = path.getJSONArray("sampled_points").getJSONObject(0).getDouble("time");
                 this.path = path;
-                autoFollower = new DoNothingFollower(path.getJSONArray("sampled_points"));
+                this.autoFollower = new DoNothingFollower(path.optJSONArray("sampled_points"));
+                this.finalPathTime = computeFinalPathTime();
+
+                StartEndCommand pathTimerCommand = new StartEndCommand(
+                                () -> {
+                                        pathStartWallTimestamp = Timer.getFPGATimestamp();
+                                        pathFinishWallTimestamp = null;
+                                        Logger.recordOutput("Path Time Start", pathStartWallTimestamp);
+                                },
+                                () -> {
+                                        pathFinishWallTimestamp = Timer.getFPGATimestamp();
+                                        finalPathTime = Math.max(finalPathTime, computeFinalPathTime());
+                                        pathStartWallTimestamp = null;
+                                        Logger.recordOutput("Path Time Finish", pathFinishWallTimestamp);
+                                });
+
+                ArrayList<Command> pdgChildren = new ArrayList<>();
+                pdgChildren.add(autoFollower);
+                pdgChildren.add(pathTimerCommand);
+
+                if (path.has("commands")) {
+                        JSONArray cmds = path.getJSONArray("commands");
+                        for (int i = 0; i < cmds.length(); i++) {
+                                JSONObject cmdJson = cmds.getJSONObject(i);
+                                Command parsed = runCommand(cmdJson, commandMap, conditionMap);
+                                if (parsed != null)
+                                        pdgChildren.add(parsed);
+
+                        }
+                }
+
+                ParallelDeadlineGroup pdg = new ParallelDeadlineGroup(
+                                new WaitUntilCommand(() -> autoFollower.isFinished()),
+                                pdgChildren.toArray(new Command[0]));
+
+                addCommands(pdg);
         }
 
-        public Command runCommand(JSONObject command, HashMap<String, Supplier<Command>> commandMap,
+        private Command runCommand(JSONObject command,
+                        HashMap<String, Supplier<Command>> commandMap,
                         HashMap<String, BooleanSupplier> conditionMap) {
+                double start = command.optDouble("start", 0.0);
+                double end = command.optDouble("end", Double.MAX_VALUE);
+
+                BooleanSupplier Start = () -> GetTime() >= start;
+                BooleanSupplier End = () -> GetTime() >= end;
+
                 if (command.has("command")) {
-                        return runSingleCommand(command, commandMap);
+                        JSONObject cobj = command.getJSONObject("command");
+                        String name = cobj.getString("name");
+                        Supplier<Command> sup = commandMap.get(name);
+                        if (sup == null) {
+                                return null;
+                        }
+                        StartEndCommand deferred = new StartEndCommand(
+                                        () -> CommandScheduler.getInstance().schedule(sup.get()),
+                                        () -> {
+                                        });
+                        return new TriggerCommand(Start, deferred, End);
                 } else if (command.has("branched_command")) {
-                        BooleanSupplier Start = () -> command.getDouble("start") > GetTime();
-                        BooleanSupplier End = () -> command.getDouble("end") <= GetTime();
-                        JSONObject OnTrue = command.getJSONObject("branched_command").getJSONObject("on_true");
-                        JSONObject OnFalse = command.getJSONObject("branched_command").getJSONObject("on_false");
-                        BooleanSupplier condition = conditionMap.get(
-                                        command.getJSONObject("branched_command").getString("condition"));
+                        JSONObject branched = command.getJSONObject("branched_command");
+                        String condName = branched.optString("condition", null);
+                        BooleanSupplier condition = (conditionMap != null && condName != null)
+                                        ? conditionMap.get(condName)
+                                        : () -> false;
+                        if (condName != null && (condition == null)) {
 
-                        return new TriggerCommand(
-                                        Start,
-                                        new ConditionalCommand(
-                                                        runCommand(OnTrue, commandMap, conditionMap),
-                                                        runCommand(OnFalse, commandMap, conditionMap),
-                                                        condition),
-                                        End);
-
+                                condition = () -> false;
+                        }
+                        JSONObject onTrue = branched.getJSONObject("on_true");
+                        JSONObject onFalse = branched.getJSONObject("on_false");
+                        Command trueCmd = runCommand(onTrue, commandMap, conditionMap);
+                        Command falseCmd = runCommand(onFalse, commandMap, conditionMap);
+                        return new TriggerCommand(Start, new ConditionalCommand(trueCmd, falseCmd, condition), End);
                 } else if (command.has("parallel_command_group")) {
-                        ArrayList<Command> commands = new ArrayList<>();
-                        for (int i = 0; i < command.getJSONObject("parallel_command_group")
-                                        .getJSONArray("commands").length(); i++) {
-                                commands.add(runCommand(
-                                                command.getJSONObject("parallel_command_group")
-                                                                .getJSONArray("commands").getJSONObject(i),
-                                                commandMap, conditionMap));
+                        JSONArray arr = command.getJSONObject("parallel_command_group").getJSONArray("commands");
+                        ArrayList<Command> subs = new ArrayList<>();
+                        for (int i = 0; i < arr.length(); i++) {
+                                Command sub = runCommand(arr.getJSONObject(i), commandMap, conditionMap);
+                                if (sub != null)
+                                        subs.add(sub);
                         }
-                        BooleanSupplier Start = () -> command.getDouble("start") > GetTime();
-                        BooleanSupplier End = () -> command.getDouble("end") <= GetTime();
-
-                        return new TriggerCommand(
-                                        Start,
-                                        new ParallelCommandGroup(commands.toArray(new Command[0])),
-                                        End);
-
+                        return new TriggerCommand(Start, new ParallelCommandGroup(subs.toArray(new Command[0])), End);
                 } else if (command.has("sequential_command_group")) {
-                        ArrayList<Command> commands = new ArrayList<>();
-                        for (int i = 0; i < command.getJSONObject("sequential_command_group")
-                                        .getJSONArray("commands").length(); i++) {
-                                commands.add(runCommand(
-                                                command.getJSONObject("sequential_command_group")
-                                                                .getJSONArray("commands").getJSONObject(i),
-                                                commandMap, conditionMap));
+                        JSONArray arr = command.getJSONObject("sequential_command_group").getJSONArray("commands");
+                        ArrayList<Command> subs = new ArrayList<>();
+                        for (int i = 0; i < arr.length(); i++) {
+                                Command sub = runCommand(arr.getJSONObject(i), commandMap, conditionMap);
+                                if (sub != null)
+                                        subs.add(sub);
                         }
-                        BooleanSupplier Start = () -> command.getDouble("start") > GetTime();
-                        BooleanSupplier End = () -> command.getDouble("end") <= GetTime();
-
-                        return new TriggerCommand(
-                                        Start,
-                                        new SequentialCommandGroup(commands.toArray(new Command[0])),
-                                        End);
-
+                        return new TriggerCommand(Start, new SequentialCommandGroup(subs.toArray(new Command[0])), End);
                 } else if (command.has("parallel_deadline_group")) {
-                        Command deadlineCommand = runCommand(
-                                        command.getJSONObject("parallel_deadline_group")
-                                                        .getJSONArray("deadline_command").getJSONObject(0),
-                                        commandMap, conditionMap);
-
-                        ArrayList<Command> commands = new ArrayList<>();
-                        for (int i = 0; i < command.getJSONObject("parallel_deadline_group")
-                                        .getJSONArray("commands").length(); i++) {
-                                commands.add(runCommand(
-                                                command.getJSONObject("commands")
-                                                                .getJSONArray("commands").getJSONObject(i),
-                                                commandMap, conditionMap));
+                        JSONObject pdg = command.getJSONObject("parallel_deadline_group");
+                        Command deadline = runCommand(pdg.getJSONArray("deadline_command").getJSONObject(0), commandMap,
+                                        conditionMap);
+                        JSONArray arr = pdg.getJSONArray("commands");
+                        ArrayList<Command> subs = new ArrayList<>();
+                        for (int i = 0; i < arr.length(); i++) {
+                                Command sub = runCommand(arr.getJSONObject(i), commandMap, conditionMap);
+                                if (sub != null)
+                                        subs.add(sub);
                         }
-
-                        Command[] otherCommands = commands.subList(1, commands.size()).toArray(new Command[0]);
-                        BooleanSupplier Start = () -> command.getDouble("start") > GetTime();
-                        BooleanSupplier End = () -> command.getDouble("end") <= GetTime();
-
-                        return new TriggerCommand(
-                                        Start,
-                                        new ParallelDeadlineGroup(deadlineCommand, commands.toArray(new Command[0])),
-                                        End);
-
+                        return new TriggerCommand(Start,
+                                        new ParallelDeadlineGroup(deadline, subs.toArray(new Command[0])), End);
                 } else if (command.has("parallel_race_group")) {
-                        ArrayList<Command> commands = new ArrayList<>();
-
-                        // Parse all commands in the race group
-                        for (int i = 0; i < command.getJSONObject("parallel_race_group")
-                                        .getJSONArray("commands").length(); i++) {
-                                commands.add(runCommand(
-                                                command.getJSONObject("parallel_race_group")
-                                                                .getJSONArray("commands").getJSONObject(i),
-                                                commandMap, conditionMap));
+                        JSONArray arr = command.getJSONObject("parallel_race_group").getJSONArray("commands");
+                        ArrayList<Command> subs = new ArrayList<>();
+                        for (int i = 0; i < arr.length(); i++) {
+                                Command sub = runCommand(arr.getJSONObject(i), commandMap, conditionMap);
+                                if (sub != null)
+                                        subs.add(sub);
                         }
-
-                        BooleanSupplier Start = () -> command.getDouble("start") > GetTime();
-                        BooleanSupplier End = () -> command.getDouble("end") <= GetTime();
-
-                        return new TriggerCommand(
-                                        Start,
-                                        new ParallelRaceGroup(commands.toArray(new Command[0])),
-                                        End);
-
-                } else {
-                        throw new IllegalArgumentException("Invalid command JSON: " + command.toString());
+                        return new TriggerCommand(Start, new ParallelRaceGroup(subs.toArray(new Command[0])), End);
                 }
+
+                throw new IllegalArgumentException("PolarPathFollower: Invalid command JSON: " + command.toString());
         }
 
-        public Command runSingleCommand(JSONObject command, HashMap<String, Supplier<Command>> commandMap) {
-                Command Commands = commandMap.get(command.getJSONObject("command").getString("name")).get();
-                BooleanSupplier Start = () -> command.getDouble("start") > GetTime();
-                BooleanSupplier End = () -> command.getDouble("end") <= GetTime();
-                return new TriggerCommand(Start, Commands, End);
+        private double GetTime() {
+                double now = Timer.getFPGATimestamp();
+
+                if (pathStartWallTimestamp != null) {
+                        double elapsed = now - pathStartWallTimestamp;
+                        if (elapsed < 0.0)
+                                elapsed = 0.0;
+                        if (finalPathTime >= 0.0 && elapsed > finalPathTime)
+                                elapsed = finalPathTime;
+                        Logger.recordOutput("Path Time", elapsed);
+                        return elapsed;
+                }
+
+                if (pathFinishWallTimestamp != null) {
+                        double after = now - pathFinishWallTimestamp;
+                        if (after < 0.0)
+                                after = 0.0;
+                        double t = (finalPathTime >= 0.0) ? finalPathTime : 0.0;
+                        double result = t + after;
+                        Logger.recordOutput("Path Time", result);
+                        return result;
+                }
+
+                Logger.recordOutput("Path Time", 0.0);
+                return 0.0;
         }
 
-        double GetTime() {
-                if (autoFollower.isFinished() || !autoFollower.isScheduled()) {
-                        if (!timerStarted) {
-                                endTime = Timer.getFPGATimestamp();
-                                timerStarted = true;
+        private double computeFinalPathTime() {
+                double maxT = -1.0;
+
+                if (path.has("sampled_points")) {
+                        JSONArray sp = path.getJSONArray("sampled_points");
+                        if (sp.length() > 0) {
+                                double t = sp.getJSONObject(sp.length() - 1).optDouble("time", -1.0);
+                                if (t > maxT)
+                                        maxT = t;
                         }
-                        time = Timer.getFPGATimestamp() - endTime;
                 }
 
-                if (autoFollower.isFinished()) {
-                        time += path.getJSONArray("sampled_points")
-                                        .getJSONObject(path.getJSONArray("time").length() - 1)
-                                        .getDouble("time");
-                } else if (autoFollower.isScheduled()) {
-                        timerStarted = false;
-                        time = path.getJSONArray("sampled_points").getJSONObject(autoFollower.getPathPointIndex())
-                                        .getDouble("time");
+                if (path.has("key_points")) {
+                        JSONArray kp = path.getJSONArray("key_points");
+                        if (kp.length() > 0) {
+                                double t = kp.getJSONObject(kp.length() - 1).optDouble("time", -1.0);
+                                if (t > maxT)
+                                        maxT = t;
+                        }
                 }
 
-                return time;
+                if (path.has("time")) {
+                        double t = path.optDouble("time", -1.0);
+                        if (t > maxT)
+                                maxT = t;
+                }
+
+                return maxT;
         }
 
+        private double getMaxPathTime() {
+                if (finalPathTime < 0.0)
+                        finalPathTime = computeFinalPathTime();
+                return finalPathTime;
+        }
 }

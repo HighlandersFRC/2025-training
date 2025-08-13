@@ -6,8 +6,6 @@ import org.json.JSONObject;
 import frc.robot.tools.wrappers.AutoFollower;
 import edu.wpi.first.wpilibj.Timer;
 
-import org.json.JSONObject;
-
 public class DoNothingFollower extends AutoFollower {
     double start = 0;
     double currentTime = 0;
@@ -21,14 +19,12 @@ public class DoNothingFollower extends AutoFollower {
 
     @Override
     public int getPathPointIndex() {
-        if (index <= path.length()) {
-
-            long index = Math.round(currentTime / 0.01);
-            this.index = (int) index;
-            return (int) index;
-        } else {
-            throw new UnsupportedOperationException("Index out of bounds for path points.");
-        }
+        // Clamp index to valid range
+        int maxIndex = path.length() - 1;
+        long computedIndex = Math.round(currentTime / 0.01);
+        int safeIndex = (int) Math.max(0, Math.min(computedIndex, maxIndex));
+        this.index = safeIndex;
+        return safeIndex;
     }
 
     @Override
@@ -36,16 +32,17 @@ public class DoNothingFollower extends AutoFollower {
         isFinished = false;
         index = 0;
         start = Timer.getFPGATimestamp();
+        currentTime = 0;
     }
 
     @Override
     public void execute() {
-        if (index >= path.length()) {
-            isFinished = true;
-            return;
-        }
         currentTime = Timer.getFPGATimestamp() - start;
-        System.out.println(getPathPointIndex());
+        int idx = getPathPointIndex();
+        if (idx >= path.length() - 1) {
+            isFinished = true;
+        }
+        System.out.println(idx);
     }
 
     @Override
@@ -54,11 +51,11 @@ public class DoNothingFollower extends AutoFollower {
 
     @Override
     public void from(int pointIndex, JSONObject pathJSON, int toIndex) {
+        // No action for DoNothingFollower
     }
 
     @Override
     public boolean isFinished() {
         return isFinished;
     }
-
 }

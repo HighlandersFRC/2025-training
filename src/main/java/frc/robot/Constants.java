@@ -4114,9 +4114,22 @@ public final class Constants {
                 public static final int CLIMBER_PIVOT_MOTOR_ID = 15;
 
                 // Intake
-                public static final int INTAKE_ROLLER_MOTOR_ID = 16;
-                public static final int INTAKE_PIVOT_MOTOR_ID = 17;
+                public static final int INTAKE_ROLLER_MOTOR_ID = 10;
+                public static final int INTAKE_PIVOT_MOTOR_ID = 11;
                 public static final int INTAKE_BEAM_BREAK_PORT = 0;
+
+                // Straightenator
+                public static final int MASTER_STRAIGHTENATOR_MOTOR_ID = 12;
+                public static final int FOLLOWER_STRAIGHTENATOR_MOTOR_ID = 13;
+
+                // Arm
+                public static final int ARM_PIVOT_MOTOR_ID = 14;
+                public static final int ARM_MANIPULATOR_MOTOR_ID = 7;
+        }
+
+        public static final class IntakeConstants {
+                public static double PIVOT_LOWER_LIMIT = 0;
+                public static double PIVOT_UPPER_LIMIT = 10;
         }
 
         // Misc. controller values

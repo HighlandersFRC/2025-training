@@ -9,12 +9,15 @@ import javax.lang.model.util.ElementScanner14;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drive.DriveState;
+import frc.robot.subsystems.Elevator.ElevatorState;
 
 public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
   public enum SuperState {
     DEFAULT,
     PATH_TO_POINT,
+    AUTO_L2_PLACE,
+    AUTO_L2_SCORE,
     IDLE
   }
 
@@ -24,10 +27,12 @@ public class Superstructure extends SubsystemBase {
 
   Drive drive;
   Peripherals peripherals;
+  Elevator elevator;
 
-  public Superstructure(Drive driveSubsystem, Peripherals peripheralSubsystem) {
+  public Superstructure(Drive driveSubsystem, Peripherals peripheralSubsystem, Elevator elevatorSubsystem) {
     drive = driveSubsystem;
     peripherals = peripheralSubsystem;
+    elevator = elevatorSubsystem;
   }
 
   public void setWantedState(SuperState wantedState) {
@@ -62,6 +67,11 @@ public class Superstructure extends SubsystemBase {
       case PATH_TO_POINT:
         handlePathToPointState();
         break;
+      case AUTO_L2_PLACE:
+        handleAutoL2Place();
+        break;
+      case AUTO_L2_SCORE:
+        handleAutoL2Score();
       default:
         handleIdleState();
         break;
@@ -76,6 +86,12 @@ public class Superstructure extends SubsystemBase {
       case PATH_TO_POINT:
         currentSuperState = SuperState.PATH_TO_POINT;
         break;
+      case AUTO_L2_PLACE:
+        currentSuperState = SuperState.AUTO_L2_PLACE;
+        break;
+      case AUTO_L2_SCORE:
+        currentSuperState = SuperState.AUTO_L2_SCORE;
+        break;
       default:
         currentSuperState = SuperState.IDLE;
         break;
@@ -85,6 +101,7 @@ public class Superstructure extends SubsystemBase {
 
   public void handleDefaultState() {
     drive.setWantedState(DriveState.DEFAULT);
+    elevator.setWantedState(ElevatorState.DEFAULT);
   }
 
   public void handlePathToPointState() {
@@ -93,6 +110,14 @@ public class Superstructure extends SubsystemBase {
     } else {
       drive.setWantedState(DriveState.DEFAULT);
     }
+  }
+
+  public void handleAutoL2Place() {
+    elevator.setWantedState(ElevatorState.AUTO_L2);
+  }
+
+  public void handleAutoL2Score() {
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
   }
 
   public void handleIdleState() {

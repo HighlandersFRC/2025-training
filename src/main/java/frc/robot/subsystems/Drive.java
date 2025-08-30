@@ -28,13 +28,12 @@ public class Drive extends SubsystemBase {
     private final SwerveModule swerve1, swerve2, swerve3, swerve4;
     private final SwerveDriveOdometry odometry;
     public static Pose2d m_pose = new Pose2d();
-    private final double offset = 0.6096 / 2;
     public boolean atPosition = false;
 
     public boolean startedPathToPoint = false;
 
-    private PID xPID = new PID(1.5, 0, 4.2);
-    private PID yPID = new PID(1.5, 0, 4.2);
+    private PID xPID = new PID(0.5, 0, 1.2);
+    private PID yPID = new PID(0.5, 0, 1.2);
     private PID yawPID = new PID(0.004, 0, 0.011);
 
     double targetX = 0;
@@ -44,6 +43,7 @@ public class Drive extends SubsystemBase {
     public enum DriveState {
         DEFAULT,
         PATH_TO_POINT,
+        AUTO_PLACE,
         IDLE
     }
 
@@ -52,14 +52,14 @@ public class Drive extends SubsystemBase {
 
     public Drive() {
         driveMotor1 = new TalonFX(1, "Canivore");
-        driveMotor2 = new TalonFX(4, "Canivore");
-        driveMotor3 = new TalonFX(6, "Canivore");
-        driveMotor4 = new TalonFX(8, "Canivore");
+        driveMotor2 = new TalonFX(3, "Canivore");
+        driveMotor3 = new TalonFX(5, "Canivore");
+        driveMotor4 = new TalonFX(7, "Canivore");
 
         turnMotor1 = new TalonFX(2, "Canivore");
-        turnMotor2 = new TalonFX(3, "Canivore");
-        turnMotor3 = new TalonFX(5, "Canivore");
-        turnMotor4 = new TalonFX(7, "Canivore");
+        turnMotor2 = new TalonFX(4, "Canivore");
+        turnMotor3 = new TalonFX(6, "Canivore");
+        turnMotor4 = new TalonFX(8, "Canivore");
 
         encoder1 = new CANcoder(1, "Canivore");
         encoder2 = new CANcoder(2, "Canivore");
@@ -72,10 +72,12 @@ public class Drive extends SubsystemBase {
         swerve4 = new SwerveModule(driveMotor4, turnMotor4, encoder4, 4);
 
         var kinematics = new SwerveDriveKinematics(
-                new Translation2d(offset, offset),
-                new Translation2d(offset, -offset),
-                new Translation2d(-offset, offset),
-                new Translation2d(-offset, -offset));
+                new Translation2d(Constants.Swerve.moduleX,
+                        Constants.Swerve.moduleY),
+                new Translation2d(Constants.Swerve.moduleX, -Constants.Swerve.moduleY),
+                new Translation2d(-Constants.Swerve.moduleX,
+                        Constants.Swerve.moduleY),
+                new Translation2d(-Constants.Swerve.moduleX, -Constants.Swerve.moduleY));
         odometry = new SwerveDriveOdometry(
                 kinematics,
                 peripherals.getRotation2d(),
@@ -106,10 +108,15 @@ public class Drive extends SubsystemBase {
         this.wantedState = wantedState;
     }
 
+    public enum WANTED_GAME_PIECE {
+        ALGAE,
+        CORAL,
+    }
+
     private DriveState handleStateTransition() {
         switch (wantedState) {
             case DEFAULT:
-                if (systemState == DriveState.PATH_TO_POINT) {
+                if (systemState == DriveState.AUTO_PLACE) {
                     startedPathToPoint = false;
                     atPosition = false;
                 }
@@ -207,17 +214,12 @@ public class Drive extends SubsystemBase {
         double leftY = -OI.getDriverLeftX();
         double rightX = Math.abs(OI.getDriverRightX()) < 0.03 ? 0 : OI.getDriverRightX() * 0.15;
 
-        if (Math.abs(leftX) < 0.03) {
+        if (Math.abs(leftX) < 0.03)
             leftX = 0;
-        }
-
-        if (Math.abs(leftY) < 0.03) {
+        if (Math.abs(leftY) < 0.03)
             leftY = 0;
-        }
-
-        if (Math.abs(rightX) < 0.03) {
+        if (Math.abs(rightX) < 0.03)
             rightX = 0;
-        }
 
         double originalY = -(Math.copySign(leftY * leftY, leftY));
         double originalX = -(Math.copySign(leftX * leftX, leftX));
@@ -242,7 +244,22 @@ public class Drive extends SubsystemBase {
             fieldCentricVector = new Vector(0, 0);
         }
 
-        driveSwerve(fieldCentricVector, -rightX);
+        double halfL = Constants.Swerve.chassisLengthMeters / 2.0;
+        double halfW = Constants.Swerve.chassisWidthMeters / 2.0;
+        double R = Math.sqrt(halfL * halfL + halfW * halfW);
+
+        if (R <= 1e-6) {
+            R = 1.0;
+        }
+
+        double scaledRotation = -rightX / R;
+
+        if (scaledRotation > 1.0)
+            scaledRotation = 1.0;
+        if (scaledRotation < -1.0)
+            scaledRotation = -1.0;
+
+        driveSwerve(fieldCentricVector, scaledRotation);
     }
 
     public void updateOdometry() {
@@ -293,8 +310,10 @@ public class Drive extends SubsystemBase {
         Logger.recordOutput("Angle Close", angleClose);
 
         if (posClose && angleClose) {
+            setWantedState(DriveState.DEFAULT);
         } else {
             atPosition = false;
+            setWantedState(DriveState.AUTO_PLACE);
             autoDrive(new Vector(xOut, yOut), turnOut);
         }
     }
@@ -327,6 +346,72 @@ public class Drive extends SubsystemBase {
             atPosition = false;
             autoDrive(new Vector(xOut, yOut), turnOut);
         }
+    }
+
+    public double[] findClosestPiece(WANTED_GAME_PIECE piece, double x, double y) {
+        java.util.List<Pose2d> a, b;
+
+        if (piece == WANTED_GAME_PIECE.ALGAE) {
+            if (isOnBlueSide()) {
+                a = Constants.Reef.algaeBlueFrontPlacingPositions;
+                b = Constants.Reef.algaeBlueBackPlacingPositions;
+            } else {
+                a = Constants.Reef.algaeRedFrontPlacingPositions;
+                b = Constants.Reef.algaeRedBackPlacingPositions;
+            }
+        } else {
+            if (isOnBlueSide()) {
+                a = Constants.Reef.blueFrontPlacingPositions;
+                b = Constants.Reef.blueBackPlacingPositions;
+            } else {
+                a = Constants.Reef.redFrontPlacingPositions;
+                b = Constants.Reef.redBackPlacingPositions;
+            }
+        }
+
+        double best = Double.POSITIVE_INFINITY;
+        double rx = x, ry = y, rAngle = 0.0;
+
+        if (a != null) {
+            for (int i = 0; i < a.size(); i++) {
+                Pose2d front = a.get(i);
+                Pose2d back = (b != null && b.size() > i) ? b.get(i) : null;
+
+                double distFront = Math.hypot(x - front.getX(), y - front.getY());
+                if (distFront < best && distFront <= Constants.Autonomous.AUTO_PLACE_DISTANCE) {
+                    best = distFront;
+                    rx = front.getX();
+                    ry = front.getY();
+                    rAngle = front.getRotation().getRadians();
+                }
+
+                if (back != null) {
+                    double distBack = Math.hypot(x - back.getX(), y - back.getY());
+                    if (distBack < best && distBack <= Constants.Autonomous.AUTO_PLACE_DISTANCE) {
+                        best = distBack;
+                        rx = back.getX();
+                        ry = back.getY();
+                        rAngle = back.getRotation().getRadians() + Math.PI;
+                    }
+                }
+            }
+        }
+
+        double[] out = new double[] { rx, ry, rAngle };
+        try {
+            Logger.recordOutput("closestPiece", out);
+        } catch (Throwable t) {
+            System.out.printf("closestPiece: (%.2f, %.2f, %.2f rad)%n", rx, ry, rAngle);
+        }
+        return out;
+    }
+
+    public boolean isOnBlueSide() {
+        return false;
+    }
+
+    public Pose2d coordToPose2d(double x, double y) {
+        return new Pose2d(x, y, new Rotation2d(0));
     }
 
     @Override

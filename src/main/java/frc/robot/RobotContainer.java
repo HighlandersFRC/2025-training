@@ -1,11 +1,15 @@
 package frc.robot;
 
 import frc.robot.commands.PolarAutoFollower;
+import frc.robot.commands.SetRobotState;
 import frc.robot.commands.Test;
 import frc.robot.commands.ZeroPigeon;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Drive.WANTED_GAME_PIECE;
+import frc.robot.subsystems.Superstructure.SuperState;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   public final Drive drive = new Drive();
   public final Peripherals peripherals = new Peripherals();
-  public final Superstructure superstructure = new Superstructure(drive, peripherals);
+  public final Elevator elevator = new Elevator();
+  public final Superstructure superstructure = new Superstructure(drive, peripherals, elevator);
   private Command autonomousCommand;
 
   public RobotContainer() {
@@ -37,6 +42,9 @@ public class RobotContainer {
 
   private void configureBindings() {
     OI.driverA.whileTrue(new ZeroPigeon(peripherals));
+    OI.driverX.whileTrue(new SetRobotState(superstructure, SuperState.AUTO_L2_PLACE));
+    OI.driverY.whileTrue(new SetRobotState(superstructure, SuperState.AUTO_L2_SCORE));
+
   }
 
   public Command getAutonomousCommand() {

@@ -7,7 +7,10 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.opencv.core.Point;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -15,6 +18,8 @@ import frc.robot.commands.DriveTrainOverride;
 import frc.robot.commands.PolarAutoFollower;
 import frc.robot.commands.Test;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Drive.WANTED_GAME_PIECE;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.SuperState;
@@ -32,12 +37,15 @@ public class Robot extends LoggedRobot {
     private final Drive drive;
     private final Peripherals peripherals;
     private final Superstructure superstructure;
+    private final Elevator elevator;
     private double setAngle = 0;
     private Command m_autonomousCommand;
     PathLoader path = new PathLoader();
     JSONObject autoPath;
     PolarAutoFollower autoCommand;
 
+    private double[] frozenPoint = null;
+    private double[] frozenPointAlgae = null;
     HashMap<String, Supplier<Command>> commandMap = new HashMap<String, Supplier<Command>>() {
         {
             put("Command1", () -> new Test("command1"));
@@ -67,6 +75,7 @@ public class Robot extends LoggedRobot {
         drive = m_robotContainer.drive;
         peripherals = m_robotContainer.peripherals;
         superstructure = m_robotContainer.superstructure;
+        elevator = m_robotContainer.elevator;
     }
 
     @Override
@@ -76,7 +85,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotInit() {
-
+        elevator.init();
     }
 
     @Override
@@ -130,7 +139,30 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopPeriodic() {
+        if (OI.driverB.getAsBoolean()) {
+            if (frozenPoint == null) {
+                frozenPoint = drive.findClosestPiece(WANTED_GAME_PIECE.CORAL, drive.getX(), drive.getY());
+            }
+            if (frozenPointAlgae == null) {
+                frozenPointAlgae = drive.findClosestPiece(WANTED_GAME_PIECE.ALGAE, drive.getX(), drive.getY());
+            }
 
+            if (frozenPoint != null && frozenPoint.length >= 3) {
+                drive.moveToPoint(frozenPoint[0], frozenPoint[1], Math.toDegrees(frozenPoint[2]));
+                System.out.printf("Frozen CORAL: (%.2f, %.2f)%n", frozenPoint[0], frozenPoint[1]);
+                Logger.recordOutput("frozen position coral",
+                        new Pose2d(frozenPoint[0], frozenPoint[1], new Rotation2d(frozenPoint[2])));
+            }
+
+            if (frozenPointAlgae != null && frozenPointAlgae.length >= 3) {
+                Logger.recordOutput("frozen position algae",
+                        new Pose2d(frozenPointAlgae[0], frozenPointAlgae[1], new Rotation2d(frozenPointAlgae[2])));
+            }
+
+        } else {
+            frozenPoint = null;
+            frozenPointAlgae = null;
+        }
     }
 
     @Override

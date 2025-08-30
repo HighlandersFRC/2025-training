@@ -49,17 +49,18 @@ public class Drive extends SubsystemBase {
 
     private DriveState wantedState = DriveState.IDLE;
     private DriveState systemState = DriveState.IDLE;
+    
 
     public Drive() {
         driveMotor1 = new TalonFX(1, "Canivore");
-        driveMotor2 = new TalonFX(4, "Canivore");
-        driveMotor3 = new TalonFX(6, "Canivore");
-        driveMotor4 = new TalonFX(8, "Canivore");
+        driveMotor2 = new TalonFX(3, "Canivore");
+        driveMotor3 = new TalonFX(5, "Canivore");
+        driveMotor4 = new TalonFX(7, "Canivore");
 
         turnMotor1 = new TalonFX(2, "Canivore");
-        turnMotor2 = new TalonFX(3, "Canivore");
-        turnMotor3 = new TalonFX(5, "Canivore");
-        turnMotor4 = new TalonFX(7, "Canivore");
+        turnMotor2 = new TalonFX(4, "Canivore");
+        turnMotor3 = new TalonFX(6, "Canivore");
+        turnMotor4 = new TalonFX(8, "Canivore");
 
         encoder1 = new CANcoder(1, "Canivore");
         encoder2 = new CANcoder(2, "Canivore");
@@ -158,7 +159,6 @@ public class Drive extends SubsystemBase {
         Pose2d pose = new Pose2d(getX(), getY(), getRotation2D());
         return pose;
     }
-
     public void stop() {
         swerve1.stop();
         swerve2.stop();
@@ -176,7 +176,18 @@ public class Drive extends SubsystemBase {
             driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
         }
     }
-
+    public void resetOdometry(Pose2d pose) {
+        m_pose = pose;
+        odometry.resetPosition(peripherals.getRotation2d(),
+                               new SwerveModulePosition[] {
+                                   swerve2.getPosition(),
+                                   swerve1.getPosition(),
+                                   swerve3.getPosition(),
+                                   swerve4.getPosition()
+                               },
+                               pose);
+    }
+    
     public void driveSwerve(Vector driveVector, double turn) {
         swerve1.drive(driveVector, turn, Math.toDegrees(getAngle()));
         swerve2.drive(driveVector, turn, Math.toDegrees(getAngle()));

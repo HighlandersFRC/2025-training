@@ -124,11 +124,11 @@ public class SwerveModule {
 
         driveMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
-        if (index == 4) {
-            driveMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        } else {
-            driveMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        }
+        // if (index == 4) {
+        //     driveMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        // } else {
+        //     driveMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        // }
 
         double absolutePosition = motorEncoder.getAbsolutePosition().getValueAsDouble();
         motorTurn.setPosition(absolutePosition);

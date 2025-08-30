@@ -9,8 +9,6 @@ import frc.robot.tools.PathLoader;
 import java.io.Console;
 import java.util.List;
 
-import org.littletonrobotics.junction.Logger;
-
 public class FollowPath extends Command {
     private final Drive drive;
     private final List<PathLoader.PosePoint> points;
@@ -21,7 +19,6 @@ public class FollowPath extends Command {
         this.points = inputPoints;
         this.drive = driveSubsystem;
     }
-
     @Override
     public void initialize() {
         currentIndex = 0;
@@ -37,9 +34,9 @@ public class FollowPath extends Command {
 
             PathLoader.PosePoint point = points.get(currentIndex);
 
-            Logger.recordOutput("Points X", point.x);
-            Logger.recordOutput("Points Y", point.y);
-            Logger.recordOutput("Points Theta", point.theta);
+            org.littletonrobotics.junction.Logger.recordOutput("Points X", point.x);
+            org.littletonrobotics.junction.Logger.recordOutput("Points Y", point.y);
+            org.littletonrobotics.junction.Logger.recordOutput("Points Theta", point.theta);
 
             Constants.x = point.x;
             Constants.y = point.y;

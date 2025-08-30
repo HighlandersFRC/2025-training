@@ -11,21 +11,19 @@ import org.json.JSONObject;
 
 import edu.wpi.first.wpilibj.Filesystem;
 
-public class PathLoader {
+public class PathLoaderOld{
 
     public static class PosePoint {
         public final double x, y, theta, time;
-        public final double dx, dy, dtheta;
+        
 
-        public PosePoint(double x, double y, double theta, double time,
-                         double dx, double dy, double dtheta) {
+        public PosePoint(double x, double y, double theta, double time
+                        ) {
             this.x = x;
             this.y = y;
             this.theta = theta;
             this.time = time;
-            this.dx = dx;
-            this.dy = dy;
-            this.dtheta = dtheta;
+          
         }
     }
 
@@ -41,10 +39,7 @@ public class PathLoader {
                     p.getDouble("x"),
                     p.getDouble("y"),
                     p.getDouble("angle"),
-                    p.getDouble("time"),
-                    p.getDouble("x_velocity"),
-                    p.getDouble("y_velocity"),
-                    p.getDouble("angular_velocity")));
+                    p.getDouble("time")));
         }
         return points;
     }

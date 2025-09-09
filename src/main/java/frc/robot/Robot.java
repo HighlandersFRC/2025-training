@@ -21,6 +21,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Drive.WANTED_GAME_PIECE;
 import frc.robot.subsystems.Peripherals;
+import frc.robot.subsystems.Straightenator;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.SuperState;
 import frc.robot.tools.PathLoader;
@@ -38,6 +39,7 @@ public class Robot extends LoggedRobot {
     private final Peripherals peripherals;
     private final Superstructure superstructure;
     private final Elevator elevator;
+    private final Straightenator straightenator;
     private double setAngle = 0;
     private Command m_autonomousCommand;
     PathLoader path = new PathLoader();
@@ -76,6 +78,7 @@ public class Robot extends LoggedRobot {
         peripherals = m_robotContainer.peripherals;
         superstructure = m_robotContainer.superstructure;
         elevator = m_robotContainer.elevator;
+        straightenator = m_robotContainer.straightenator;
     }
 
     @Override
@@ -162,6 +165,12 @@ public class Robot extends LoggedRobot {
         } else {
             frozenPoint = null;
             frozenPointAlgae = null;
+        }
+
+        if (OI.driverLT.getAsBoolean()) {
+            straightenator.setWantedState(Straightenator.StraightenatorState.DEFAULT);
+        } else {
+            straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
         }
     }
 

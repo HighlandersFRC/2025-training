@@ -82,8 +82,6 @@ public class SwerveModule {
         angleMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 70;
         angleMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -70;
 
-        angleMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
         angleMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
         angleMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -121,6 +119,7 @@ public class SwerveModule {
         driveMotorConfig.Feedback.SensorToMechanismRatio = Constants.Ratios.DRIVE_GEAR_RATIO;
 
         driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        angleMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         driveMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
@@ -304,7 +303,9 @@ public class SwerveModule {
     }
 
     public void stop() {
-        motorDrive.set(0);
+        double currentDrivePosition = motorDrive.getRotorPosition().getValueAsDouble();
+        motorDrive.setControl(positionTorqueFOCRequest.withPosition(currentDrivePosition));
+        motorTurn.setControl(positionTorqueFOCRequest.withPosition(motorTurn.getPosition().getValueAsDouble()));
     }
 
     public void periodic() {

@@ -87,20 +87,20 @@ public class Manipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     systemState = handleStateTransition();
 
     switch (systemState) {
       case CORAL_INTAKE:
-
+        setIntakeTorque(20, 30);
         break;
       case ALGAE_INTAKE:
-
+        setIntakeTorque(40, 30);
         break;
       case OUTAKE:
+        setIntakeTorque(-30, 30);
         break;
-
       case OFF:
+        setIntakeTorque(0, 0);
         break;
       default:
 

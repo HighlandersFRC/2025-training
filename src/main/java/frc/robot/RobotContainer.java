@@ -7,6 +7,7 @@ import frc.robot.commands.ZeroPigeon;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Peripherals;
+import frc.robot.subsystems.Straightenator;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Drive.WANTED_GAME_PIECE;
 import frc.robot.subsystems.Superstructure.SuperState;
@@ -30,6 +31,7 @@ public class RobotContainer {
   public final Drive drive = new Drive();
   public final Peripherals peripherals = new Peripherals();
   public final Elevator elevator = new Elevator();
+  public final Straightenator straightenator = new Straightenator();
   public final Superstructure superstructure = new Superstructure(drive, peripherals, elevator);
   private Command autonomousCommand;
 

@@ -4049,12 +4049,8 @@ public final class Constants {
         // Gear ratios and conversions
         public static final class Ratios {
 
-                // twist
-                public static final double TWIST_GEAR_RATIO_ROTOR = 28.8;
-                public static final double TWIST_GEAR_RATIO_ENCODER = 5.0 / 4.0;
-
                 // pivot
-                public static final double PIVOT_GEAR_RATIO = 95.238;
+                public static final double PIVOT_GEAR_RATIO = 57.5;
 
                 // drive
                 public static final double DRIVE_GEAR_RATIO = 6.12;
@@ -4076,7 +4072,7 @@ public final class Constants {
                 }
 
                 // intake
-                public static final double INTAKE_PIVOT_GEAR_RATIO = 30.0;
+                public static final double INTAKE_PIVOT_GEAR_RATIO = 50.0;
         }
 
         // Can info such as IDs
@@ -4115,6 +4111,7 @@ public final class Constants {
                 public static final int TWIST_CANCODER_ID = 6;
 
                 // Manipulator
+
                 public static final int MANIPULATOR_MOTOR_ID = 13;
 
                 // Climber
@@ -4126,8 +4123,10 @@ public final class Constants {
                 public static final int INTAKE_BEAM_BREAK_PORT = 0;
 
                 // Straightenator
-                public static final int MASTER_STRAIGHTENATOR_MOTOR_ID = 12;
-                public static final int FOLLOWER_STRAIGHTENATOR_MOTOR_ID = 13;
+                public static final int LEFT_STRAIGHTENATOR_MOTOR_ID = 12;
+                public static final int RIGHT_STRAIGHTENATOR_MOTOR_ID = 13;
+                public static final int FAR_BEAM_BREAK_SENSOR = 0;
+                public static final int CLOSE_BEAM_BREAK_SENSOR = 2;
 
                 // Arm
                 public static final int ARM_PIVOT_MOTOR_ID = 14;

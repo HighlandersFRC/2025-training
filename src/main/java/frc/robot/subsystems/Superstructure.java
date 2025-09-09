@@ -18,6 +18,10 @@ public class Superstructure extends SubsystemBase {
     PATH_TO_POINT,
     AUTO_L2_PLACE,
     AUTO_L2_SCORE,
+    AUTO_L3_PLACE,
+    AUTO_L3_SCORE,
+    AUTO_L4_PLACE,
+    AUTO_L4_SCORE,
     IDLE
   }
 
@@ -118,6 +122,22 @@ public class Superstructure extends SubsystemBase {
 
   public void handleAutoL2Score() {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
+  }
+
+  public void handleAutoL3Place() {
+
+  }
+
+  public void handleAutoL3Score() {
+
+  }
+
+  public void handleAutoL4Place() {
+
+  }
+
+  public void handleAutoL4Score() {
+
   }
 
   public void handleIdleState() {

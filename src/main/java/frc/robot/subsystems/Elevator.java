@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import java.lang.constant.Constable;
+import java.util.PrimitiveIterator.OfDouble;
+
+import javax.lang.model.util.ElementScanner14;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -33,6 +36,8 @@ public class Elevator extends SubsystemBase {
 
   private ElevatorState wantedState = ElevatorState.DEFAULT;
   private ElevatorState systemState = ElevatorState.DEFAULT;
+
+  boolean isZeroed = false;
 
   public Elevator() {
     left_elevator = new TalonFX(Constants.CANInfo.LEFT_ELEVATOR_MOTOR_ID, new CANBus(Constants.CANInfo.CANBUS_NAME));
@@ -129,9 +134,15 @@ public class Elevator extends SubsystemBase {
   private ElevatorState handleStateTransition() {
     switch (wantedState) {
       case DEFAULT:
-        return ElevatorState.DEFAULT;
+        if (isZeroed) {
+          return ElevatorState.DEFAULT;
+        } else
+          return ElevatorState.ZERO;
       case ZERO:
-        return ElevatorState.ZERO;
+        if (isZeroed) {
+          return ElevatorState.DEFAULT;
+        } else
+          return ElevatorState.ZERO;
       case OVER:
         return ElevatorState.OVER;
       case L1:
@@ -205,8 +216,21 @@ public class Elevator extends SubsystemBase {
       case AUTO_SCORE_L2:
         moveElevatorToPosition(Constants.inchesToMeters(30));
         break;
+      case ZERO:
+        moveWithTorque(-30, 0.25);
+        if (left_elevator.getTorqueCurrent().getValueAsDouble() < -20.0
+            && Math.abs(left_elevator.getVelocity().getValueAsDouble()) < 1) {
+          left_elevator.setPosition(0.0);
+          right_elevator.setPosition(0.0);
+          isZeroed = true;
+        }
+        break;
       default:
         break;
     }
+    Logger.recordOutput("Elevator Torque", left_elevator.getTorqueCurrent().getValueAsDouble());
+    Logger.recordOutput("Elevator Velocity", left_elevator.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Elevators Zeroed?", isZeroed);
+    Logger.recordOutput("Elevator State", systemState);
   }
 }

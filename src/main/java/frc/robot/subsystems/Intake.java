@@ -19,8 +19,6 @@ public class Intake extends SubsystemBase {
   private final TalonFX roller = new TalonFX(Constants.CANInfo.INTAKE_ROLLER_MOTOR_ID);
 
   private final TalonFX pivot = new TalonFX(Constants.CANInfo.INTAKE_PIVOT_MOTOR_ID);
-  private final TalonFX master_straightenator = new TalonFX(Constants.CANInfo.MASTER_STRAIGHTENATOR_MOTOR_ID);
-  private final TalonFX follower_straightenator = new TalonFX(Constants.CANInfo.FOLLOWER_STRAIGHTENATOR_MOTOR_ID);
 
   private final TorqueCurrentFOC m_torqueCurrentFOCRequest = new TorqueCurrentFOC(0.0).withMaxAbsDutyCycle(0.0);
   private final PositionTorqueCurrentFOC m_positionTorqueCurrentFOCRequest = new PositionTorqueCurrentFOC(0.0);

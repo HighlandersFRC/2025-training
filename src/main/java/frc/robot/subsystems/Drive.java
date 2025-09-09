@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import javax.lang.model.util.ElementScanner14;
 
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -51,20 +53,20 @@ public class Drive extends SubsystemBase {
     private DriveState systemState = DriveState.IDLE;
 
     public Drive() {
-        driveMotor1 = new TalonFX(1, "Canivore");
-        driveMotor2 = new TalonFX(3, "Canivore");
-        driveMotor3 = new TalonFX(5, "Canivore");
-        driveMotor4 = new TalonFX(7, "Canivore");
+        driveMotor1 = new TalonFX(Constants.CANInfo.FRONT_RIGHT_DRIVE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
+        driveMotor2 = new TalonFX(Constants.CANInfo.FRONT_LEFT_DRIVE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
+        driveMotor3 = new TalonFX(Constants.CANInfo.BACK_LEFT_DRIVE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
+        driveMotor4 = new TalonFX(Constants.CANInfo.BACK_RIGHT_DRIVE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
 
-        turnMotor1 = new TalonFX(2, "Canivore");
-        turnMotor2 = new TalonFX(4, "Canivore");
-        turnMotor3 = new TalonFX(6, "Canivore");
-        turnMotor4 = new TalonFX(8, "Canivore");
+        turnMotor1 = new TalonFX(Constants.CANInfo.FRONT_RIGHT_ANGLE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
+        turnMotor2 = new TalonFX(Constants.CANInfo.FRONT_LEFT_ANGLE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
+        turnMotor3 = new TalonFX(Constants.CANInfo.BACK_LEFT_ANGLE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
+        turnMotor4 = new TalonFX(Constants.CANInfo.BACK_RIGHT_ANGLE_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
 
-        encoder1 = new CANcoder(1, "Canivore");
-        encoder2 = new CANcoder(2, "Canivore");
-        encoder3 = new CANcoder(3, "Canivore");
-        encoder4 = new CANcoder(4, "Canivore");
+        encoder1 = new CANcoder(Constants.CANInfo.FRONT_RIGHT_MODULE_CANCODER_ID, Constants.CANInfo.CANBUS_NAME);
+        encoder2 = new CANcoder(Constants.CANInfo.FRONT_LEFT_MODULE_CANCODER_ID, Constants.CANInfo.CANBUS_NAME);
+        encoder3 = new CANcoder(Constants.CANInfo.BACK_LEFT_MODULE_CANCODER_ID, Constants.CANInfo.CANBUS_NAME);
+        encoder4 = new CANcoder(Constants.CANInfo.BACK_RIGHT_MODULE_CANCODER_ID, Constants.CANInfo.CANBUS_NAME);
 
         swerve1 = new SwerveModule(driveMotor1, turnMotor1, encoder1, 1);
         swerve2 = new SwerveModule(driveMotor2, turnMotor2, encoder2, 2);
@@ -210,8 +212,8 @@ public class Drive extends SubsystemBase {
     public void teleopDrive() {
         startedPathToPoint = false;
 
-        double leftX = OI.getDriverLeftY();
-        double leftY = -OI.getDriverLeftX();
+        double leftX = -OI.getDriverLeftY();
+        double leftY = OI.getDriverLeftX();
         double rightX = Math.abs(OI.getDriverRightX()) < 0.03 ? 0 : OI.getDriverRightX() * 0.15;
 
         if (Math.abs(leftX) < 0.03)
@@ -221,6 +223,10 @@ public class Drive extends SubsystemBase {
         if (Math.abs(rightX) < 0.03)
             rightX = 0;
 
+        if (leftX == 0 && leftY == 0 && rightX == 0) {
+            stop();
+        }
+
         double originalY = -(Math.copySign(leftY * leftY, leftY));
         double originalX = -(Math.copySign(leftX * leftX, leftX));
 
@@ -229,31 +235,22 @@ public class Drive extends SubsystemBase {
             driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
         }
 
-        Vector fieldCentricVector;
-        if (driveVector.magnitude() > 0) {
-            double angleDeg = peripherals.getPigeonAngle();
-            double angleRad = Math.toRadians(angleDeg);
-            double cosA = Math.cos(angleRad);
-            double sinA = Math.sin(angleRad);
+        double angleDeg = peripherals.getPigeonAngle();
+        double angleRad = Math.toRadians(angleDeg);
+        double cosA = Math.cos(angleRad);
+        double sinA = Math.sin(angleRad);
 
-            double fieldX = driveVector.getI() * cosA - driveVector.getJ() * sinA;
-            double fieldY = driveVector.getI() * sinA + driveVector.getJ() * cosA;
-
-            fieldCentricVector = new Vector(fieldX, fieldY);
-        } else {
-            fieldCentricVector = new Vector(0, 0);
-        }
+        Vector fieldCentricVector = new Vector(
+                driveVector.getI() * cosA - driveVector.getJ() * sinA,
+                driveVector.getI() * sinA + driveVector.getJ() * cosA);
 
         double halfL = Constants.Swerve.chassisLengthMeters / 2.0;
         double halfW = Constants.Swerve.chassisWidthMeters / 2.0;
         double R = Math.sqrt(halfL * halfL + halfW * halfW);
-
-        if (R <= 1e-6) {
+        if (R <= 1e-6)
             R = 1.0;
-        }
 
         double scaledRotation = -rightX / R;
-
         if (scaledRotation > 1.0)
             scaledRotation = 1.0;
         if (scaledRotation < -1.0)

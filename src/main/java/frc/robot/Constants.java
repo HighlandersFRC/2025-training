@@ -32,6 +32,12 @@ public final class Constants {
                 public static final double TURN_kI = 0;
                 public static final double TURN_kD = 0;
 
+                public static final double chassisWidthMeters = 0.66041;
+                public static final double chassisLengthMeters = 0.8128;
+
+                public static final double moduleX = chassisWidthMeters / 2;
+                public static final double moduleY = chassisLengthMeters / 2;
+
         }
 
         public static final class Autonomous {
@@ -59,6 +65,7 @@ public final class Constants {
                                 "4PieceFeederGroundSmart.polarauto",
                                 "TushPush.polarauto",
                 };
+                public static final double AUTO_PLACE_DISTANCE = 5;
 
                 public static int getSelectedPathIndex() {
                         if (OI.autoChooserConnected()) {
@@ -786,7 +793,7 @@ public final class Constants {
                                 Pose2d l1Corner = new Pose2d();
                                 Pose2d l1Drive = new Pose2d();
                                 Pose2d poseDirection = new Pose2d(centerBlue,
-                                                Rotation2d.fromDegrees(180 - (60 * face)));
+                                                Rotation2d.fromDegrees(180 + (60 * face)));
                                 double adjustX = inchesToMeters(30.738);
                                 double adjustY = inchesToMeters(6.469);
                                 double adjustXL1 = inchesToMeters(30.738);
@@ -4055,8 +4062,8 @@ public final class Constants {
                 public static final double MAX_WHEEL_RPS = 6380.0 / 60.0 / 6.12;
 
                 // elevator
-                public static final double ELEVATOR_FIRST_STAGE = Constants.inchesToMeters(23.25);
-                public static final double ELEVATOR_MOTOR_ROTATIONS_FOR_FIRST_STAGE = 20.425781;
+                public static final double ELEVATOR_FIRST_STAGE = Constants.inchesToMeters(20);
+                public static final double ELEVATOR_MOTOR_ROTATIONS_FOR_FIRST_STAGE = 18.067;
                 public static final double ELEVATOR_MOTOR_ROTATIONS_PER_METER = ELEVATOR_MOTOR_ROTATIONS_FOR_FIRST_STAGE
                                 * (1 / ELEVATOR_FIRST_STAGE);
 
@@ -4096,8 +4103,8 @@ public final class Constants {
                 public static final int CANDLE_ID_2 = 2;
 
                 // Elevator
-                public static final int MASTER_ELEVATOR_MOTOR_ID = 9;
-                public static final int FOLLOWER_ELEVATOR_MOTOR_ID = 10;
+                public static final int LEFT_ELEVATOR_MOTOR_ID = 9;
+                public static final int RIGHT_ELEVATOR_MOTOR_ID = 10;
 
                 // Pivot
                 public static final int PIVOT_MOTOR_ID = 11;
@@ -4114,9 +4121,22 @@ public final class Constants {
                 public static final int CLIMBER_PIVOT_MOTOR_ID = 15;
 
                 // Intake
-                public static final int INTAKE_ROLLER_MOTOR_ID = 16;
-                public static final int INTAKE_PIVOT_MOTOR_ID = 17;
+                public static final int INTAKE_ROLLER_MOTOR_ID = 10;
+                public static final int INTAKE_PIVOT_MOTOR_ID = 11;
                 public static final int INTAKE_BEAM_BREAK_PORT = 0;
+
+                // Straightenator
+                public static final int MASTER_STRAIGHTENATOR_MOTOR_ID = 12;
+                public static final int FOLLOWER_STRAIGHTENATOR_MOTOR_ID = 13;
+
+                // Arm
+                public static final int ARM_PIVOT_MOTOR_ID = 14;
+                public static final int ARM_MANIPULATOR_MOTOR_ID = 7;
+        }
+
+        public static final class IntakeConstants {
+                public static double PIVOT_LOWER_LIMIT = 0;
+                public static double PIVOT_UPPER_LIMIT = 10;
         }
 
         // Misc. controller values

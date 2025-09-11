@@ -655,9 +655,10 @@ public class testPathingFF extends AutoFollower {
     private int lastLookaheadIndex = 0;
 
 
-    private final PID xPID = new PID(0.18, 0.0, 0.8);
-    private final PID yPID = new PID(0.18, 0.0, 0.8);
-    private final PID thetaPID = new PID(0.004, 0.0, 0.011);
+    private final PID xPID = new PID(0.36, 0.0, 0.75);
+    private final PID yPID = new PID(0.36, 0.0, 0.75);
+    private final PID thetaPID = new PID(0.016, 0.0, 0.019);
+
 
     public testPathingFF(List<PosePoint> points, Drive driveSubsystem) {
         this.points = points;
@@ -708,6 +709,8 @@ public class testPathingFF extends AutoFollower {
                 break;
             }
         }
+
+        
         if (lookaheadIndex >= points.size()) {
             lookaheadIndex = points.size() - 1;
         }
@@ -731,13 +734,13 @@ public class testPathingFF extends AutoFollower {
     
         double vxFF = target.dx*0.1;
         double vyFF = target.dy*0.1;
-        double omegaFF = Math.toDegrees(target.dtheta);
+        double omegaFF = Math.toDegrees(target.dtheta)*0.1;
     
         double vx = vxFF + xCorrection ;
         double vy = vyFF + yCorrection;
-        double omega = omegaFF;
+        double omega = omegaFF + thetaCorrection;
     
-        double headingRad = Math.toRadians(robotPose.theta);
+        double headingRad = Math.toRadians(omega);
         double robotX = vx * Math.cos(-headingRad) - vy * Math.sin(-headingRad);
         double robotY = vx * Math.sin(-headingRad) + vy * Math.cos(-headingRad);
     
@@ -770,5 +773,18 @@ public class testPathingFF extends AutoFollower {
     }
 
     @Override
-    public void from(int pointIndex, JSONObject pathJSON, int toIndex) {}
+    public void from(int pointIndex, JSONObject pathJSON, int toIndex) {
+        points.clear();
+        for (int i = pointIndex; i <= toIndex; i++) {
+            JSONObject point = pathJSON.getJSONObject(String.valueOf(i));
+            double x = point.getDouble("x");
+            double y = point.getDouble("y");
+            double theta = point.getDouble("theta");
+            double dx = point.optDouble("dx", 0.0);
+            double dy = point.optDouble("dy", 0.0);
+            double dtheta = point.optDouble("dtheta", 0.0);
+            points.add(new PosePoint(x, y, theta, 0.0, dx, dy, dtheta));
+        }
+    }
 }
+

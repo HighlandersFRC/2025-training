@@ -18,6 +18,7 @@ import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.FollowPath;
 import frc.robot.commands.pathing.FFTest;
 import frc.robot.commands.pathing.FollowTest;
+import frc.robot.commands.pathing.NewPathing;
 import frc.robot.commands.pathing.FollowTest;
 import frc.robot.commands.pathing.testPathing;
 import frc.robot.commands.pathing.testPathingFF;
@@ -71,7 +72,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         try {
-            autoPath = PathLoader.loadPath("square.polarpath");
+            autoPath = PathLoader.loadPath("opsquare.polarpath");
             Path = PathLoaderOld.loadPath("testingsquares.polarpath");
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,6 +81,8 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
+
+
     }
 
     @Override
@@ -88,7 +91,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-       new testPathingFF(autoPath, drive).schedule();
+       new NewPathing(autoPath, drive).schedule();
       // new FollowTest(Path, drive).schedule();
     }
 

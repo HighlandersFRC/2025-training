@@ -27,6 +27,8 @@ public class SwerveModule {
     private final double wheelCircumference = Constants.Physical.WHEEL_CIRCUMFERENCE;
     private final PositionTorqueCurrentFOC positionTorqueFOCRequest = new PositionTorqueCurrentFOC(0);
     private final VelocityTorqueCurrentFOC velocityTorqueFOCRequest = new VelocityTorqueCurrentFOC(0);
+    VelocityTorqueCurrentFOC velocityTorqueFOCRequestAngleMotor = new VelocityTorqueCurrentFOC(0);
+
     private int moduleIndex;
     private double lastTargetRad = 0.0;
     private double moduleOffsetX;
@@ -75,14 +77,12 @@ public class SwerveModule {
         angleMotorConfig.Slot0.kI = 0.0;
         angleMotorConfig.Slot0.kD = 15;
 
-        angleMotorConfig.Slot1.kP = 3.0;
+        angleMotorConfig.Slot1.kP = 10.0;
         angleMotorConfig.Slot1.kI = 0.0;
         angleMotorConfig.Slot1.kD = 0.0;
 
         angleMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 70;
         angleMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -70;
-
-        angleMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         angleMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
@@ -111,6 +111,11 @@ public class SwerveModule {
         driveMotorConfig.Slot0.kD = 0.0;
         driveMotorConfig.Slot0.kV = 0.0;
 
+        driveMotorConfig.Slot1.kP = 16.0;
+        driveMotorConfig.Slot1.kI = 0.0;
+        driveMotorConfig.Slot1.kD = 0.0;
+        driveMotorConfig.Slot1.kV = 0.0;
+
         driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 120;
         driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -120;
         driveMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -121,8 +126,11 @@ public class SwerveModule {
         driveMotorConfig.Feedback.SensorToMechanismRatio = Constants.Ratios.DRIVE_GEAR_RATIO;
 
         driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        angleMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         driveMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
+
+        velocityTorqueFOCRequestAngleMotor.Slot = 1;
 
         double absolutePosition = motorEncoder.getAbsolutePosition().getValueAsDouble();
         motorTurn.setPosition(absolutePosition);
@@ -133,58 +141,63 @@ public class SwerveModule {
 
     }
 
-    public void drive(Vector driveVector, double turnInput, double navxAngle) {
-        double vx = driveVector.getI();
-        double vy = driveVector.getJ();
+    public void drive(Vector driveVector, double turnInput, double yawRad) {
+        double vx = driveVector.getI() * Math.cos(yawRad) - driveVector.getJ() * Math.sin(yawRad);
+        double vy = driveVector.getI() * Math.sin(yawRad) + driveVector.getJ() * Math.cos(yawRad);
 
         double rotationalVx = turnInput * turnVector.getI();
         double rotationalVy = turnInput * turnVector.getJ();
 
-        double totalVx = vx + rotationalVx;
-        double totalVy = vy + rotationalVy;
+        if (Math.abs(vx) < 0.03 && Math.abs(vy) < 0.03 && Math.abs(turnInput) < 0.03) {
+            stop();
 
-        double speed = Math.hypot(totalVx, totalVy);
-        double angle = Math.atan2(totalVy, totalVx);
+        } else {
+            double totalVx = vx + rotationalVx;
+            double totalVy = vy + rotationalVy;
 
-        double absAngleRad = motorEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
-        double targetRad;
+            double speed = Math.hypot(totalVx, totalVy);
+            double angle = Math.atan2(totalVy, totalVx);
 
-        if (speed > minSpeed) {
-            while (angle < 0)
-                angle += 2 * Math.PI;
-            while (angle >= 2 * Math.PI)
-                angle -= 2 * Math.PI;
+            double absAngleRad = motorEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
+            double targetRad;
 
-            double noFlip = findClosestAngle(absAngleRad, angle);
-            double flip = findClosestAngle(absAngleRad, angle + Math.PI);
+            if (speed > minSpeed) {
+                while (angle < 0)
+                    angle += 2 * Math.PI;
+                while (angle >= 2 * Math.PI)
+                    angle -= 2 * Math.PI;
 
-            if (Math.abs(flip) < Math.abs(noFlip)) {
-                targetRad = absAngleRad + flip;
-                speed = -speed;
+                double noFlip = findClosestAngle(absAngleRad, angle);
+                double flip = findClosestAngle(absAngleRad, angle + Math.PI);
+
+                if (Math.abs(flip) < Math.abs(noFlip)) {
+                    targetRad = absAngleRad + flip;
+                    speed = -speed;
+                } else {
+                    targetRad = absAngleRad + noFlip;
+                }
+
+                lastTargetRad = targetRad;
             } else {
-                targetRad = absAngleRad + noFlip;
+                targetRad = lastTargetRad;
+                speed = 0;
             }
 
-            lastTargetRad = targetRad;
-        } else {
-            targetRad = lastTargetRad;
-            speed = 0;
+            setSpeed(speed * Constants.Physical.TOP_SPEED);
+            Logger.recordOutput("Speed", speed * Constants.Physical.TOP_SPEED);
+            Logger.recordOutput("Current Speed",
+                    motorDrive.getVelocity().getValueAsDouble());
+            double currentRevs = motorTurn.getPosition().getValueAsDouble();
+            double diffRad = findClosestAngle(absAngleRad, targetRad);
+            double deltaRevs = diffRad / (2 * Math.PI);
+
+            final double MAX_DELTA_REVS = 0.5;
+            if (Math.abs(deltaRevs) > MAX_DELTA_REVS) {
+                deltaRevs = Math.signum(deltaRevs) * MAX_DELTA_REVS;
+            }
+
+            motorTurn.setControl(positionTorqueFOCRequest.withPosition(currentRevs + deltaRevs));
         }
-
-        setSpeed(speed * Constants.Physical.TOP_SPEED);
-        Logger.recordOutput("Speed", speed * Constants.Physical.TOP_SPEED);
-        Logger.recordOutput("Current Speed",
-                motorDrive.getVelocity().getValueAsDouble());
-        double currentRevs = motorTurn.getPosition().getValueAsDouble();
-        double diffRad = findClosestAngle(absAngleRad, targetRad);
-        double deltaRevs = diffRad / (2 * Math.PI);
-
-        final double MAX_DELTA_REVS = 0.5;
-        if (Math.abs(deltaRevs) > MAX_DELTA_REVS) {
-            deltaRevs = Math.signum(deltaRevs) * MAX_DELTA_REVS;
-        }
-
-        motorTurn.setControl(positionTorqueFOCRequest.withPosition(currentRevs + deltaRevs));
     }
 
     private double findClosestAngle(double currentAngle, double targetAngle) {
@@ -266,7 +279,7 @@ public class SwerveModule {
     }
 
     private void setSpeed(double velocity) {
-        motorDrive.setControl(velocityTorqueFOCRequest.withVelocity(wheelToDriveMotorRotations(velocity)));
+        motorDrive.setControl(velocityTorqueFOCRequest.withVelocity(wheelToDriveMotorRotations(velocity)).withSlot(0));
     }
 
     public double wheelToSteerMotorRotations(double rotations) {
@@ -304,7 +317,9 @@ public class SwerveModule {
     }
 
     public void stop() {
-        motorDrive.set(0);
+
+        motorDrive.setControl(velocityTorqueFOCRequest.withVelocity(0.0).withSlot(1));
+        motorTurn.setControl(velocityTorqueFOCRequestAngleMotor.withVelocity(0.0).withSlot(1));
     }
 
     public void periodic() {

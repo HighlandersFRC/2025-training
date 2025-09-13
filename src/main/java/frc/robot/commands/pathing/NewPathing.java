@@ -180,11 +180,15 @@ public class NewPathing extends AutoFollower {
     public NewPathing(List<PosePoint> points, Drive driveSubsystem) {
         this.points = points;
         this.driveSubsystem = driveSubsystem;
-        xPID.setMinOutput(-3.0); xPID.setMaxOutput(3.0);
-        yPID.setMinOutput(-3.0); yPID.setMaxOutput(3.0);
-        thetaPID.setMinInput(-Math.PI); thetaPID.setMaxInput(Math.PI);
+        xPID.setMinOutput(-3.0); 
+        xPID.setMaxOutput(3.0);
+        yPID.setMinOutput(-3.0);
+        yPID.setMaxOutput(3.0);
+        thetaPID.setMinInput(-Math.PI);
+        thetaPID.setMaxInput(Math.PI);
         thetaPID.setContinuous(true);
-        thetaPID.setMinOutput(-0.5); thetaPID.setMaxOutput(0.5);
+        thetaPID.setMinOutput(-0.5);
+        thetaPID.setMaxOutput(0.5);
     }
 
     @Override
@@ -253,7 +257,12 @@ public class NewPathing extends AutoFollower {
         double vx = vxFF + xCorrection;
         double vy = vyFF + yCorrection;
         double omega = thetaCorrection;
-
+        //  double headingRad = robotPose.theta; 
+        //  double robotX =  vx * Math.cos(-headingRad) - vy * Math.sin(-headingRad);
+        //  double robotY =  vx * Math.sin(-headingRad) + vy * Math.cos(-headingRad);
+        
+        // driveSubsystem.driveSwerve(new Vector(robotX, robotY), omega);
+        
         // // double headingRad = robotPose.theta;
         // // double robotX = vx * Math.cos(-headingRad) - vy * Math.sin(-headingRad);
         // // double robotY = vx * Math.sin(-headingRad) + vy * Math.cos(-headingRad);
@@ -408,11 +417,19 @@ public class NewPathing extends AutoFollower {
 
     @Override
     public boolean isFinished() {
+        // PosePoint lastPoint = points.get(points.size() - 1);
+        // double distx = driveSubsystem.getX() - lastPoint.x;
+        // double disty = driveSubsystem.getY() - lastPoint.y;
+        // double distanceToEnd = Math.hypot(distx, disty);
+        // return distanceToEnd < 0.05 && lastLookaheadIndex >= points.size() - 1;
         PosePoint lastPoint = points.get(points.size() - 1);
         double distx = driveSubsystem.getX() - lastPoint.x;
         double disty = driveSubsystem.getY() - lastPoint.y;
         double distanceToEnd = Math.hypot(distx, disty);
-        return distanceToEnd < 0.05 && lastLookaheadIndex >= points.size() - 1;
+        double headingError = Math.abs(thetaPID.getError());
+        return distanceToEnd < 0.05
+            && headingError < Math.toRadians(5.0)
+            && lastLookaheadIndex >= points.size() - 1;
     }
 
     @Override

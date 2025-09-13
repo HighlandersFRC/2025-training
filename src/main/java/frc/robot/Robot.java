@@ -142,30 +142,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopPeriodic() {
-        if (OI.driverB.getAsBoolean()) {
-            if (frozenPoint == null) {
-                frozenPoint = drive.findClosestPiece(WANTED_GAME_PIECE.CORAL, drive.getX(), drive.getY());
-            }
-            if (frozenPointAlgae == null) {
-                frozenPointAlgae = drive.findClosestPiece(WANTED_GAME_PIECE.ALGAE, drive.getX(), drive.getY());
-            }
-
-            if (frozenPoint != null && frozenPoint.length >= 3) {
-                drive.moveToPoint(frozenPoint[0], frozenPoint[1], Math.toDegrees(frozenPoint[2]));
-                System.out.printf("Frozen CORAL: (%.2f, %.2f)%n", frozenPoint[0], frozenPoint[1]);
-                Logger.recordOutput("frozen position coral",
-                        new Pose2d(frozenPoint[0], frozenPoint[1], new Rotation2d(frozenPoint[2])));
-            }
-
-            if (frozenPointAlgae != null && frozenPointAlgae.length >= 3) {
-                Logger.recordOutput("frozen position algae",
-                        new Pose2d(frozenPointAlgae[0], frozenPointAlgae[1], new Rotation2d(frozenPointAlgae[2])));
-            }
-
-        } else {
-            frozenPoint = null;
-            frozenPointAlgae = null;
-        }
 
         if (OI.driverLT.getAsBoolean()) {
             straightenator.setWantedState(Straightenator.StraightenatorState.DEFAULT);

@@ -110,10 +110,8 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     switch (systemState) {
       case INTAKING:
-
         break;
       case OUTTAKING:
         break;

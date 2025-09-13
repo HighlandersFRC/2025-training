@@ -45,16 +45,11 @@ public class Straightenator extends SubsystemBase {
 
   public enum StraightenatorState {
     DEFAULT,
-    STRAIGHTEN,
     IDLE
   }
 
   public boolean isReady() {
     return true;// !entryBeamBreak.get() && !endBeamBreak.get();
-  }
-
-  public boolean isStraight() {
-    return true;// !entryBeamBreak.get();
   }
 
   public boolean isClose() {
@@ -80,19 +75,10 @@ public class Straightenator extends SubsystemBase {
 
   public StraightenatorState handleStateTransition() {
     switch (wantedState) {
-      case STRAIGHTEN:
-        if (isStraight()) {
-          return StraightenatorState.IDLE;
-        } else {
-          return StraightenatorState.STRAIGHTEN;
-        }
       case IDLE:
         return StraightenatorState.IDLE;
       case DEFAULT:
       default:
-        if (getLeftVoltage() > voltageThreshold || getRightVoltage() > voltageThreshold) {
-          return StraightenatorState.STRAIGHTEN;
-        }
         return StraightenatorState.DEFAULT;
     }
   }
@@ -105,10 +91,6 @@ public class Straightenator extends SubsystemBase {
   public void periodic() {
     systemState = handleStateTransition();
     switch (systemState) {
-      case STRAIGHTEN:
-        left_straightenator.set(1);
-        right_straightenator.set(-1);
-        break;
       case IDLE:
         left_straightenator.set(0);
         right_straightenator.set(0);

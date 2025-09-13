@@ -43,9 +43,7 @@ public class RobotContainer {
   Command auto;
 
   private void configureBindings() {
-    OI.driverA.whileTrue(new ZeroPigeon(peripherals));
-    OI.driverX.whileTrue(new SetRobotState(superstructure, SuperState.AUTO_L2_PLACE));
-    OI.driverY.whileTrue(new SetRobotState(superstructure, SuperState.AUTO_L2_SCORE));
+    OI.driverMenuButton.whileTrue(new ZeroPigeon(peripherals));
 
   }
 

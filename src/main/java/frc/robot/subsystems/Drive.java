@@ -44,8 +44,16 @@ public class Drive extends SubsystemBase {
 
     public enum DriveState {
         DEFAULT,
-        PATH_TO_POINT,
-        AUTO_PLACE,
+        AUTO_ALIGN_LEFT,
+        AUTO_ALIGN_RIGHT,
+        PICK_UP,
+        AUTO_NET,
+        AUTO_PROCESSOR,
+        ALGAE_HIGH,
+        ALGAE_LOW,
+        BACK_UP_LEFT,
+        BACK_UP_RIGHT,
+        AUTO_PICKUP,
         IDLE
     }
 
@@ -118,30 +126,9 @@ public class Drive extends SubsystemBase {
     private DriveState handleStateTransition() {
         switch (wantedState) {
             case DEFAULT:
-                if (systemState == DriveState.AUTO_PLACE) {
-                    startedPathToPoint = false;
-                    atPosition = false;
-                }
                 return DriveState.DEFAULT;
             case IDLE:
                 return DriveState.IDLE;
-            case PATH_TO_POINT:
-                if (systemState == DriveState.DEFAULT) {
-                    startedPathToPoint = false;
-                    atPosition = false;
-                }
-
-                if (systemState == DriveState.PATH_TO_POINT && startedPathToPoint) {
-                    boolean posClose = Math.abs(xPID.getError()) < 0.03
-                            && Math.abs(yPID.getError()) < 0.03;
-                    boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
-
-                    if (posClose && angleClose) {
-                        atPosition = true;
-                        return DriveState.DEFAULT;
-                    }
-                }
-                return DriveState.PATH_TO_POINT;
             default:
                 return DriveState.IDLE;
         }
@@ -275,44 +262,8 @@ public class Drive extends SubsystemBase {
 
     }
 
-    public void goToPoint(double xOffset, double yOffset) {
-        wantedState = DriveState.PATH_TO_POINT;
-    }
-
     public boolean getAtPosition() {
         return atPosition;
-    }
-
-    public void moveToPoint(double targetX, double targetY, double targetAngle) {
-        xPID.setSetPoint(targetX);
-        yPID.setSetPoint(targetY);
-        yawPID.setSetPoint(targetAngle);
-
-        startedPathToPoint = true;
-
-        double xOut = xPID.updatePID(getX()) / 1.0;
-        double yOut = -yPID.updatePID(getY()) / 1.0;
-        double turnOut = -yawPID.updatePID(Math.toDegrees(getAngle()));
-
-        Logger.recordOutput("xPID Error", xPID.getError());
-        Logger.recordOutput("yPID Error", yPID.getError());
-        Logger.recordOutput("Yaw Error", yawPID.getError());
-
-        boolean posClose = Math.abs(xPID.getError()) < 0.03
-                && Math.abs(yPID.getError()) < 0.03;
-        boolean angleClose = Math.abs(yawPID.getError()) < 1.0;
-
-        Logger.recordOutput("YawPID Input", Math.toDegrees(getAngle()));
-        Logger.recordOutput("Pos Close", posClose);
-        Logger.recordOutput("Angle Close", angleClose);
-
-        if (posClose && angleClose) {
-            setWantedState(DriveState.DEFAULT);
-        } else {
-            atPosition = false;
-            setWantedState(DriveState.AUTO_PLACE);
-            autoDrive(new Vector(xOut, yOut), turnOut);
-        }
     }
 
     public void moveToPoint() {
@@ -345,66 +296,8 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    public double[] findClosestPiece(WANTED_GAME_PIECE piece, double x, double y) {
-        java.util.List<Pose2d> a, b;
-
-        if (piece == WANTED_GAME_PIECE.ALGAE) {
-            if (isOnBlueSide()) {
-                a = Constants.Reef.algaeBlueFrontPlacingPositions;
-                b = Constants.Reef.algaeBlueBackPlacingPositions;
-            } else {
-                a = Constants.Reef.algaeRedFrontPlacingPositions;
-                b = Constants.Reef.algaeRedBackPlacingPositions;
-            }
-        } else {
-            if (isOnBlueSide()) {
-                a = Constants.Reef.blueFrontPlacingPositions;
-                b = Constants.Reef.blueBackPlacingPositions;
-            } else {
-                a = Constants.Reef.redFrontPlacingPositions;
-                b = Constants.Reef.redBackPlacingPositions;
-            }
-        }
-
-        double best = Double.POSITIVE_INFINITY;
-        double rx = x, ry = y, rAngle = 0.0;
-
-        if (a != null) {
-            for (int i = 0; i < a.size(); i++) {
-                Pose2d front = a.get(i);
-                Pose2d back = (b != null && b.size() > i) ? b.get(i) : null;
-
-                double distFront = Math.hypot(x - front.getX(), y - front.getY());
-                if (distFront < best && distFront <= Constants.Autonomous.AUTO_PLACE_DISTANCE) {
-                    best = distFront;
-                    rx = front.getX();
-                    ry = front.getY();
-                    rAngle = front.getRotation().getRadians();
-                }
-
-                if (back != null) {
-                    double distBack = Math.hypot(x - back.getX(), y - back.getY());
-                    if (distBack < best && distBack <= Constants.Autonomous.AUTO_PLACE_DISTANCE) {
-                        best = distBack;
-                        rx = back.getX();
-                        ry = back.getY();
-                        rAngle = back.getRotation().getRadians() + Math.PI;
-                    }
-                }
-            }
-        }
-
-        double[] out = new double[] { rx, ry, rAngle };
-        try {
-            Logger.recordOutput("closestPiece", out);
-        } catch (Throwable t) {
-            System.out.printf("closestPiece: (%.2f, %.2f, %.2f rad)%n", rx, ry, rAngle);
-        }
-        return out;
-    }
-
     public boolean isOnBlueSide() {
-        return false;
+        return true;
     }
 
     public Pose2d coordToPose2d(double x, double y) {
@@ -425,8 +318,23 @@ public class Drive extends SubsystemBase {
             case DEFAULT:
                 teleopDrive();
                 break;
-            case PATH_TO_POINT:
-                moveToPoint(0, 0, 90);
+            case AUTO_ALIGN_LEFT:
+                break;
+            case AUTO_ALIGN_RIGHT:
+                break;
+            case PICK_UP:
+                break;
+            case AUTO_NET:
+                break;
+            case ALGAE_HIGH:
+                break;
+            case ALGAE_LOW:
+                break;
+            case BACK_UP_LEFT:
+                break;
+            case BACK_UP_RIGHT:
+                break;
+            case AUTO_PICKUP:
                 break;
             case IDLE:
                 break;

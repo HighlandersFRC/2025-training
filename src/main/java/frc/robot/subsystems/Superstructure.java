@@ -15,7 +15,6 @@ public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
   public enum SuperState {
     DEFAULT,
-    PATH_TO_POINT,
     AUTO_L2_PLACE,
     AUTO_L2_SCORE,
     AUTO_L3_PLACE,
@@ -42,9 +41,6 @@ public class Superstructure extends SubsystemBase {
   public void setWantedState(SuperState wantedState) {
     this.wantedSuperState = wantedState;
 
-    if (wantedState == SuperState.PATH_TO_POINT) {
-      pathCompleted = false;
-    }
   }
 
   public SuperState getCurrentSuperState() {
@@ -68,9 +64,6 @@ public class Superstructure extends SubsystemBase {
       case DEFAULT:
         handleDefaultState();
         break;
-      case PATH_TO_POINT:
-        handlePathToPointState();
-        break;
       case AUTO_L2_PLACE:
         handleAutoL2Place();
         break;
@@ -86,9 +79,6 @@ public class Superstructure extends SubsystemBase {
     switch (wantedSuperState) {
       case DEFAULT:
         currentSuperState = SuperState.DEFAULT;
-        break;
-      case PATH_TO_POINT:
-        currentSuperState = SuperState.PATH_TO_POINT;
         break;
       case AUTO_L2_PLACE:
         currentSuperState = SuperState.AUTO_L2_PLACE;
@@ -106,14 +96,6 @@ public class Superstructure extends SubsystemBase {
   public void handleDefaultState() {
     drive.setWantedState(DriveState.DEFAULT);
     elevator.setWantedState(ElevatorState.DEFAULT);
-  }
-
-  public void handlePathToPointState() {
-    if (!drive.getAtPosition()) {
-      drive.setWantedState(DriveState.PATH_TO_POINT);
-    } else {
-      drive.setWantedState(DriveState.DEFAULT);
-    }
   }
 
   public void handleAutoL2Place() {

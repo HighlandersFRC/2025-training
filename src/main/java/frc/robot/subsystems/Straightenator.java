@@ -79,7 +79,7 @@ public class Straightenator extends SubsystemBase {
         return StraightenatorState.IDLE;
       case DEFAULT:
       default:
-        return StraightenatorState.DEFAULT;
+        return StraightenatorState.IDLE;
     }
   }
 

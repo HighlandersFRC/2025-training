@@ -174,10 +174,10 @@ public class Drive extends SubsystemBase {
     }
 
     public void driveSwerve(Vector driveVector, double turn) {
-        swerve1.drive(driveVector, turn, Math.toDegrees(getAngle()));
-        swerve2.drive(driveVector, turn, Math.toDegrees(getAngle()));
-        swerve3.drive(driveVector, turn, Math.toDegrees(getAngle()));
-        swerve4.drive(driveVector, turn, Math.toDegrees(getAngle()));
+        swerve1.drive(driveVector, turn, getAngle());
+        swerve2.drive(driveVector, turn, getAngle());
+        swerve3.drive(driveVector, turn, getAngle());
+        swerve4.drive(driveVector, turn, getAngle());
     }
 
     public void autoDrive(Vector fieldVector, double targetYawDegrees) {
@@ -201,7 +201,7 @@ public class Drive extends SubsystemBase {
 
         double leftX = -OI.getDriverLeftY();
         double leftY = OI.getDriverLeftX();
-        double rightX = Math.abs(OI.getDriverRightX()) < 0.03 ? 0 : OI.getDriverRightX() * 0.15;
+        double rightX = -OI.getDriverRightX() * 0.3;
 
         if (Math.abs(leftX) < 0.03)
             leftX = 0;
@@ -209,10 +209,6 @@ public class Drive extends SubsystemBase {
             leftY = 0;
         if (Math.abs(rightX) < 0.03)
             rightX = 0;
-
-        if (leftX == 0 && leftY == 0 && rightX == 0) {
-            stop();
-        }
 
         double originalY = -(Math.copySign(leftY * leftY, leftY));
         double originalX = -(Math.copySign(leftX * leftX, leftX));
@@ -222,28 +218,27 @@ public class Drive extends SubsystemBase {
             driveVector = driveVector.scaled(1.0 / driveVector.magnitude());
         }
 
-        double angleDeg = peripherals.getPigeonAngle();
-        double angleRad = Math.toRadians(angleDeg);
-        double cosA = Math.cos(angleRad);
-        double sinA = Math.sin(angleRad);
+        // double angleDeg = peripherals.getPigeonAngle();
+        // double angleRad = Math.toRadians(angleDeg);
+        // double cosA = Math.cos(angleRad);
+        // double sinA = Math.sin(angleRad);
 
-        Vector fieldCentricVector = new Vector(
-                driveVector.getI() * cosA - driveVector.getJ() * sinA,
-                driveVector.getI() * sinA + driveVector.getJ() * cosA);
+        // Vector fieldCentricVector = new Vector(
+        // driveVector.getI() * cosA - driveVector.getJ() * sinA,
+        // driveVector.getI() * sinA + driveVector.getJ() * cosA);
 
-        double halfL = Constants.Swerve.chassisLengthMeters / 2.0;
-        double halfW = Constants.Swerve.chassisWidthMeters / 2.0;
-        double R = Math.sqrt(halfL * halfL + halfW * halfW);
-        if (R <= 1e-6)
-            R = 1.0;
+        // double halfL = Constants.Swerve.chassisLengthMeters / 2.0;
+        // double halfW = Constants.Swerve.chassisWidthMeters / 2.0;
+        // double R = Math.sqrt(halfL * halfL + halfW * halfW);
+        // if (R <= 1e-6)
+        // R = 1.0;
 
-        double scaledRotation = -rightX / R;
-        if (scaledRotation > 1.0)
-            scaledRotation = 1.0;
-        if (scaledRotation < -1.0)
-            scaledRotation = -1.0;
+        // double scaledRotation = -rightX / R;
+        // if (scaledRotation > 1.0)
+        // scaledRotation = 1.0;
+        // if (scaledRotation < -1.0)
 
-        driveSwerve(fieldCentricVector, scaledRotation);
+        driveSwerve(driveVector, rightX);
     }
 
     public void updateOdometry() {

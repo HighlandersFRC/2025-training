@@ -141,9 +141,9 @@ public class SwerveModule {
 
     }
 
-    public void drive(Vector driveVector, double turnInput, double navxAngle) {
-        double vx = driveVector.getI();
-        double vy = driveVector.getJ();
+    public void drive(Vector driveVector, double turnInput, double yawRad) {
+        double vx = driveVector.getI() * Math.cos(yawRad) - driveVector.getJ() * Math.sin(yawRad);
+        double vy = driveVector.getI() * Math.sin(yawRad) + driveVector.getJ() * Math.cos(yawRad);
 
         double rotationalVx = turnInput * turnVector.getI();
         double rotationalVy = turnInput * turnVector.getJ();

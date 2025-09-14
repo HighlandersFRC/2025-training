@@ -6746,7 +6746,7 @@ public final class Constants {
 
                 // Arm
                 public static final int ARM_PIVOT_MOTOR_ID = 14;
-                public static final int ARM_MANIPULATOR_MOTOR_ID = 7;
+                public static final int ARM_MANIPULATOR_MOTOR_ID = 13;
         }
 
         public static final class IntakeConstants {

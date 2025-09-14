@@ -104,6 +104,7 @@ import frc.robot.commands.Test;
 import frc.robot.commands.ZeroPigeon;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Straightenator;
 import frc.robot.subsystems.Superstructure;
@@ -130,7 +131,8 @@ public class RobotContainer {
   public final Peripherals peripherals = new Peripherals();
   public final Elevator elevator = new Elevator();
   public final Straightenator straightenator = new Straightenator();
-  public final Superstructure superstructure = new Superstructure(drive, peripherals, elevator);
+  public final Manipulator manipulator = new Manipulator();
+  public final Superstructure superstructure = new Superstructure(drive, peripherals, elevator, manipulator);
   private Command autonomousCommand;
 
   public RobotContainer() {
@@ -142,6 +144,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     OI.driverMenuButton.whileTrue(new ZeroPigeon(peripherals));
+    OI.driverX.whileTrue(new SetRobotState(superstructure, SuperState.CORAL_INTAKE));
 
   }
 

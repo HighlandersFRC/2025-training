@@ -117,6 +117,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drive.DriveState;
 import frc.robot.subsystems.Elevator.ElevatorState;
+import frc.robot.subsystems.Manipulator.ManipulatorState;
 
 public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
@@ -128,6 +129,7 @@ public class Superstructure extends SubsystemBase {
     AUTO_L3_SCORE,
     AUTO_L4_PLACE,
     AUTO_L4_SCORE,
+    CORAL_INTAKE,
     IDLE
   }
 
@@ -138,11 +140,13 @@ public class Superstructure extends SubsystemBase {
   Drive drive;
   Peripherals peripherals;
   Elevator elevator;
+  Manipulator manipulator;
 
-  public Superstructure(Drive driveSubsystem, Peripherals peripheralSubsystem, Elevator elevatorSubsystem) {
+  public Superstructure(Drive driveSubsystem, Peripherals peripheralSubsystem, Elevator elevatorSubsystem, Manipulator manipulatorSubsystem) {
     drive = driveSubsystem;
     peripherals = peripheralSubsystem;
     elevator = elevatorSubsystem;
+    manipulator = manipulatorSubsystem;
   }
 
   public void setWantedState(SuperState wantedState) {
@@ -176,6 +180,9 @@ public class Superstructure extends SubsystemBase {
         break;
       case AUTO_L2_SCORE:
         handleAutoL2Score();
+      case CORAL_INTAKE:
+        handleCoralIntake();
+        break;
       default:
         handleIdleState();
         break;
@@ -193,7 +200,10 @@ public class Superstructure extends SubsystemBase {
       case AUTO_L2_SCORE:
         currentSuperState = SuperState.AUTO_L2_SCORE;
         break;
-      default:
+      case CORAL_INTAKE:
+        currentSuperState = SuperState.CORAL_INTAKE;
+        break;
+        default:
         currentSuperState = SuperState.IDLE;
         break;
     }
@@ -203,6 +213,7 @@ public class Superstructure extends SubsystemBase {
   public void handleDefaultState() {
     drive.setWantedState(DriveState.DEFAULT);
     elevator.setWantedState(ElevatorState.DEFAULT);
+    manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleAutoL2Place() {
@@ -211,6 +222,10 @@ public class Superstructure extends SubsystemBase {
 
   public void handleAutoL2Score() {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
+  }
+
+  public void handleCoralIntake() {
+    manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
   }
 
   public void handleAutoL3Place() {

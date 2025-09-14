@@ -156,6 +156,7 @@ import frc.robot.commands.pathing.FinalPathing;
 import frc.robot.commands.pathing.NewPathing;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Drive.WANTED_GAME_PIECE;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Straightenator;
@@ -181,6 +182,7 @@ public class Robot extends LoggedRobot {
     private final Superstructure superstructure;
     private final Elevator elevator;
     private final Straightenator straightenator;
+    private final Manipulator manipulator;
     private double setAngle = 0;
     private Command m_autonomousCommand;
     PathLoader path = new PathLoader();
@@ -221,6 +223,7 @@ public class Robot extends LoggedRobot {
         superstructure = m_robotContainer.superstructure;
         elevator = m_robotContainer.elevator;
         straightenator = m_robotContainer.straightenator;
+        manipulator = m_robotContainer.manipulator;
     }
 
     @Override

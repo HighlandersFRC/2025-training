@@ -6718,20 +6718,6 @@ public final class Constants {
                 public static final int LEFT_ELEVATOR_MOTOR_ID = 9;
                 public static final int RIGHT_ELEVATOR_MOTOR_ID = 10;
 
-                // Pivot
-                public static final int PIVOT_MOTOR_ID = 11;
-                public static final int PIVOT_CANCODER_ID = 5;
-
-                // Twist
-                public static final int TWIST_MOTOR_ID = 12;
-                public static final int TWIST_CANCODER_ID = 6;
-
-                // Manipulator
-
-                public static final int MANIPULATOR_MOTOR_ID = 13;
-
-                // Climber
-                public static final int CLIMBER_PIVOT_MOTOR_ID = 15;
 
                 // Intake
                 public static final int INTAKE_ROLLER_MOTOR_ID = 10;
@@ -6745,8 +6731,8 @@ public final class Constants {
                 public static final int CLOSE_BEAM_BREAK_SENSOR = 2;
 
                 // Arm
-                public static final int ARM_PIVOT_MOTOR_ID = 14;
-                public static final int ARM_MANIPULATOR_MOTOR_ID = 13;
+                public static final int ARM_PIVOT_MOTOR_ID = 15;
+                public static final int ARM_MANIPULATOR_MOTOR_ID = 14;
         }
 
         public static final class IntakeConstants {

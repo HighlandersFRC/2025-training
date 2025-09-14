@@ -223,7 +223,7 @@ public class Robot extends LoggedRobot {
         superstructure = m_robotContainer.superstructure;
         elevator = m_robotContainer.elevator;
         straightenator = m_robotContainer.straightenator;
-        manipulator = m_robotContainer.manipulator;
+         manipulator = m_robotContainer.manipulator;
     }
 
     @Override
@@ -235,7 +235,7 @@ public class Robot extends LoggedRobot {
     public void robotInit() {
         elevator.init();
         try {
-             autoPath = PathLoader.loadPath("opsquare.polarpath");
+             autoPath = PathLoader.loadPath("opturntest.polarpath");
              Path = PathLoaderOld.loadPath("testingsquares.polarpath");
                     } 
              catch (IOException e) {
@@ -285,6 +285,10 @@ public class Robot extends LoggedRobot {
             straightenator.setWantedState(Straightenator.StraightenatorState.DEFAULT);
         } else {
             straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+        }
+
+        if(OI.driverA.getAsBoolean()){
+            manipulator.setWantedState(Manipulator.ManipulatorState.CORAL_INTAKE);
         }
     }
 

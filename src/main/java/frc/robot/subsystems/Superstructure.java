@@ -111,12 +111,15 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
+
 import javax.lang.model.util.ElementScanner14;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drive.DriveState;
 import frc.robot.subsystems.Elevator.ElevatorState;
+//import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 
 public class Superstructure extends SubsystemBase {
@@ -213,7 +216,7 @@ public class Superstructure extends SubsystemBase {
   public void handleDefaultState() {
     drive.setWantedState(DriveState.DEFAULT);
     elevator.setWantedState(ElevatorState.DEFAULT);
-    manipulator.setWantedState(ManipulatorState.DEFAULT);
+   manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleAutoL2Place() {
@@ -224,8 +227,8 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
   }
 
-  public void handleCoralIntake() {
-    manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
+ public void handleCoralIntake() {
+   manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
   }
 
   public void handleAutoL3Place() {
@@ -252,5 +255,7 @@ public class Superstructure extends SubsystemBase {
   public void periodic() {
     currentSuperState = handleStateTransitions();
     applyStates();
+    org.littletonrobotics.junction.Logger.recordOutput("Superstructure State", currentSuperState);
+    
   }
 }

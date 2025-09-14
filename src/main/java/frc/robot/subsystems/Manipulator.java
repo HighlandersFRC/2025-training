@@ -51,7 +51,7 @@ public class Manipulator extends SubsystemBase {
     ALGAE_INTAKE,
     OUTAKE,
     DEFAULT,
-    OFF,
+    OFF
   }
 
   private ManipulatorState handleStateTransition() {
@@ -62,9 +62,9 @@ public class Manipulator extends SubsystemBase {
         return ManipulatorState.ALGAE_INTAKE;
       case OUTAKE:
         return ManipulatorState.OUTAKE;
-      case OFF:
+        case OFF:   
         return ManipulatorState.OFF;
-      default:
+        default:
         return ManipulatorState.DEFAULT;
     }
   }
@@ -101,12 +101,12 @@ public class Manipulator extends SubsystemBase {
         setIntakeTorque(-30, 30);
         break;
       case OFF:
-        setIntakeTorque(0, 0);
+        setIntakePercent(0);
         break;
       default:
-
         break;
-        
+    
     }
+    org.littletonrobotics.junction.Logger.recordOutput("Manipulator State", systemState);
   }
 }

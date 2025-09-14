@@ -144,7 +144,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     OI.driverMenuButton.whileTrue(new ZeroPigeon(peripherals));
-    OI.driverX.whileTrue(new SetRobotState(superstructure, SuperState.CORAL_INTAKE));
+    OI.driverA.whileTrue(new SetRobotState(superstructure, SuperState.CORAL_INTAKE));
 
   }
 

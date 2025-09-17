@@ -1,24 +1,24 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.tools.math.PID;
 
 public class Arm extends SubsystemBase {
-  /** Creates a new Arm. */
-  private final TalonFX armMotor = new TalonFX(Constants.CANInfo.ARM_PIVOT_MOTOR_ID);
-  private final TalonFX pivotCANcoder = new TalonFX(Constants.CANInfo.PIVOT_CANCODER_ID);
-  private double pivotJerk = 0;
-  private final double pivotAcceleration = 6.0 * Constants.Ratios.PIVOT_GEAR_RATIO;
-  private final double pivotCruiseVelocity = 6.0 * Constants.Ratios.PIVOT_GEAR_RATIO;
+  private final TalonFX armMotor;
+  private final PID armPID = new PID(0.09, 0.0, 0.038);
+
+  private static final double ROT_NEG90_DEG = 0;
+  private static final double ROT_POS90_DEG = -0.477;
+  private static final double CAL_M = (90.0 - (-90.0)) / (ROT_POS90_DEG - ROT_NEG90_DEG);
+  private static final double CAL_B = -90.0 - CAL_M * ROT_NEG90_DEG;
 
   public enum ArmState {
     DEFAULT,
@@ -28,40 +28,150 @@ public class Arm extends SubsystemBase {
     L3_PLACE,
     L2_SCORE,
     L2_PLACE,
+    HANDOFF,
     IDLE
   }
 
+  private ArmState wantedState = ArmState.DEFAULT;
+  private ArmState systemState = ArmState.DEFAULT;
+
   public Arm() {
-    armMotor.setNeutralMode(NeutralModeValue.Brake);
-    TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
-    pivotConfig.Slot0.kP = 100.0;
-    pivotConfig.Slot0.kI = 0.0;
-    pivotConfig.Slot0.kD = 5.0;
-    pivotConfig.Slot1.kP = 30.0;
-    pivotConfig.Slot1.kI = 0.0;
-    pivotConfig.Slot1.kD = 5.0;
-    pivotConfig.Slot2.kP = 50.0;
-    pivotConfig.Slot2.kI = 0.0;
-    pivotConfig.Slot2.kD = 15.0;
-    pivotConfig.MotionMagic.MotionMagicJerk = this.pivotJerk;
-    pivotConfig.MotionMagic.MotionMagicAcceleration = this.pivotAcceleration;
-    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = this.pivotCruiseVelocity;
-    pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
-    pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
-    pivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    pivotConfig.Feedback.FeedbackRemoteSensorID = pivotCANcoder.getDeviceID();
-    pivotConfig.Feedback.SensorToMechanismRatio = 1.0;
-    pivotConfig.Feedback.RotorToSensorRatio = Constants.Ratios.PIVOT_GEAR_RATIO;
+    armMotor = new TalonFX(Constants.CANInfo.ARM_PIVOT_MOTOR_ID, new CANBus(Constants.CANInfo.CANBUS_NAME));
+    init();
+    armMotor.setPosition(0);
+  }
+
+  public void zeroOnEnable() {
+    armMotor.setPosition(0.0);
   }
 
   public void init() {
+    TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
 
+    pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    pivotConfig.CurrentLimits.StatorCurrentLimit = 60;
+    pivotConfig.CurrentLimits.SupplyCurrentLimit = 60;
+
+    pivotConfig.Voltage.PeakForwardVoltage = 12.0;
+    pivotConfig.Voltage.PeakReverseVoltage = -12.0;
+
+    pivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    pivotConfig.Feedback.SensorToMechanismRatio = Constants.Ratios.PIVOT_GEAR_RATIO;
+
+    armMotor.getConfigurator().apply(pivotConfig);
+    armMotor.setNeutralMode(NeutralModeValue.Brake);
+
+    armPID.setMaxOutput(10.0);
+    armPID.setMinOutput(-10.0);
+  }
+
+  public double getArmRotations() {
+    return armMotor.getPosition().getValueAsDouble();
+  }
+
+  public double getRotorRotations() {
+    return armMotor.getRotorPosition().getValueAsDouble();
+  }
+
+  public double getArmDegrees() {
+    double rotations = getArmRotations();
+    return CAL_M * rotations + CAL_B;
+  }
+
+  private double degreesToRotations(double degrees) {
+    return (degrees - CAL_B) / CAL_M;
+  }
+
+  public boolean isReadyForHandoff() {
+    return getArmDegrees() < -85.0;
+  }
+
+  public void setArmDegrees(double degrees) {
+    armPID.setSetPoint(degrees);
+
+    Logger.recordOutput("Arm Target Degrees", degrees);
+    Logger.recordOutput("Arm Current Degrees", getArmDegrees());
+    Logger.recordOutput("Arm Error Degrees", armPID.getError());
+  }
+
+  public void setWantedState(ArmState state) {
+    wantedState = state;
+  }
+
+  private ArmState handleStateTransition() {
+    switch (wantedState) {
+      case IDLE:
+        return ArmState.IDLE;
+      case L4_SCORE:
+        return ArmState.L4_SCORE;
+      case L4_PLACE:
+        return ArmState.L4_PLACE;
+      case L3_SCORE:
+      case L3_PLACE:
+      case L2_SCORE:
+      case L2_PLACE:
+      case DEFAULT:
+      case HANDOFF:
+        return ArmState.HANDOFF;
+      default:
+        return wantedState;
+    }
+  }
+
+  public void setCurrentLimit(int limit) {
+    TalonFXConfiguration cfg = new TalonFXConfiguration();
+    cfg.CurrentLimits.StatorCurrentLimit = limit;
+    cfg.CurrentLimits.SupplyCurrentLimit = limit;
+    armMotor.getConfigurator().apply(cfg);
+    Logger.recordOutput("Arm Current Limit", limit);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    systemState = handleStateTransition();
+    switch (systemState) {
+      case IDLE:
+        armPID.setSetPoint(getArmDegrees());
+        break;
+      case L4_SCORE:
+        setArmDegrees(20.0);
+        break;
+      case L4_PLACE:
+        setArmDegrees(40.0);
+        break;
+      case L3_SCORE:
+        setArmDegrees(-30.0);
+        break;
+      case L3_PLACE:
+        setArmDegrees(-40.0);
+        break;
+      case L2_SCORE:
+        setArmDegrees(-50.0);
+        break;
+      case L2_PLACE:
+        setArmDegrees(-60.0);
+        break;
+      case DEFAULT:
+        setArmDegrees(-90.0);
+        break;
+      case HANDOFF:
+        setArmDegrees(-90);
+        break;
+    }
+
+    double pidOutput = armPID.updatePID(getArmDegrees());
+    armMotor.set(-pidOutput);
+
+    Logger.recordOutput("Arm Rotations", getArmRotations());
+    Logger.recordOutput("Arm RotorRotations", getRotorRotations());
+    Logger.recordOutput("Arm Degrees", getArmDegrees());
+    Logger.recordOutput("Arm Wanted State", systemState.toString());
+    Logger.recordOutput("Arm Supply Current", armMotor.getSupplyCurrent().getValueAsDouble());
+    Logger.recordOutput("Arm Stator Current", armMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Arm Motor Voltage", armMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Arm Velocity", armMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Arm PID Output", pidOutput);
+    Logger.recordOutput("Arm Ready For Handoff", isReadyForHandoff());
   }
 }

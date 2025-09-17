@@ -27,6 +27,9 @@ public final class Constants {
         public static double y = 0;
         public static double angle = 0;
         public static boolean lastPoint = false;
+        public static final String field_side = "blue";
+
+        public static boolean isReady = false;
 
         public static final class Swerve {
 
@@ -2347,7 +2350,7 @@ public final class Constants {
         public static final class Ratios {
 
                 // pivot
-                public static final double PIVOT_GEAR_RATIO = 57.5;
+                public static final double PIVOT_GEAR_RATIO = 23 * 64 / 24;
 
                 // drive
                 public static final double DRIVE_GEAR_RATIO = 6.12;
@@ -2426,8 +2429,8 @@ public final class Constants {
                 public static final int CLOSE_BEAM_BREAK_SENSOR = 2;
 
                 // Arm
-                public static final int ARM_PIVOT_MOTOR_ID = 14;
-                public static final int ARM_MANIPULATOR_MOTOR_ID = 7;
+                public static final int ARM_PIVOT_MOTOR_ID = 15;
+                public static final int ARM_MANIPULATOR_MOTOR_ID = 14;
         }
 
         public static final class IntakeConstants {

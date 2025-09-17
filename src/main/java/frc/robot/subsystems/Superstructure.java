@@ -21,6 +21,7 @@ public class Superstructure extends SubsystemBase {
     AUTO_L3_SCORE,
     AUTO_L4_PLACE,
     AUTO_L4_SCORE,
+    HANDOFF,
     IDLE
   }
 
@@ -69,6 +70,13 @@ public class Superstructure extends SubsystemBase {
         break;
       case AUTO_L2_SCORE:
         handleAutoL2Score();
+        break;
+      case AUTO_L4_SCORE:
+        handleAutoL4Score();
+        break;
+      case HANDOFF:
+        handleHandoffState();
+        break;
       default:
         handleIdleState();
         break;
@@ -86,11 +94,22 @@ public class Superstructure extends SubsystemBase {
       case AUTO_L2_SCORE:
         currentSuperState = SuperState.AUTO_L2_SCORE;
         break;
+      case AUTO_L4_SCORE:
+        currentSuperState = SuperState.AUTO_L4_SCORE;
+        break;
+      case HANDOFF:
+        currentSuperState = SuperState.HANDOFF;
+        break;
       default:
         currentSuperState = SuperState.IDLE;
         break;
     }
     return currentSuperState;
+  }
+
+  public void handleHandoffState() {
+    elevator.setWantedState(ElevatorState.HANDOFF);
+
   }
 
   public void handleDefaultState() {
@@ -107,18 +126,22 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleAutoL3Place() {
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
 
   }
 
   public void handleAutoL3Score() {
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
 
   }
 
   public void handleAutoL4Place() {
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
 
   }
 
   public void handleAutoL4Score() {
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
 
   }
 

@@ -30,8 +30,8 @@ public class Elevator extends SubsystemBase {
   private TalonFX right_elevator;
 
   private final TorqueCurrentFOC torqueCurrentFOCRequest = new TorqueCurrentFOC(0.0).withMaxAbsDutyCycle(0.0);
-  private final double elevatorAcceleration = 1482542976.0;
-  private final double elevatorCruiseVelocity = 449929104911.0;
+  private final double elevatorAcceleration = 3000.0;
+  private final double elevatorCruiseVelocity = 3000.0;
   private final MotionMagicTorqueCurrentFOC elevatorMotionProfileRequest = new MotionMagicTorqueCurrentFOC(0);
 
   private ElevatorState wantedState = ElevatorState.DEFAULT;
@@ -72,19 +72,20 @@ public class Elevator extends SubsystemBase {
     OVER,
     LOLLIPOP,
     PREHANDOFF,
-    HANDOFF
+    HANDOFF_HIGH,
+    HANDOFF_LOW
   }
 
   public void init() {
     TalonFXConfiguration elevatorConfig = new TalonFXConfiguration();
     double elevatorMultiplier = 1;
-    elevatorConfig.Slot0.kP = 1.5 * elevatorMultiplier;
+    elevatorConfig.Slot0.kP = 0.8 * elevatorMultiplier;
     elevatorConfig.Slot0.kI = 0.0 * elevatorMultiplier;
     elevatorConfig.Slot0.kD = 0.0 * elevatorMultiplier;
     elevatorConfig.Slot0.kG = 1 * elevatorMultiplier;
-    elevatorConfig.Slot1.kP = 1.5 * elevatorMultiplier;
+    elevatorConfig.Slot1.kP = 1.7 * elevatorMultiplier;
     elevatorConfig.Slot1.kI = 0.0 * elevatorMultiplier;
-    elevatorConfig.Slot1.kD = 0.0 * elevatorMultiplier;
+    elevatorConfig.Slot1.kD = 0.4 * elevatorMultiplier;
     elevatorConfig.Slot1.kG = 1 * elevatorMultiplier;
 
     elevatorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
@@ -107,19 +108,19 @@ public class Elevator extends SubsystemBase {
   }
 
   public void moveElevatorToPosition(double position) {
-    if (position < Constants.Ratios.ELEVATOR_FIRST_STAGE) {
+    if (position > Constants.Ratios.ELEVATOR_FIRST_STAGE) {
       left_elevator.setControl(
-          elevatorMotionProfileRequest.withPosition(Constants.Ratios.elevatorMetersToRotations(position)).withSlot(0));
+          elevatorMotionProfileRequest.withPosition(Constants.Ratios.elevatorMetersToRotations(position)).withSlot(1));
       right_elevator.setControl(
-          elevatorMotionProfileRequest.withPosition(-Constants.Ratios.elevatorMetersToRotations(position)).withSlot(0));
+          elevatorMotionProfileRequest.withPosition(-Constants.Ratios.elevatorMetersToRotations(position)).withSlot(1));
     } else {
       left_elevator.setControl(
-          elevatorMotionProfileRequest.withPosition(Constants.Ratios.elevatorMetersToRotations(position))
-              .withSlot(1));
+          elevatorMotionProfileRequest.withPosition(Constants.Ratios.elevatorMetersToRotations(position)).withSlot(1));
       right_elevator.setControl(
-          elevatorMotionProfileRequest.withPosition(-Constants.Ratios.elevatorMetersToRotations(position))
-              .withSlot(1));
+          elevatorMotionProfileRequest.withPosition(-Constants.Ratios.elevatorMetersToRotations(position)).withSlot(1));
+
     }
+
   }
 
   public void setWantedState(ElevatorState wantedState) {
@@ -135,7 +136,7 @@ public class Elevator extends SubsystemBase {
     switch (wantedState) {
       case DEFAULT:
         if (isZeroed) {
-          return ElevatorState.DEFAULT;
+          return ElevatorState.HANDOFF;
         } else
           return ElevatorState.ZERO;
       case ZERO:
@@ -191,10 +192,10 @@ public class Elevator extends SubsystemBase {
         return ElevatorState.NET;
       case LOLLIPOP:
         return ElevatorState.LOLLIPOP;
-      case HANDOFF:
-        return ElevatorState.HANDOFF;
-      case PREHANDOFF:
-        return ElevatorState.PREHANDOFF;
+      case HANDOFF_HIGH:
+        return ElevatorState.HANDOFF_HIGH;
+      case HANDOFF_LOW:
+        return ElevatorState.HANDOFF_LOW;
       default:
         return ElevatorState.DEFAULT;
     }
@@ -230,7 +231,7 @@ public class Elevator extends SubsystemBase {
         moveElevatorToPosition(Constants.inchesToMeters(35));
         break;
       case AUTO_SCORE_L4:
-        moveElevatorToPosition(Constants.inchesToMeters(58));
+        moveElevatorToPosition(Constants.inchesToMeters(50));
         break;
       case ZERO:
         moveWithTorque(-30, 0.25);
@@ -241,11 +242,27 @@ public class Elevator extends SubsystemBase {
           isZeroed = true;
         }
         break;
+      case HANDOFF_HIGH:
+        if (Constants.isReady) {
+          moveElevatorToPosition(Constants.inchesToMeters(4));
+        } else
+          moveElevatorToPosition(Constants.inchesToMeters(7));
+        break;
       default:
         break;
     }
     Logger.recordOutput("Elevator Torque", left_elevator.getTorqueCurrent().getValueAsDouble());
     Logger.recordOutput("Elevator Velocity", left_elevator.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Elevator PID OUtput", left_elevator.getClosedLoopOutput().getValueAsDouble());
+    Logger.recordOutput("Elevator PID Error", left_elevator.getClosedLoopError().getValueAsDouble());
+    Logger.recordOutput("Elevator In Meters", Constants.Ratios.elevatorRotationsToMeters(
+        left_elevator.getPosition().getValueAsDouble()));
+    Logger.recordOutput("Elevator In Inches", Constants.metersToInches(Constants.Ratios.elevatorRotationsToMeters(
+        left_elevator.getPosition().getValueAsDouble())));
+    Logger.recordOutput("Elevator PID Target", Constants.inchesToMeters(Constants.Ratios.elevatorRotationsToMeters(
+        left_elevator.getClosedLoopReference().getValueAsDouble())));
+    Logger.recordOutput("Elevator Left Position ", left_elevator.getPosition().getValueAsDouble());
+    Logger.recordOutput("Elevator Right Position ", right_elevator.getPosition().getValueAsDouble());
     Logger.recordOutput("Elevators Zeroed?", isZeroed);
     Logger.recordOutput("Elevator State", systemState);
   }

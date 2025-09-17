@@ -49,7 +49,7 @@ public class Straightenator extends SubsystemBase {
   }
 
   public boolean isReady() {
-    return true;// !entryBeamBreak.get() && !endBeamBreak.get();
+    return isClose() && isFar();
   }
 
   public boolean isClose() {
@@ -79,7 +79,7 @@ public class Straightenator extends SubsystemBase {
         return StraightenatorState.IDLE;
       case DEFAULT:
       default:
-        return StraightenatorState.IDLE;
+        return StraightenatorState.DEFAULT;
     }
   }
 
@@ -123,6 +123,7 @@ public class Straightenator extends SubsystemBase {
       default:
         break;
     }
+    Constants.isReady = isReady();
     org.littletonrobotics.junction.Logger.recordOutput("Left Straightenator Voltage",
         left_straightenator.getTorqueCurrent().getValueAsDouble());
     org.littletonrobotics.junction.Logger.recordOutput("Right Straightenator Voltage",

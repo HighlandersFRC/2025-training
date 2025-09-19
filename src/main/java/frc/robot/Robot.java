@@ -235,7 +235,7 @@ public class Robot extends LoggedRobot {
     public void robotInit() {
         elevator.init();
         try {
-             autoPath = PathLoader.loadPath("opturntest.polarpath");
+             autoPath = PathLoader.loadAuto("opauto.polarauto");
              Path = PathLoaderOld.loadPath("testingsquares.polarpath");
                     } 
              catch (IOException e) {

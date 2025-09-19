@@ -21,9 +21,9 @@ public class FinalPathing extends AutoFollower {
     private int lastLookaheadIndex = 0;
 
 
-    private final PID xPID = new PID(0.34, 0.0, 0.73);
-    private final PID yPID = new PID(0.34, 0.0, 0.73);
-    private final PID thetaPID = new PID(0.22, 0, 0.000);
+    private final PID xPID = new PID(0.65, 0.0, 0.87);
+    private final PID yPID = new PID(0.33, 0.0, 0.5);
+    private final PID thetaPID = new PID(0.16, 0, 0.00);
 
     public FinalPathing(List<PosePoint> points, Drive driveSubsystem) {
         this.points = points;

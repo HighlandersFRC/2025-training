@@ -77,10 +77,11 @@ public class Straightenator extends SubsystemBase {
     switch (wantedState) {
       case IDLE:
         return StraightenatorState.IDLE;
-      case DEFAULT:
-      default:
-        return StraightenatorState.DEFAULT;
+      // case DEFAULT:
+      // default:
+      //   return StraightenatorState.DEFAULT;
     }
+        return systemState;
   }
 
   public void setWantedState(StraightenatorState state) {

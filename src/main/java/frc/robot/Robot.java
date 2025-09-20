@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DriveTrainOverride;
@@ -36,6 +38,7 @@ import java.io.FileReader;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -48,17 +51,19 @@ public class Robot extends LoggedRobot {
     private final Arm arm;
     private final Straightenator straightenator;
     private final Manipulator manipulator;
-    private double setAngle = 0;
     private Command m_autonomousCommand;
+    String m_fieldSide = "blue";
 
-    private Timer handoffTimer = new Timer();
-    private boolean handoffSequenceActive = false;
+    File[] autoFiles;
+    Command[] autos;
+    JSONObject[] autoJSONs;
+    JSONArray[] autoPoints;
+    SendableChooser<String> fieldSideChooser = new SendableChooser<String>();
+
     PathLoader path = new PathLoader();
     JSONObject autoPath;
     PolarAutoFollower autoCommand;
 
-    private double[] frozenPoint = null;
-    private double[] frozenPointAlgae = null;
     HashMap<String, Supplier<Command>> commandMap = new HashMap<String, Supplier<Command>>() {
         {
             put("Command1", () -> new Test("command1"));
@@ -67,6 +72,12 @@ public class Robot extends LoggedRobot {
             put("Command4", () -> new Test("command4"));
             put("Print", () -> new Test("Print"));
             put("DriveOverride", () -> new DriveTrainOverride());
+        }
+    };
+
+    HashMap<String, BooleanSupplier> conditionMap = new HashMap<String, BooleanSupplier>() {
+        {
+            put("Note in Robot", () -> true);
         }
     };
 
@@ -97,13 +108,48 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotPeriodic() {
+        Constants.periodic();
         CommandScheduler.getInstance().run();
     }
 
     @Override
     public void robotInit() {
+        OI.init();
+        Constants.init();
         elevator.init();
-        drive.init("blue");
+        drive.init(m_fieldSide);
+        autoFiles = new File[Constants.paths.size()];
+        autos = new Command[Constants.paths.size()];
+        autoJSONs = new JSONObject[Constants.paths.size()];
+        autoPoints = new JSONArray[Constants.paths.size()];
+        for (int i = 0; i < Constants.paths.size(); i++) {
+            try {
+                autoFiles[i] = new File(Filesystem.getDeployDirectory().getPath() + "/" + Constants.paths.get(i));
+                FileReader scanner = new FileReader(autoFiles[i]);
+                autoJSONs[i] = new JSONObject(new JSONTokener(scanner));
+                autoPoints[i] = (JSONArray) autoJSONs[i].getJSONArray("paths").getJSONObject(0)
+                        .getJSONArray("sampled_points");
+                autos[i] = new PolarAutoFollower(autoJSONs[i], drive, peripherals, commandMap, conditionMap);
+            } catch (Exception e) {
+                System.out.println("ERROR LOADING PATH " + Constants.paths.get(i) + ":" + e);
+            }
+        }
+        SmartDashboard.putNumber("L2/3 Front X", Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_FRONT));
+        SmartDashboard.putNumber("L2/3 Front Y", Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_FRONT));
+        SmartDashboard.putNumber("L2/3 Back X", Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_BACK));
+        SmartDashboard.putNumber("L2/3 Back Y", Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_BACK));
+        SmartDashboard.putNumber("L4 Front X", Constants.metersToInches(Constants.Physical.L4_INTAKE_X_OFFSET_FRONT));
+        SmartDashboard.putNumber("L4 Front Y", Constants.metersToInches(Constants.Physical.L4_INTAKE_Y_OFFSET_FRONT));
+        SmartDashboard.putNumber("L4 Back X", Constants.metersToInches(Constants.Physical.L4_INTAKE_X_OFFSET_BACK));
+        SmartDashboard.putNumber("L4 Back Y", Constants.metersToInches(Constants.Physical.L4_INTAKE_Y_OFFSET_BACK));
+        SmartDashboard.putNumber("Algae Front X",
+                Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_FRONT_ALGAE));
+        SmartDashboard.putNumber("Algae Front Y",
+                Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_FRONT_ALGAE));
+        SmartDashboard.putNumber("Algae Back X",
+                Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_BACK_ALGAE));
+        SmartDashboard.putNumber("Algae Back Y",
+                Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_BACK_ALGAE));
     }
 
     @Override
@@ -116,30 +162,19 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        String pathName = "Paths/Commands.polarauto";
-        try {
-            File file = new File(Filesystem.getDeployDirectory(), pathName);
-            if (!file.exists()) {
-                System.out.println("File not found: " + file.getAbsolutePath());
-                return;
-            }
-
-            JSONObject json = new JSONObject(new JSONTokener(new FileReader(file)));
-            System.out.println(json);
-            autoCommand = new PolarAutoFollower(json, commandMap, null);
-        } catch (Exception e) {
-            System.out.println("ERROR LOADING PATH " + pathName + ": " + e.getMessage());
-            e.printStackTrace();
+        double autoInitTime = Timer.getFPGATimestamp();
+        m_robotContainer.superstructure.setWantedState(SuperState.IDLE);
+        if (OI.isBlueSide()) {
+            java.util.logging.Logger.getGlobal().info("ON BLUE SIDE");
+            m_fieldSide = "blue";
+        } else {
+            java.util.logging.Logger.getGlobal().info("ON RED SIDE");
+            m_fieldSide = "red";
         }
-        CommandScheduler.getInstance().schedule(autoCommand);
-        // try {
-        // List<PathLoader.PosePoint> pathPoints =
-        // PathLoader.loadPath("square.polarpath");
-        // new PurePursuitAutoFollower(pathPoints, drive).schedule();
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
-
+        this.m_robotContainer.drive.setFieldSide(m_fieldSide);
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        java.util.logging.Logger.getGlobal().info("Auto init time" + (Timer.getFPGATimestamp() - autoInitTime));
+        m_autonomousCommand.schedule();
     }
 
     @Override

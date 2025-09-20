@@ -8,7 +8,10 @@ import javax.lang.model.util.ElementScanner14;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.fasterxml.jackson.databind.ser.BeanSerializer;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.Arm.ArmState;
@@ -20,6 +23,7 @@ public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
   public enum SuperState {
     DEFAULT,
+    AUTO_L1_SCORE,
     AUTO_L2_PLACE,
     AUTO_L2_SCORE,
     AUTO_L3_PLACE,
@@ -27,6 +31,8 @@ public class Superstructure extends SubsystemBase {
     AUTO_L4_PLACE,
     AUTO_L4_SCORE,
     HANDOFF,
+    MOVE_TO_POINT,
+    OUTAKE,
     IDLE
   }
 
@@ -81,6 +87,12 @@ public class Superstructure extends SubsystemBase {
         drive.setWantedState(DriveState.DEFAULT);
         handleDefaultState();
         break;
+      case OUTAKE:
+        manipulator.setWantedState(ManipulatorState.OUTAKE);
+        break;
+      case AUTO_L1_SCORE:
+        handleAutoL1Score();
+        break;
       case AUTO_L2_PLACE:
         handleAutoL2Place();
         break;
@@ -111,6 +123,9 @@ public class Superstructure extends SubsystemBase {
       case IDLE:
         handleIdleState();
         break;
+      case MOVE_TO_POINT:
+        drive.setWantedState(DriveState.MOVE_TO_POINT);
+        break;
     }
   }
 
@@ -118,6 +133,9 @@ public class Superstructure extends SubsystemBase {
     switch (wantedSuperState) {
       case DEFAULT:
         currentSuperState = SuperState.DEFAULT;
+        break;
+      case OUTAKE:
+        currentSuperState = SuperState.OUTAKE;
         break;
       case AUTO_L2_PLACE:
         currentSuperState = SuperState.AUTO_L2_PLACE;
@@ -140,6 +158,12 @@ public class Superstructure extends SubsystemBase {
       case AUTO_L4_PLACE:
         currentSuperState = SuperState.AUTO_L4_PLACE;
         break;
+      case AUTO_L1_SCORE:
+        currentSuperState = SuperState.AUTO_L1_SCORE;
+        break;
+      case MOVE_TO_POINT:
+        currentSuperState = SuperState.MOVE_TO_POINT;
+        break;
     }
     return currentSuperState;
   }
@@ -149,7 +173,6 @@ public class Superstructure extends SubsystemBase {
     arm.setWantedState(ArmState.HANDOFF);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
-
   }
 
   public void handleHandOffLowState() {
@@ -163,6 +186,15 @@ public class Superstructure extends SubsystemBase {
     drive.setWantedState(DriveState.DEFAULT);
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
     arm.setWantedState(ArmState.HANDOFF);
+  }
+
+  public void handleAutoL1Score() {
+    elevator.setWantedState(ElevatorState.AUTO_L1);
+    if (elevator.getElevatorPosition() < Constants.inchesToMeters(9.0)) {
+      arm.setWantedState(ArmState.HANDOFF);
+    } else {
+      arm.setWantedState(ArmState.L1_PLACE);
+    }
   }
 
   public void handleAutoL2Place() {

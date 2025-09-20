@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.Test;
@@ -27,9 +29,30 @@ public final class Constants {
         public static double y = 0;
         public static double angle = 0;
         public static boolean lastPoint = false;
-        public static final String field_side = "blue";
+
+        public static final ArrayList<String> paths = new ArrayList<String>();
 
         public static boolean isReady = false;
+
+        public static int getSelectedPathIndex() {
+                String selectedAuto = OI.autoSendableChooser.getSelected();
+                for (int i = 0; i < paths.size(); i++) {
+                        if (selectedAuto.equals(paths.get(i))) {
+                                return i;
+                        }
+                }
+                return -1;
+        }
+
+        static {
+                File[] autos = Filesystem.getDeployDirectory().listFiles();
+                for (File file : autos) {
+                        if (file.getAbsolutePath().endsWith(".polarauto")) {
+                                paths.add(file.getName());
+                        }
+
+                }
+        }
 
         public static final class Swerve {
 
@@ -46,6 +69,8 @@ public final class Constants {
         }
 
         public static final class Autonomous {
+                public static final int STAGNATE_BOOST = 35;
+                public static final int STAGNATE_THRESHOLD = 8;
                 // lookahead distance is a function:
                 // LOOKAHEAD = AUTONOMOUS_LOOKAHEAD_DISTANCE * velocity + MIN_LOOKAHEAD_DISTANCE
                 // their constants
@@ -101,6 +126,12 @@ public final class Constants {
                 int index = Autonomous.getSelectedPathIndex();
                 if (index == -1 || index > Constants.Autonomous.paths.length) {
                 } else {
+                }
+                index = getSelectedPathIndex();
+                if (index == -1) {
+                        Logger.recordOutput("Selected Auto", "Do Nothing");
+                } else {
+                        Logger.recordOutput("Selected Auto", paths.get(index));
                 }
         }
 

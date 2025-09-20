@@ -8,6 +8,8 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.tools.TriggerButton;
 
@@ -81,6 +83,16 @@ public class OI {
     public static Joystick autoChooser = new Joystick(2);
 
     public static JoystickButton autoChooserIsBlue = new JoystickButton(autoChooser, 8);
+    public static SendableChooser<String> autoSendableChooser = new SendableChooser<String>();
+
+    public static void init() {
+        autoSendableChooser.setDefaultOption("None", "None");
+        ;
+        for (String auto : Constants.paths) {
+            autoSendableChooser.addOption(auto, auto);
+        }
+        SmartDashboard.putData("Selected Auto", autoSendableChooser);
+    }
 
     public static void printAutoChooserInputs() {
         java.util.logging.Logger.getGlobal().info("Driver Controller Connected: " + driverController.isConnected());

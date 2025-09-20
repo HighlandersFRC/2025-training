@@ -387,7 +387,8 @@ public class Drive extends SubsystemBase {
         AUTO_L1_MORE,
         FEEDER_AUTO,
         PIECE_PICKUP,
-        AUTO_CLIMB
+        AUTO_CLIMB,
+        MOVE_TO_POINT
     }
 
     private DriveState wantedState = DriveState.IDLE;
@@ -2610,6 +2611,8 @@ public class Drive extends SubsystemBase {
                 return DriveState.AUTO_CLIMB;
             case STOP:
                 return DriveState.STOP;
+            case MOVE_TO_POINT:
+                return DriveState.MOVE_TO_POINT;
             default:
                 return DriveState.IDLE;
         }
@@ -2875,10 +2878,15 @@ public class Drive extends SubsystemBase {
             case DEFAULT:
                 teleopDrive();
                 break;
+            case MOVE_TO_POINT:
+                driveToPoint(1, 1, 0);
+                break;
             default:
                 teleopDrive();
                 break;
         }
+        Logger.recordOutput("Robot Position", new Pose2d(new Translation2d(getFusedOdometryX(), getFusedOdometryY()),
+                new Rotation2d(getFusedOdometryTheta())));
     }
 
     /**

@@ -28,6 +28,7 @@ public class Arm extends SubsystemBase {
     L3_PLACE,
     L2_SCORE,
     L2_PLACE,
+    L1_PLACE,
     HANDOFF,
     IDLE
   }
@@ -37,7 +38,6 @@ public class Arm extends SubsystemBase {
 
   public Arm() {
     armMotor = new TalonFX(Constants.CANInfo.ARM_PIVOT_MOTOR_ID, new CANBus(Constants.CANInfo.CANBUS_NAME));
-    init();
     armMotor.setPosition(0);
   }
 
@@ -115,6 +115,8 @@ public class Arm extends SubsystemBase {
         return ArmState.L2_SCORE;
       case L2_PLACE:
         return ArmState.L2_PLACE;
+      case L1_PLACE:
+        return ArmState.L1_PLACE;
       case DEFAULT:
       case HANDOFF:
         return ArmState.HANDOFF;
@@ -155,6 +157,9 @@ public class Arm extends SubsystemBase {
         break;
       case L2_PLACE:
         setArmDegrees(50.0);
+        break;
+      case L1_PLACE:
+        setArmDegrees(-25);
         break;
       case DEFAULT:
         setArmDegrees(-90.0);

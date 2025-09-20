@@ -6,14 +6,18 @@ package frc.robot.subsystems;
 
 import java.util.logging.Logger;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.OI;
 
 public class Manipulator extends SubsystemBase {
   /** Creates a new Manipulator. */
@@ -24,8 +28,15 @@ public class Manipulator extends SubsystemBase {
   private ManipulatorState systemState = ManipulatorState.DEFAULT;
 
   private final TorqueCurrentFOC torqueCurrentFOCRequest = new TorqueCurrentFOC(0.0);
-  CurrentGamePiece currentGamePiece = CurrentGamePiece.NONE;
+
   private boolean algaeMode = false;
+  private ArmItem armItem = ArmItem.NONE;
+
+  private boolean firstTimeCoral = true;
+  private double coralTime = Timer.getFPGATimestamp();
+  private boolean lastCoralValue = false;
+  private double switchTime = Timer.getFPGATimestamp();
+  private boolean hasCoralSticky = false;
 
   public Manipulator() {
     init();
@@ -42,10 +53,10 @@ public class Manipulator extends SubsystemBase {
     manipulatorMotor.setNeutralMode(NeutralModeValue.Brake);
   }
 
-  public enum CurrentGamePiece {
+  public enum ArmItem {
     CORAL,
     ALGAE,
-    NONE
+    NONE,
   }
 
   public enum ManipulatorState {
@@ -57,22 +68,34 @@ public class Manipulator extends SubsystemBase {
   }
 
   private ManipulatorState handleStateTransition() {
-    switch (wantedState) {
-      case CORAL_INTAKE:
-        if (manipulatorMotor.getTorqueCurrent().getValueAsDouble() > 30) {
-          currentGamePiece = CurrentGamePiece.CORAL;
-          return ManipulatorState.DEFAULT;
-        }
-        return ManipulatorState.CORAL_INTAKE;
-      case ALGAE_INTAKE:
-        return ManipulatorState.ALGAE_INTAKE;
-      case OUTAKE:
-        return ManipulatorState.OUTAKE;
-      case OFF:
-        return ManipulatorState.OFF;
-      default:
-        return ManipulatorState.DEFAULT;
-    }
+    if (OI.driverLT.getAsBoolean()) {
+      return ManipulatorState.OUTAKE;
+    } else
+      switch (wantedState) {
+        case CORAL_INTAKE:
+          if (OI.driverLT.getAsBoolean()) {
+            return ManipulatorState.OUTAKE;
+          } else if (lastCoralValue) {
+            return ManipulatorState.DEFAULT;
+          } else
+            return ManipulatorState.CORAL_INTAKE;
+        case ALGAE_INTAKE:
+          return ManipulatorState.ALGAE_INTAKE;
+        case OUTAKE:
+          return ManipulatorState.OUTAKE;
+        case OFF:
+          return ManipulatorState.OFF;
+        case DEFAULT:
+          if (OI.driverLT.getAsBoolean()) {
+            return ManipulatorState.OUTAKE;
+          } else
+            return ManipulatorState.DEFAULT;
+        default:
+          if (OI.driverLT.getAsBoolean()) {
+            return ManipulatorState.OUTAKE;
+          } else
+            return ManipulatorState.DEFAULT;
+      }
   }
 
   public void setWantedState(ManipulatorState wantedState) {
@@ -93,37 +116,67 @@ public class Manipulator extends SubsystemBase {
         .withMaxAbsDutyCycle(maxDutyFraction));
   }
 
+  public boolean hasCoral() {
+    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 10.0
+        && Math.abs(manipulatorMotor.getTorqueCurrent().getValueAsDouble()) > 21.0) {
+      if (firstTimeCoral) {
+        firstTimeCoral = false;
+        coralTime = Timer.getFPGATimestamp();
+      }
+      if (lastCoralValue != true) {
+        switchTime = Timer.getFPGATimestamp();
+        java.util.logging.Logger.getGlobal().finer("Switch Intake Item: Has Coral");
+      }
+      lastCoralValue = true;
+      return true;
+    } else {
+      firstTimeCoral = true;
+      coralTime = Timer.getFPGATimestamp();
+      if (lastCoralValue != false) {
+        switchTime = Timer.getFPGATimestamp();
+        java.util.logging.Logger.getGlobal().finer("Switch Intake Item: Empty");
+      }
+      lastCoralValue = false;
+      return false;
+    }
+  }
+
   @Override
   public void periodic() {
     systemState = handleStateTransition();
 
     double motorVelocity = getIntakeRPS();
+    if (OI.driverLT.getAsBoolean()) {
+      setIntakeTorque(-30, 0.3);
 
-    switch (systemState) {
-      case CORAL_INTAKE:
-        setIntakeTorque(40, 0.4);
-        break;
-      case ALGAE_INTAKE:
-        if (Math.abs(motorVelocity) < 25) {
-          setIntakeTorque(10, 0.05);
-        } else {
+    } else {
+      switch (systemState) {
+        case CORAL_INTAKE:
+          setIntakeTorque(20, 0.3);
+          break;
+        case ALGAE_INTAKE:
           setIntakeTorque(67, 0.3);
-        }
-        break;
-      case OUTAKE:
-        setIntakeTorque(-30, 0.3);
-        break;
-      case OFF:
-        setIntakeTorque(0, 0);
-        break;
-      default:
-        setIntakeTorque(20, 0.01);
-        break;
+          break;
+        case OUTAKE:
+          setIntakeTorque(-30, 0.5);
+          break;
+        case OFF:
+          setIntakeTorque(0, 0);
+          break;
+        default:
+          setIntakeTorque(10, 0.01);
+          break;
+      }
     }
 
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator State", systemState);
+    org.littletonrobotics.junction.Logger.recordOutput("Manipulator Acceleration",
+        manipulatorMotor.getAcceleration().getValueAsDouble());
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Velocity", motorVelocity);
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Torque",
         manipulatorMotor.getTorqueCurrent().getValueAsDouble());
+    org.littletonrobotics.junction.Logger.recordOutput("Manipulator Has Coral",
+        hasCoral());
+    hasCoral();
   }
 }

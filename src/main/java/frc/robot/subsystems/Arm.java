@@ -13,10 +13,10 @@ import frc.robot.tools.math.PID;
 
 public class Arm extends SubsystemBase {
   private final TalonFX armMotor;
-  private final PID armPID = new PID(0.09, 0.0, 0.038);
+  private final PID armPID = new PID(0.04, 0.0, 0.0);
 
   private static final double ROT_NEG90_DEG = 0;
-  private static final double ROT_POS90_DEG = -0.477;
+  private static final double ROT_POS90_DEG = -0.464;
   private static final double CAL_M = (90.0 - (-90.0)) / (ROT_POS90_DEG - ROT_NEG90_DEG);
   private static final double CAL_B = -90.0 - CAL_M * ROT_NEG90_DEG;
 
@@ -108,9 +108,13 @@ public class Arm extends SubsystemBase {
       case L4_PLACE:
         return ArmState.L4_PLACE;
       case L3_SCORE:
+        return ArmState.L3_SCORE;
       case L3_PLACE:
+        return ArmState.L3_PLACE;
       case L2_SCORE:
+        return ArmState.L2_SCORE;
       case L2_PLACE:
+        return ArmState.L2_PLACE;
       case DEFAULT:
       case HANDOFF:
         return ArmState.HANDOFF;
@@ -135,22 +139,22 @@ public class Arm extends SubsystemBase {
         armPID.setSetPoint(getArmDegrees());
         break;
       case L4_SCORE:
-        setArmDegrees(20.0);
+        setArmDegrees(14.0);
         break;
       case L4_PLACE:
         setArmDegrees(40.0);
         break;
       case L3_SCORE:
-        setArmDegrees(-30.0);
+        setArmDegrees(35.0);
         break;
       case L3_PLACE:
-        setArmDegrees(-40.0);
+        setArmDegrees(50.0);
         break;
       case L2_SCORE:
-        setArmDegrees(-50.0);
+        setArmDegrees(35.0);
         break;
       case L2_PLACE:
-        setArmDegrees(-60.0);
+        setArmDegrees(50.0);
         break;
       case DEFAULT:
         setArmDegrees(-90.0);

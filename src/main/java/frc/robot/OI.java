@@ -1,4 +1,5 @@
 // Copyrights (c) 2018-2019 FIRST, 2020 Highlanders FRC. All Rights Reserved.
+//hi om
 
 package frc.robot;
 
@@ -82,13 +83,13 @@ public class OI {
     public static JoystickButton autoChooserIsBlue = new JoystickButton(autoChooser, 8);
 
     public static void printAutoChooserInputs() {
-        System.out.println("Driver Controller Connected: " + driverController.isConnected());
-        System.out.println("Operator Controller Connected: " + operatorController.isConnected());
-        System.out.println("Auto Chooser Connected: " + autoChooser.isConnected());
-        System.out.println("Auto Chooser Num Buttons: " + autoChooser.getButtonCount());
-        System.out.println("Is Blue: " + autoChooserIsBlue.getAsBoolean());
+        java.util.logging.Logger.getGlobal().info("Driver Controller Connected: " + driverController.isConnected());
+        java.util.logging.Logger.getGlobal().info("Operator Controller Connected: " + operatorController.isConnected());
+        java.util.logging.Logger.getGlobal().info("Auto Chooser Connected: " + autoChooser.isConnected());
+        java.util.logging.Logger.getGlobal().info("Auto Chooser Num Buttons: " + autoChooser.getButtonCount());
+        java.util.logging.Logger.getGlobal().info("Is Blue: " + autoChooserIsBlue.getAsBoolean());
         for (int i = 1; i <= 16; i++) {
-            System.out.println("Auto Chooser Button " + i + " : " + autoChooser.getRawButton(i));
+            java.util.logging.Logger.getGlobal().info("Auto Chooser Button " + i + " : " + autoChooser.getRawButton(i));
         }
     }
 
@@ -160,8 +161,23 @@ public class OI {
         return driverController.getRightTriggerAxis();
     }
 
+    // public static double getDriverLTPercent() {
+    // return driverController.getLeftTriggerAxis();
+    // }
+
+    /**
+     * This is for using the backup controller, the LT is 1.0 when it should be at
+     * zero
+     * Set the trigger depth on the controller to T2 (middle) for LT when using this
+     * code
+     */
     public static double getDriverLTPercent() {
-        return driverController.getLeftTriggerAxis();
+        double raw = driverController.getLeftTriggerAxis();
+        if (raw > 0.9) {
+            raw = 0.0;
+        }
+        double refined = raw * (4.0 / 3.0);
+        return refined;
     }
 
     public static boolean getDriverA() {
@@ -169,11 +185,11 @@ public class OI {
     }
 
     public static boolean getDriverRB() {
-        return driverController.getRightBumper();
+        return driverController.getRightBumperButton();
     }
 
     public static boolean getDriverLB() {
-        return driverController.getLeftBumper();
+        return driverController.getLeftBumperButton();
     }
 
     public static double getOperatorRTPercent() {
@@ -185,7 +201,7 @@ public class OI {
     }
 
     public static boolean getOperatorLB() {
-        return operatorController.getLeftBumper();
+        return operatorController.getLeftBumperButton();
     }
 
     public static int getPOV() {
@@ -207,8 +223,10 @@ public class OI {
     public static boolean isRedSide() {
         if (autoChooserConnected()) {
             return !autoChooser.getRawButton(8);
-        } else {
+        } else if (DriverStation.isDSAttached()) {
             return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+        } else {
+            return true;
         }
     }
 

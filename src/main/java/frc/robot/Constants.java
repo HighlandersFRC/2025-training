@@ -2273,6 +2273,11 @@ public final class Constants {
                                         + Math.pow(pose1.getY() - pose2.getY(), 2)));
                 }
 
+                public static double distBetweenPose2d(Pose2d pose1, Pose2d pose2) {
+                        return (Math.sqrt(Math.pow(pose1.getX() - pose2.getX(), 2)
+                                        + Math.pow(pose1.getY() - pose2.getY(), 2)));
+                }
+
                 public static final double DISTANCE_OFFSET = 7.0;
                 public static final double CAMERA_ANGLE_OFFSET = 0.0;
                 // pitch, distance

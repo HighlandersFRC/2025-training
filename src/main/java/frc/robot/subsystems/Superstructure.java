@@ -6,10 +6,15 @@ package frc.robot.subsystems;
 
 import javax.lang.model.util.ElementScanner14;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.OI;
 import frc.robot.Robot;
+import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Drive.DriveState;
 import frc.robot.subsystems.Elevator.ElevatorState;
+import frc.robot.subsystems.Manipulator.ManipulatorState;
 
 public class Superstructure extends SubsystemBase {
   /** Creates a new Superstructure. */
@@ -32,11 +37,29 @@ public class Superstructure extends SubsystemBase {
   Drive drive;
   Peripherals peripherals;
   Elevator elevator;
+  Straightenator straightenator;
+  Arm arm;
+  Manipulator manipulator;
 
-  public Superstructure(Drive driveSubsystem, Peripherals peripheralSubsystem, Elevator elevatorSubsystem) {
+  public enum CurrentMode {
+    ALGAE,
+    CORAL
+  }
+
+  public CurrentMode currentMode = CurrentMode.CORAL;
+
+  public Superstructure(Drive driveSubsystem, Peripherals peripheralSubsystem, Elevator elevatorSubsystem,
+      Straightenator straightenatorSubsystem, Arm armSubsystem, Manipulator manipulatorSubsystem) {
     drive = driveSubsystem;
     peripherals = peripheralSubsystem;
     elevator = elevatorSubsystem;
+    straightenator = straightenatorSubsystem;
+    arm = armSubsystem;
+    manipulator = manipulatorSubsystem;
+  }
+
+  public void setCurrentMode(CurrentMode mode) {
+    currentMode = mode;
   }
 
   public void setWantedState(SuperState wantedState) {
@@ -48,14 +71,6 @@ public class Superstructure extends SubsystemBase {
     return currentSuperState;
   }
 
-  public void resetPathToPoint() {
-    pathCompleted = false;
-    if (currentSuperState == SuperState.DEFAULT && wantedSuperState == SuperState.DEFAULT) {
-      wantedSuperState = SuperState.IDLE;
-      currentSuperState = SuperState.IDLE;
-    }
-  }
-
   public boolean isPathCompleted() {
     return pathCompleted;
   }
@@ -63,6 +78,7 @@ public class Superstructure extends SubsystemBase {
   private void applyStates() {
     switch (currentSuperState) {
       case DEFAULT:
+        drive.setWantedState(DriveState.DEFAULT);
         handleDefaultState();
         break;
       case AUTO_L2_PLACE:
@@ -71,13 +87,28 @@ public class Superstructure extends SubsystemBase {
       case AUTO_L2_SCORE:
         handleAutoL2Score();
         break;
+      case AUTO_L3_PLACE:
+        handleAutoL3Place();
+        break;
+      case AUTO_L3_SCORE:
+        handleAutoL3Score();
+        break;
       case AUTO_L4_SCORE:
         handleAutoL4Score();
         break;
+      case AUTO_L4_PLACE:
+        handleAutoL4Place();
+        break;
       case HANDOFF:
-        handleHandoffState();
+        if (straightenator.isFar()) {
+          handleHandOffLowState();
+        } else
+          handleHandoffState();
         break;
       default:
+        handleHandoffState();
+        break;
+      case IDLE:
         handleIdleState();
         break;
     }
@@ -94,54 +125,81 @@ public class Superstructure extends SubsystemBase {
       case AUTO_L2_SCORE:
         currentSuperState = SuperState.AUTO_L2_SCORE;
         break;
+      case AUTO_L3_PLACE:
+        currentSuperState = SuperState.AUTO_L3_PLACE;
+        break;
+      case AUTO_L3_SCORE:
+        currentSuperState = SuperState.AUTO_L3_SCORE;
+        break;
       case AUTO_L4_SCORE:
         currentSuperState = SuperState.AUTO_L4_SCORE;
         break;
       case HANDOFF:
         currentSuperState = SuperState.HANDOFF;
         break;
-      default:
-        currentSuperState = SuperState.IDLE;
+      case AUTO_L4_PLACE:
+        currentSuperState = SuperState.AUTO_L4_PLACE;
         break;
     }
     return currentSuperState;
   }
 
   public void handleHandoffState() {
-    elevator.setWantedState(ElevatorState.HANDOFF);
+    drive.setWantedState(DriveState.DEFAULT);
+    arm.setWantedState(ArmState.HANDOFF);
+    manipulator.setWantedState(ManipulatorState.DEFAULT);
+    elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+
+  }
+
+  public void handleHandOffLowState() {
+    drive.setWantedState(DriveState.DEFAULT);
+    elevator.setWantedState(ElevatorState.HANDOFF_LOW);
+    manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
 
   }
 
   public void handleDefaultState() {
     drive.setWantedState(DriveState.DEFAULT);
-    elevator.setWantedState(ElevatorState.DEFAULT);
+    elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+    arm.setWantedState(ArmState.HANDOFF);
   }
 
   public void handleAutoL2Place() {
     elevator.setWantedState(ElevatorState.AUTO_L2);
+    arm.setWantedState(ArmState.L2_PLACE);
+    manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleAutoL2Score() {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
+    manipulator.setWantedState(ManipulatorState.OUTAKE);
+    arm.setWantedState(ArmState.L2_SCORE);
   }
 
   public void handleAutoL3Place() {
-    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
-
+    elevator.setWantedState(ElevatorState.AUTO_L3);
+    arm.setWantedState(ArmState.L3_PLACE);
+    manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleAutoL3Score() {
-    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
-
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
+    manipulator.setWantedState(ManipulatorState.OUTAKE);
+    arm.setWantedState(ArmState.L3_SCORE);
   }
 
   public void handleAutoL4Place() {
-    elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
+    elevator.setWantedState(ElevatorState.AUTO_L4);
+    arm.setWantedState(ArmState.L4_PLACE);
+    manipulator.setWantedState(ManipulatorState.DEFAULT);
 
   }
 
   public void handleAutoL4Score() {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
+    manipulator.setWantedState(ManipulatorState.OUTAKE);
+    arm.setWantedState(ArmState.L4_SCORE);
 
   }
 
@@ -151,6 +209,8 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+    drive.setWantedState(DriveState.DEFAULT);
+    Logger.recordOutput("SuperStructure State", currentSuperState);
     currentSuperState = handleStateTransitions();
     applyStates();
   }

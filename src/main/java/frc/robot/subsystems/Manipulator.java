@@ -59,6 +59,10 @@ public class Manipulator extends SubsystemBase {
   private ManipulatorState handleStateTransition() {
     switch (wantedState) {
       case CORAL_INTAKE:
+        if (manipulatorMotor.getTorqueCurrent().getValueAsDouble() > 30) {
+          currentGamePiece = CurrentGamePiece.CORAL;
+          return ManipulatorState.DEFAULT;
+        }
         return ManipulatorState.CORAL_INTAKE;
       case ALGAE_INTAKE:
         return ManipulatorState.ALGAE_INTAKE;
@@ -97,14 +101,10 @@ public class Manipulator extends SubsystemBase {
 
     switch (systemState) {
       case CORAL_INTAKE:
-        if (Math.abs(motorVelocity) < 0.05) {
-          setIntakeTorque(20, 0.05);
-        } else {
-          setIntakeTorque(40, 0.75);
-        }
+        setIntakeTorque(40, 0.4);
         break;
       case ALGAE_INTAKE:
-        if (Math.abs(motorVelocity) < 0.2) {
+        if (Math.abs(motorVelocity) < 25) {
           setIntakeTorque(10, 0.05);
         } else {
           setIntakeTorque(67, 0.3);
@@ -117,11 +117,13 @@ public class Manipulator extends SubsystemBase {
         setIntakeTorque(0, 0);
         break;
       default:
-        setIntakeTorque(10, 0.01);
+        setIntakeTorque(20, 0.01);
         break;
     }
 
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator State", systemState);
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Velocity", motorVelocity);
+    org.littletonrobotics.junction.Logger.recordOutput("Manipulator Torque",
+        manipulatorMotor.getTorqueCurrent().getValueAsDouble());
   }
 }

@@ -23,7 +23,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.Drive.WANTED_GAME_PIECE;
 import frc.robot.subsystems.Elevator.ElevatorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.Peripherals;
@@ -104,6 +103,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         elevator.init();
+        drive.init("blue");
     }
 
     @Override
@@ -152,7 +152,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        superstructure.setWantedState(SuperState.DEFAULT);
+        superstructure.setWantedState(SuperState.HANDOFF);
 
     }
 
@@ -164,38 +164,36 @@ public class Robot extends LoggedRobot {
         } else {
             straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
         }
-        if (OI.driverY.getAsBoolean()) {
-            arm.setWantedState(ArmState.L4_PLACE);
 
-        }
-        if (OI.driverX.getAsBoolean() && !handoffSequenceActive) {
-            arm.setWantedState(ArmState.L4_SCORE);
-            manipulator.setWantedState(ManipulatorState.OUTAKE);
-            handoffTimer.restart();
-            handoffSequenceActive = true;
-        }
-        if (handoffSequenceActive && handoffTimer.hasElapsed(0.5)) {
-            arm.setWantedState(ArmState.HANDOFF);
-            superstructure.setWantedState(SuperState.HANDOFF);
-            handoffSequenceActive = false;
-        }
-        if (straightenator.isFar()) {
-            manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
-        } else if (OI.driverLT.getAsBoolean()) {
-            manipulator.setWantedState(ManipulatorState.OUTAKE);
-        }
-        OI.driverA.whileTrue(new SetRobotStateSimple(superstructure, SuperState.HANDOFF));
+        // if (OI.driverX.getAsBoolean() && !handoffSequenceActive) {
+        // arm.setWantedState(ArmState.L4_SCORE);
+        // manipulator.setWantedState(ManipulatorState.OUTAKE);
+        // handoffTimer.restart();
+        // handoffSequenceActive = true;
+        // }
+        // if (handoffSequenceActive && handoffTimer.hasElapsed(0.5)) {
+        // arm.setWantedState(ArmState.HANDOFF);
+        // superstructure.setWantedState(SuperState.HANDOFF);
+        // handoffSequenceActive = false;
+        // }
+        // if (straightenator.isFar()) {
+        // manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
+        // } else if (OI.driverLT.getAsBoolean()) {
+        // manipulator.setWantedState(ManipulatorState.OUTAKE);
+        // }
+        // OI.driverA.whileTrue(new SetRobotStateSimple(superstructure,
+        // SuperState.HANDOFF));
 
-        if (OI.driverB.getAsBoolean()) {
-            superstructure.setWantedState(SuperState.AUTO_L4_SCORE);
-            arm.setWantedState(ArmState.L4_PLACE);
-        }
-        if (OI.driverA.getAsBoolean()) {
-            arm.setWantedState(ArmState.HANDOFF);
-            if (arm.isReadyForHandoff()) {
-                superstructure.setWantedState(SuperState.HANDOFF);
-            }
-        }
+        // if (OI.driverB.getAsBoolean()) {
+        // superstructure.setWantedState(SuperState.AUTO_L4_SCORE);
+        // arm.setWantedState(ArmState.L4_PLACE);
+        // }
+        // if (OI.driverA.getAsBoolean()) {
+        // arm.setWantedState(ArmState.HANDOFF);
+        // if (arm.isReadyForHandoff()) {
+        // superstructure.setWantedState(SuperState.HANDOFF);
+        // }
+        // }
     }
 
     @Override

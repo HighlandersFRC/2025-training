@@ -136,7 +136,7 @@ public class Elevator extends SubsystemBase {
     switch (wantedState) {
       case DEFAULT:
         if (isZeroed) {
-          return ElevatorState.HANDOFF;
+          return ElevatorState.DEFAULT;
         } else
           return ElevatorState.ZERO;
       case ZERO:
@@ -216,22 +216,22 @@ public class Elevator extends SubsystemBase {
       case AUTO_L1:
         moveElevatorToPosition(Constants.inchesToMeters(17));
       case AUTO_L2:
-        moveElevatorToPosition(Constants.inchesToMeters(22));
+        moveElevatorToPosition(Constants.inchesToMeters(7));
         break;
       case AUTO_L3:
-        moveElevatorToPosition(Constants.inchesToMeters(37));
+        moveElevatorToPosition(Constants.inchesToMeters(25));
         break;
       case AUTO_L4:
-        moveElevatorToPosition(Constants.inchesToMeters(60));
+        moveElevatorToPosition(Constants.inchesToMeters(55));
         break;
       case AUTO_SCORE_L2:
-        moveElevatorToPosition(Constants.inchesToMeters(20));
+        moveElevatorToPosition(Constants.inchesToMeters(4));
         break;
       case AUTO_SCORE_L3:
-        moveElevatorToPosition(Constants.inchesToMeters(35));
+        moveElevatorToPosition(Constants.inchesToMeters(15));
         break;
       case AUTO_SCORE_L4:
-        moveElevatorToPosition(Constants.inchesToMeters(50));
+        moveElevatorToPosition(Constants.inchesToMeters(48));
         break;
       case ZERO:
         moveWithTorque(-30, 0.25);
@@ -243,10 +243,10 @@ public class Elevator extends SubsystemBase {
         }
         break;
       case HANDOFF_HIGH:
-        if (Constants.isReady) {
-          moveElevatorToPosition(Constants.inchesToMeters(4));
-        } else
-          moveElevatorToPosition(Constants.inchesToMeters(7));
+        moveElevatorToPosition(Constants.inchesToMeters(7));
+        break;
+      case HANDOFF_LOW:
+        moveElevatorToPosition(Constants.inchesToMeters(3));
         break;
       default:
         break;
@@ -265,5 +265,10 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator Right Position ", right_elevator.getPosition().getValueAsDouble());
     Logger.recordOutput("Elevators Zeroed?", isZeroed);
     Logger.recordOutput("Elevator State", systemState);
+  }
+
+  public double getElevatorPosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getElevatorPosition'");
   }
 }

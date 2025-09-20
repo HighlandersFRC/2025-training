@@ -214,25 +214,25 @@ public class Elevator extends SubsystemBase {
         moveWithTorque(0, 0);
         break;
       case AUTO_L1:
-        moveElevatorToPosition(Constants.inchesToMeters(18));
+        moveElevatorToPosition(Constants.Elevator.AutoL1);
         break;
       case AUTO_L2:
-        moveElevatorToPosition(Constants.inchesToMeters(7));
+        moveElevatorToPosition(Constants.Elevator.AutoL2);
         break;
       case AUTO_L3:
-        moveElevatorToPosition(Constants.inchesToMeters(25));
+        moveElevatorToPosition(Constants.Elevator.AutoL3);
         break;
       case AUTO_L4:
-        moveElevatorToPosition(Constants.inchesToMeters(55));
+        moveElevatorToPosition(Constants.Elevator.AutoL4);
         break;
       case AUTO_SCORE_L2:
-        moveElevatorToPosition(Constants.inchesToMeters(4));
+        moveElevatorToPosition(Constants.Elevator.AutoScoreL2);
         break;
       case AUTO_SCORE_L3:
-        moveElevatorToPosition(Constants.inchesToMeters(15));
+        moveElevatorToPosition(Constants.Elevator.AutoScoreL3);
         break;
       case AUTO_SCORE_L4:
-        moveElevatorToPosition(Constants.inchesToMeters(48));
+        moveElevatorToPosition(Constants.Elevator.AutoScoreL4);
         break;
       case ZERO:
         moveWithTorque(-30, 0.25);
@@ -244,10 +244,10 @@ public class Elevator extends SubsystemBase {
         }
         break;
       case HANDOFF_HIGH:
-        moveElevatorToPosition(Constants.inchesToMeters(11));
+        moveElevatorToPosition(Constants.Elevator.HandoffHigh);
         break;
       case HANDOFF_LOW:
-        moveElevatorToPosition(Constants.inchesToMeters(3));
+        moveElevatorToPosition(Constants.Elevator.HandoffLow);
         break;
       default:
         break;

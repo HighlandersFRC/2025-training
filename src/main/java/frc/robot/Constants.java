@@ -83,6 +83,22 @@ public final class Constants {
          }
 
 
+        public static final class Elevator{
+        public static final double AutoL1 = inchesToMeters(18.0);
+        public static final double AutoL2 = inchesToMeters(7.0);
+        public static final double AutoL3 = inchesToMeters(25.0);
+        public static final double AutoL4 = inchesToMeters(55.0);
+        public static final double AutoScoreL2 = inchesToMeters(4.0);
+        public static final double AutoScoreL3 = inchesToMeters(15.0);
+        public static final double AutoScoreL4 = inchesToMeters(48.0);
+        public static final double HandoffHigh = inchesToMeters(11.0);
+        public static final double HandoffLow = inchesToMeters(3.0);
+        
+              
+            }
+
+
+
 
 
         

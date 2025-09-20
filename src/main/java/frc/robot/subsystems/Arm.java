@@ -141,31 +141,31 @@ public class Arm extends SubsystemBase {
         armPID.setSetPoint(getArmDegrees());
         break;
       case L4_SCORE:
-        setArmDegrees(14.0);
+        setArmDegrees(Constants.Arm.L4_Score);
         break;
       case L4_PLACE:
-        setArmDegrees(40.0);
+        setArmDegrees(Constants.Arm.L4_Place);
         break;
       case L3_SCORE:
-        setArmDegrees(35.0);
+        setArmDegrees(Constants.Arm.L3_Score);
         break;
       case L3_PLACE:
-        setArmDegrees(50.0);
+        setArmDegrees(Constants.Arm.L3_Place);;
         break;
       case L2_SCORE:
-        setArmDegrees(13);
+        setArmDegrees(Constants.Arm.L2_Score);
         break;
       case L2_PLACE:
-        setArmDegrees(45);
+        setArmDegrees(Constants.Arm.L2_Place);
         break;
       case L1_PLACE:
-        setArmDegrees(-25);
+        setArmDegrees(Constants.Arm.L1_Place);
         break;
       case DEFAULT:
-        setArmDegrees(-90.0);
+        setArmDegrees(Constants.Arm.Default);
         break;
       case HANDOFF:
-        setArmDegrees(-90);
+        setArmDegrees(Constants.Arm.Handoff);
         break;
     }
 

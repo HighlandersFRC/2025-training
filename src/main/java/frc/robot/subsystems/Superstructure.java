@@ -198,9 +198,13 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleAutoL2Place() {
-    elevator.setWantedState(ElevatorState.AUTO_L2);
+    elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
     arm.setWantedState(ArmState.L2_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
+    // if(arm.getArmDegrees() == 135){
+    // elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
+    // }
+      
   }
 
   public void handleAutoL2Score() {

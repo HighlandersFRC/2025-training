@@ -68,6 +68,25 @@ public final class Constants {
 
         }
 
+        public static final class Arm{
+
+        public static final double L4_Score = 14.0;
+        public static final double L4_Place = 40.0;
+        public static final double L3_Score = 35.0;
+        public static final double L3_Place = 50.0;
+        public static final double L2_Score = 13.0;
+        public static final double L2_Place = 45.0;
+        public static final double L1_Place = -25.0;
+        public static final double Handoff = -90.0;
+        public static final double Default = -90.0;
+        public static final double Idle = 0.0;
+         }
+
+
+
+
+        
+
         public static final class Autonomous {
                 public static final int STAGNATE_BOOST = 35;
                 public static final int STAGNATE_THRESHOLD = 8;

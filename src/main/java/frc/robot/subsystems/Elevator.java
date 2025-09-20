@@ -244,7 +244,7 @@ public class Elevator extends SubsystemBase {
         }
         break;
       case HANDOFF_HIGH:
-        moveElevatorToPosition(Constants.inchesToMeters(7));
+        moveElevatorToPosition(Constants.inchesToMeters(11));
         break;
       case HANDOFF_LOW:
         moveElevatorToPosition(Constants.inchesToMeters(3));

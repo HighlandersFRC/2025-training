@@ -153,10 +153,10 @@ public class Arm extends SubsystemBase {
         setArmDegrees(50.0);
         break;
       case L2_SCORE:
-        setArmDegrees(35.0);
+        setArmDegrees(13);
         break;
       case L2_PLACE:
-        setArmDegrees(50.0);
+        setArmDegrees(45);
         break;
       case L1_PLACE:
         setArmDegrees(-25);

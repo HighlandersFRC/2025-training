@@ -214,7 +214,8 @@ public class Elevator extends SubsystemBase {
         moveWithTorque(0, 0);
         break;
       case AUTO_L1:
-        moveElevatorToPosition(Constants.inchesToMeters(17));
+        moveElevatorToPosition(Constants.inchesToMeters(20));
+        break;
       case AUTO_L2:
         moveElevatorToPosition(Constants.inchesToMeters(7));
         break;
@@ -268,7 +269,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getElevatorPosition() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getElevatorPosition'");
+    return Constants.Ratios.elevatorRotationsToMeters(left_elevator.getPosition().getValueAsDouble());
   }
 }

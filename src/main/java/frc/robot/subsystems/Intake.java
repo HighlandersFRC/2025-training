@@ -32,6 +32,7 @@ public class Intake extends SubsystemBase {
     OUTTAKING,
     DEFAULT,
     DOWN,
+    UP,
     IDLE
   }
 
@@ -67,6 +68,8 @@ public class Intake extends SubsystemBase {
         return IntakeState.OUTTAKING;
       case IDLE:
         return IntakeState.IDLE;
+      case UP:
+        return IntakeState.UP;
       case DEFAULT:
         return IntakeState.DEFAULT;
       case DOWN:
@@ -110,8 +113,9 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    systemState = handleStateTransition();
     switch (systemState) {
-      case INTAKING:
+      case INTAKING: 
         break;
       case OUTTAKING:
         break;
@@ -120,6 +124,8 @@ public class Intake extends SubsystemBase {
       case DEFAULT:
         break;
       case DOWN:
+        break;
+      case UP:
         break;
       default:
         break;

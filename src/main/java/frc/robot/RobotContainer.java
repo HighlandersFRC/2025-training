@@ -59,6 +59,8 @@ public class RobotContainer {
     OI.driverY.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_SCORE));
     OI.driverB.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L3_SCORE));
     OI.driverA.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L4_SCORE));
+    OI.driverX.whileTrue(new SetRobotStateSimple(superstructure, SuperState.L1_SCORE));
+  
   }
 
   public Command getAutonomousCommand() {

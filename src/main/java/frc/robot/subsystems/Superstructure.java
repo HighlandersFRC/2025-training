@@ -9,6 +9,7 @@ import javax.lang.model.util.ElementScanner14;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.Arm.ArmState;
@@ -26,6 +27,7 @@ public class Superstructure extends SubsystemBase {
     AUTO_L3_SCORE,
     AUTO_L4_PLACE,
     AUTO_L4_SCORE,
+    L1_SCORE,
     HANDOFF,
     IDLE
   }
@@ -99,6 +101,9 @@ public class Superstructure extends SubsystemBase {
       case AUTO_L4_PLACE:
         handleAutoL4Place();
         break;
+      case L1_SCORE:
+        handleL1SCORE();
+        break;
       case HANDOFF:
         if (straightenator.isFar()) {
           handleHandOffLowState();
@@ -133,6 +138,9 @@ public class Superstructure extends SubsystemBase {
         break;
       case AUTO_L4_SCORE:
         currentSuperState = SuperState.AUTO_L4_SCORE;
+        break;
+      case L1_SCORE:
+        currentSuperState = SuperState.L1_SCORE;
         break;
       case HANDOFF:
         currentSuperState = SuperState.HANDOFF;
@@ -169,6 +177,15 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.AUTO_L2);
     arm.setWantedState(ArmState.L2_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
+  }
+
+  public void handleL1SCORE(){
+    elevator.setWantedState(ElevatorState.AUTO_L1);
+    if(elevator.getElevatorPosition() < Constants.inchesToMeters(9.0)){
+      arm.setWantedState(ArmState.HANDOFF);
+    } else {
+      arm.setWantedState(ArmState.L1_PLACE);
+    }
   }
 
   public void handleAutoL2Score() {

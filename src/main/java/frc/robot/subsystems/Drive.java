@@ -202,7 +202,7 @@ public class Drive extends SubsystemBase {
             new Translation3d(Constants.inchesToMeters(-2.0), Constants.inchesToMeters(-11.5),
                     Constants.inchesToMeters(23.625)),
             new Rotation3d(Math.toRadians(1.5), Math.toRadians(25.2), Math.toRadians(165.0)));
-
+//upwards pitch is negative use the two below
     Transform3d backLeftReefRobotToCam = new Transform3d(
             new Translation3d(Constants.inchesToMeters(-12.375), Constants.inchesToMeters(9.375),
                     Constants.inchesToMeters(8.6875)),
@@ -2853,6 +2853,7 @@ public class Drive extends SubsystemBase {
         if (!OI.getDriverA()) {
             firstTimeReef = true;
         }
+        Logger.recordOutput("Odometry", getMT2Odometry());
         // Logger.recordOutput("L1 Vector",
         // new Pose2d(new Translation2d(2.0, 2.0),
         // new Rotation2d(

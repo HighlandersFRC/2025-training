@@ -103,6 +103,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         elevator.init();
+        arm.init();
         drive.init("blue");
     }
 

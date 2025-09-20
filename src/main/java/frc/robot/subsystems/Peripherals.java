@@ -25,8 +25,8 @@ public class Peripherals {
     private PhotonCamera frontReefCam = new PhotonCamera("Left_Reef");
     private PhotonCamera frontSwerveCam = new PhotonCamera("Front_Swerve");
     private PhotonCamera backReefCam = new PhotonCamera("Back_Reef");
-    private PhotonCamera backLeftReefCam = new PhotonCamera("Back_Left_Reef");
-    private PhotonCamera backRightReefCam = new PhotonCamera("Back_Right_Reef");
+    private PhotonCamera backLeftReefCam = new PhotonCamera("Back_Left_Reef");//rename photonvision cams to this
+    private PhotonCamera backRightReefCam = new PhotonCamera("Back_Right_Reef");//and this
     private PhotonCamera frontBargeCam = new PhotonCamera("Front_Barge");
     private PhotonCamera backBargeCam = new PhotonCamera("Back_Barge");
     private PhotonCamera gamePieceCamera = new PhotonCamera("Front_Game_Piece_Cam");

@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.OI;
 
 public class Manipulator extends SubsystemBase {
   /** Creates a new Manipulator. */
@@ -56,10 +57,15 @@ public class Manipulator extends SubsystemBase {
     OFF,
   }
 
+
+
   private ManipulatorState handleStateTransition() {
+    if(OI.driverLT.getAsBoolean()){
+        return ManipulatorState.OUTAKE;
+    }
     switch (wantedState) {
       case CORAL_INTAKE:
-        if (manipulatorMotor.getTorqueCurrent().getValueAsDouble() > 30) {
+        if (manipulatorMotor.getTorqueCurrent().getValueAsDouble() > 25) {
           currentGamePiece = CurrentGamePiece.CORAL;
           return ManipulatorState.DEFAULT;
         }
@@ -101,7 +107,7 @@ public class Manipulator extends SubsystemBase {
 
     switch (systemState) {
       case CORAL_INTAKE:
-        setIntakeTorque(40, 0.4);
+        setIntakeTorque(10, 0.2);
         break;
       case ALGAE_INTAKE:
         if (Math.abs(motorVelocity) < 25) {
@@ -114,10 +120,10 @@ public class Manipulator extends SubsystemBase {
         setIntakeTorque(-30, 0.3);
         break;
       case OFF:
-        setIntakeTorque(0, 0);
+        setIntakePercent(0);
         break;
       default:
-        setIntakeTorque(20, 0.01);
+      setIntakePercent(0);
         break;
     }
 

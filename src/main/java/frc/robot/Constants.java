@@ -93,6 +93,10 @@ public final class Constants {
         public static final double AutoScoreL4 = inchesToMeters(48.0);
         public static final double HandoffHigh = inchesToMeters(11.0);
         public static final double HandoffLow = inchesToMeters(3.0);
+        public static final double High = inchesToMeters(40);
+        public static final double Low = inchesToMeters(18);
+        public static final double Processor = inchesToMeters(0);
+        public static final double Net = inchesToMeters(70);
         
               
             }

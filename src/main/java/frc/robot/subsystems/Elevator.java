@@ -58,17 +58,17 @@ public class Elevator extends SubsystemBase {
     L3,
     L4,
     FEEDER_INTAKE,
-    L2_ALGAE,
-    L3_ALGAE,
+    HIGH,
+    LOW,
+    NET,
+    PROCESSOR,
     GROUND_CORAL_INTAKE,
     GROUND_ALGAE_INTAKE,
-    PROCESSOR,
     SCORE_L1,
     SCORE_L2,
     AUTO_SCORE_L2,
     SCORE_L3,
     SCORE_L4,
-    NET,
     OVER,
     LOLLIPOP,
     PREHANDOFF,
@@ -168,10 +168,10 @@ public class Elevator extends SubsystemBase {
         return ElevatorState.AUTO_SCORE_L4;
       case FEEDER_INTAKE:
         return ElevatorState.FEEDER_INTAKE;
-      case L2_ALGAE:
-        return ElevatorState.L2_ALGAE;
-      case L3_ALGAE:
-        return ElevatorState.L3_ALGAE;
+      case HIGH:
+        return ElevatorState.HIGH;
+      case LOW:
+        return ElevatorState.LOW;
       case GROUND_CORAL_INTAKE:
         return ElevatorState.GROUND_CORAL_INTAKE;
       case GROUND_ALGAE_INTAKE:
@@ -230,6 +230,18 @@ public class Elevator extends SubsystemBase {
         break;
       case AUTO_SCORE_L3:
         moveElevatorToPosition(Constants.Elevator.AutoScoreL3);
+        break;
+      case HIGH:
+        moveElevatorToPosition(Constants.Elevator.High);
+        break;
+      case LOW:
+        moveElevatorToPosition(Constants.Elevator.Low);
+        break;
+      case PROCESSOR:
+        moveElevatorToPosition(Constants.Elevator.Processor);
+        break;
+      case NET:
+        moveElevatorToPosition(Constants.Elevator.Net);
         break;
       case AUTO_SCORE_L4:
         moveElevatorToPosition(Constants.Elevator.AutoScoreL4);

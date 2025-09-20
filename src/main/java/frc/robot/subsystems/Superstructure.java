@@ -33,6 +33,7 @@ public class Superstructure extends SubsystemBase {
     HANDOFF,
     MOVE_TO_POINT,
     OUTAKE,
+    ALGAE_PICK_HIGH,
     IDLE
   }
 

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -16,9 +18,9 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  private final TalonFX roller = new TalonFX(Constants.CANInfo.INTAKE_ROLLER_MOTOR_ID);
+  private final TalonFX roller = new TalonFX(Constants.CANInfo.INTAKE_ROLLER_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
 
-  private final TalonFX pivot = new TalonFX(Constants.CANInfo.INTAKE_PIVOT_MOTOR_ID);
+  private final TalonFX pivot = new TalonFX(Constants.CANInfo.INTAKE_PIVOT_MOTOR_ID, Constants.CANInfo.CANBUS_NAME);
 
   private final TorqueCurrentFOC m_torqueCurrentFOCRequest = new TorqueCurrentFOC(0.0).withMaxAbsDutyCycle(0.0);
   private final PositionTorqueCurrentFOC m_positionTorqueCurrentFOCRequest = new PositionTorqueCurrentFOC(0.0);
@@ -36,6 +38,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Intake() {
+    init();
   }
 
   public void init() {
@@ -46,7 +49,10 @@ public class Intake extends SubsystemBase {
     config.CurrentLimits.SupplyCurrentLimit = 60;
     config.Slot0.kP = 4.068;
     config.Slot0.kI = 0.0;
-    config.Slot0.kD = 0;
+    config.Slot0.kD = 0.7;
+    config.Slot1.kP = 4;
+    config.Slot1.kI = 0.0;
+    config.Slot1.kD = 0.3;
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.kG = 0;
     config.MotionMagic.MotionMagicAcceleration = Constants.SetPoints.IntakeSetpoints.INTAKE_ACCELERATION;
@@ -86,10 +92,14 @@ public class Intake extends SubsystemBase {
 
   public void pivotToPosition(double pivotRotations) {
     pivot.setControl(m_positionTorqueCurrentFOCRequest
-        .withPosition(pivotRotations * Constants.Ratios.INTAKE_PIVOT_GEAR_RATIO)
-        .withVelocity(Constants.SetPoints.IntakeSetpoints.INTAKE_CRUISE_VELOCITY
-            * Constants.SetPoints.IntakeSetpoints.INTAKE_MOTION_PROFILE_SCALAR)
+        .withPosition(pivotRotations)
         .withSlot(0));
+  }
+
+  public void pivotToPositionHighPower(double pivotRotations) {
+    pivot.setControl(m_positionTorqueCurrentFOCRequest
+        .withPosition(pivotRotations)
+        .withSlot(1));
   }
 
   public void setRollerCurrent(double amps, double maxPercent) {
@@ -110,16 +120,26 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    systemState = handleStateTransition();
+    Logger.recordOutput("Intake Pivot Position", pivot.getPosition().getValueAsDouble());
     switch (systemState) {
       case INTAKING:
+        pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
+        setRollerCurrent(60, 0.75);
         break;
       case OUTTAKING:
+        pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
+        setRollerCurrent(-20, 0.5);
         break;
       case IDLE:
+        setRollerPercent(0);
         break;
       case DEFAULT:
+        setRollerPercent(0);
+        pivotToPositionHighPower(Constants.SetPoints.IntakeSetpoints.INTAKE_UP);
         break;
       case DOWN:
+        pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
         break;
       default:
         break;

@@ -13,7 +13,7 @@ import frc.robot.tools.math.PID;
 
 public class Arm extends SubsystemBase {
   private final TalonFX armMotor;
-  private final PID armPID = new PID(0.04, 0.0, 0.0);
+  private final PID armPID = new PID(0.03, 0.0, 0.005);
 
   private static final double ROT_NEG90_DEG = 0;
   private static final double ROT_POS90_DEG = -0.464;
@@ -29,6 +29,9 @@ public class Arm extends SubsystemBase {
     L2_SCORE,
     L2_PLACE,
     L1_PLACE,
+    HORIZONTAL,
+    VERTICAL,
+    NET,
     HANDOFF,
     IDLE
   }
@@ -118,8 +121,15 @@ public class Arm extends SubsystemBase {
       case L1_PLACE:
         return ArmState.L1_PLACE;
       case DEFAULT:
+        return ArmState.DEFAULT;
+      case HORIZONTAL:
+        return ArmState.HORIZONTAL;
+      case NET:
+        return ArmState.NET;
       case HANDOFF:
         return ArmState.HANDOFF;
+      case VERTICAL:
+        return ArmState.VERTICAL;
       default:
         return wantedState;
     }
@@ -150,7 +160,7 @@ public class Arm extends SubsystemBase {
         setArmDegrees(Constants.Arm.L3_Score);
         break;
       case L3_PLACE:
-        setArmDegrees(Constants.Arm.L3_Place);;
+        setArmDegrees(Constants.Arm.L3_Place);
         break;
       case L2_SCORE:
         setArmDegrees(Constants.Arm.L2_Score);
@@ -162,10 +172,19 @@ public class Arm extends SubsystemBase {
         setArmDegrees(Constants.Arm.L1_Place);
         break;
       case DEFAULT:
-        setArmDegrees(Constants.Arm.Default);
+        setArmDegrees(Constants.Arm.DEFAULT);
         break;
       case HANDOFF:
-        setArmDegrees(Constants.Arm.Handoff);
+        setArmDegrees(Constants.Arm.HANDOFF);
+        break;
+      case NET:
+        setArmDegrees(Constants.Arm.NET);
+        break;
+      case HORIZONTAL:
+        setArmDegrees(Constants.Arm.HORIZONTAL);
+        break;
+      case VERTICAL:
+        setArmDegrees(Constants.Arm.VERTICAL);
         break;
     }
 

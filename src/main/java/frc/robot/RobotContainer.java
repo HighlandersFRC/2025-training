@@ -11,6 +11,7 @@ import frc.robot.commands.ZeroPigeon;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Peripherals;
 import frc.robot.subsystems.Straightenator;
@@ -30,6 +31,8 @@ import org.json.JSONTokener;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -39,16 +42,21 @@ public class RobotContainer {
   public final Straightenator straightenator = new Straightenator();
   public final Arm arm = new Arm();
   public final Manipulator manipulator = new Manipulator();
+  public final Intake intake = new Intake();
 
   public final Drive drive = new Drive(peripherals, elevator);
   public final Superstructure superstructure = new Superstructure(drive, peripherals, elevator, straightenator, arm,
-      manipulator);
+      manipulator, intake);
 
   File[] autoFiles = new File[Constants.Autonomous.paths.length];
   Command[] autos = new Command[Constants.Autonomous.paths.length];
   JSONObject[] autoJSONs = new JSONObject[Constants.Autonomous.paths.length];
   JSONArray[] autoPoints = new JSONArray[Constants.Autonomous.paths.length];
   private Command autonomousCommand;
+
+  public boolean algaeMode;
+  public boolean manualMode;
+
   HashMap<String, Supplier<Command>> commandMap = new HashMap<String, Supplier<Command>>() {
     {
       put("Command1", () -> new Test("command1"));
@@ -92,18 +100,63 @@ public class RobotContainer {
   Command auto;
 
   private void configureBindings() {
-    OI.driverMenuButton.whileTrue(new ZeroPigeon(peripherals));
-    OI.driverLB.whileTrue(new SetRobotStateSimple(superstructure, SuperState.HANDOFF));
-    OI.driverPOVRight.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L4_PLACE));
-    OI.driverPOVDown.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L3_PLACE));
-    OI.driverPOVLeft.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_PLACE));
-    OI.driverY.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_SCORE));
-    OI.driverB.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L3_SCORE));
-    OI.driverA.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L4_SCORE));
-    // OI.driverX.whileTrue(new SetRobotStateSimple(superstructure,
-    // SuperState.MOVE_TO_POINT));
-    OI.driverX.whileTrue(new SetRobotStateSimple(superstructure, SuperState.AUTO_L1_SCORE));
-    OI.driverLT.whileTrue(new SetRobotStateSimple(superstructure, SuperState.OUTAKE));
+    OI.driverPOVRight
+        .whileTrue(
+            new ConditionalCommand(
+                new SetRobotStateSimple(superstructure, SuperState.NET),
+                new SetRobotStateSimple(superstructure, SuperState.AUTO_L4_PLACE),
+                () -> algaeMode))
+        .onFalse(
+            new ConditionalCommand(
+                new SetRobotStateSimple(superstructure, SuperState.L4_SCORE),
+                new InstantCommand(),
+                () -> manualMode));
+
+    OI.driverRT
+        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.INTAKING));
+
+    OI.driverLT
+        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.OUTTAKE));
+
+    OI.driverPOVLeft
+        .whileTrue(
+            new ConditionalCommand(
+                new SetRobotState(superstructure, SuperState.ALGAE_LOW),
+                new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_PLACE),
+                () -> algaeMode))
+        .onFalse(
+            new ConditionalCommand(
+                new SetRobotStateSimple(superstructure, SuperState.L2_SCORE),
+                new InstantCommand(),
+                () -> manualMode));
+
+    OI.driverPOVDown
+        .whileTrue(
+            new ConditionalCommand(
+                new SetRobotState(superstructure, SuperState.ALGAE_HIGH),
+                new SetRobotStateSimple(superstructure, SuperState.AUTO_L3_PLACE),
+                () -> algaeMode))
+        .onFalse(
+            new ConditionalCommand(
+                new SetRobotStateSimple(superstructure, SuperState.L3_SCORE),
+                new InstantCommand(),
+                () -> manualMode));
+
+    OI.driverPOVUp
+        .whileTrue(
+            new ConditionalCommand(
+                new SetRobotState(superstructure, SuperState.PROCESSOR),
+                new SetRobotState(superstructure, SuperState.AUTO_L1_SCORE),
+                () -> algaeMode));
+
+    OI.driverMenuButton
+        .whileTrue(new ZeroPigeon(peripherals));
+
+    OI.driverLB
+        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.DEFAULT));
+
+    OI.driverPOVLeft
+        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.DEFAULT));
   }
 
   public Command getAutonomousCommand() {

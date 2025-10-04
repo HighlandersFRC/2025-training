@@ -58,17 +58,17 @@ public class Elevator extends SubsystemBase {
     L3,
     L4,
     FEEDER_INTAKE,
-    L2_ALGAE,
-    L3_ALGAE,
+    ALGAE_HIGH,
+    ALGAE_LOW,
+    NET,
+    PROCESSOR,
     GROUND_CORAL_INTAKE,
     GROUND_ALGAE_INTAKE,
-    PROCESSOR,
     SCORE_L1,
     SCORE_L2,
     AUTO_SCORE_L2,
     SCORE_L3,
     SCORE_L4,
-    NET,
     OVER,
     LOLLIPOP,
     PREHANDOFF,
@@ -107,6 +107,10 @@ public class Elevator extends SubsystemBase {
     right_elevator.setPosition(0.0);
   }
 
+  public void rezeroElevator() {
+    isZeroed = false;
+  }
+
   public void moveElevatorToPosition(double position) {
     if (position > Constants.Ratios.ELEVATOR_FIRST_STAGE) {
       left_elevator.setControl(
@@ -124,7 +128,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setWantedState(ElevatorState wantedState) {
-    this.wantedState = wantedState;
+    if (isZeroed) {
+      this.wantedState = wantedState;
+    } else {
+      this.wantedState = ElevatorState.ZERO;
+    }
   }
 
   public void moveWithTorque(double current, double maxPercent) {
@@ -168,10 +176,10 @@ public class Elevator extends SubsystemBase {
         return ElevatorState.AUTO_SCORE_L4;
       case FEEDER_INTAKE:
         return ElevatorState.FEEDER_INTAKE;
-      case L2_ALGAE:
-        return ElevatorState.L2_ALGAE;
-      case L3_ALGAE:
-        return ElevatorState.L3_ALGAE;
+      case ALGAE_HIGH:
+        return ElevatorState.ALGAE_HIGH;
+      case ALGAE_LOW:
+        return ElevatorState.ALGAE_LOW;
       case GROUND_CORAL_INTAKE:
         return ElevatorState.GROUND_CORAL_INTAKE;
       case GROUND_ALGAE_INTAKE:
@@ -214,25 +222,37 @@ public class Elevator extends SubsystemBase {
         moveWithTorque(0, 0);
         break;
       case AUTO_L1:
-        moveElevatorToPosition(Constants.Elevator.AutoL1);
+        moveElevatorToPosition(Constants.Elevator.AUTO_L1);
         break;
       case AUTO_L2:
-        moveElevatorToPosition(Constants.Elevator.AutoL2);
+        moveElevatorToPosition(Constants.Elevator.AUTO_L2);
         break;
       case AUTO_L3:
-        moveElevatorToPosition(Constants.Elevator.AutoL3);
+        moveElevatorToPosition(Constants.Elevator.AUTO_L3);
         break;
       case AUTO_L4:
-        moveElevatorToPosition(Constants.Elevator.AutoL4);
+        moveElevatorToPosition(Constants.Elevator.AUTO_L4);
         break;
       case AUTO_SCORE_L2:
-        moveElevatorToPosition(Constants.Elevator.AutoScoreL2);
+        moveElevatorToPosition(Constants.Elevator.AUTO_SCORE_L2);
         break;
       case AUTO_SCORE_L3:
-        moveElevatorToPosition(Constants.Elevator.AutoScoreL3);
+        moveElevatorToPosition(Constants.Elevator.AUTO_SCORE_L3);
+        break;
+      case ALGAE_HIGH:
+        moveElevatorToPosition(Constants.Elevator.ALGAE_HIGH);
+        break;
+      case ALGAE_LOW:
+        moveElevatorToPosition(Constants.Elevator.ALGAE_LOW);
+        break;
+      case PROCESSOR:
+        moveElevatorToPosition(Constants.Elevator.PROCESSOR);
+        break;
+      case NET:
+        moveElevatorToPosition(Constants.Elevator.NET);
         break;
       case AUTO_SCORE_L4:
-        moveElevatorToPosition(Constants.Elevator.AutoScoreL4);
+        moveElevatorToPosition(Constants.Elevator.AUTO_SCORE_L4);
         break;
       case ZERO:
         moveWithTorque(-30, 0.25);
@@ -244,10 +264,10 @@ public class Elevator extends SubsystemBase {
         }
         break;
       case HANDOFF_HIGH:
-        moveElevatorToPosition(Constants.Elevator.HandoffHigh);
+        moveElevatorToPosition(Constants.Elevator.HANDOFF_HIGH);
         break;
       case HANDOFF_LOW:
-        moveElevatorToPosition(Constants.Elevator.HandoffLow);
+        moveElevatorToPosition(Constants.Elevator.HANDOFF_LOW);
         break;
       default:
         break;

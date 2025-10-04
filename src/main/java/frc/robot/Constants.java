@@ -68,40 +68,38 @@ public final class Constants {
 
         }
 
-        public static final class Arm{
+        public static final class Arm {
 
-        public static final double L4_Score = 14.0;
-        public static final double L4_Place = 40.0;
-        public static final double L3_Score = 35.0;
-        public static final double L3_Place = 50.0;
-        public static final double L2_Score = 13.0;
-        public static final double L2_Place = 45.0;
-        public static final double L1_Place = -25.0;
-        public static final double Handoff = -90.0;
-        public static final double Default = -90.0;
-        public static final double Idle = 0.0;
-         }
+                public static final double L4_Score = 0.0;
+                public static final double L4_Place = 40.0;
+                public static final double L3_Score = 5.0;
+                public static final double L3_Place = 45.0;
+                public static final double L2_Score = 5.0;
+                public static final double L2_Place = 45.0;
+                public static final double L1_Place = -25.0;
+                public static final double HANDOFF = -90.0;
+                public static final double DEFAULT = -90.0;
+                public static final double HORIZONTAL = 5.0;
+                public static final double VERTICAL = 90.0;
+                public static final double NET = 135.0;
+                public static final double IDLE = 0.0;
+        }
 
-
-        public static final class Elevator{
-        public static final double AutoL1 = inchesToMeters(18.0);
-        public static final double AutoL2 = inchesToMeters(7.0);
-        public static final double AutoL3 = inchesToMeters(25.0);
-        public static final double AutoL4 = inchesToMeters(55.0);
-        public static final double AutoScoreL2 = inchesToMeters(4.0);
-        public static final double AutoScoreL3 = inchesToMeters(15.0);
-        public static final double AutoScoreL4 = inchesToMeters(48.0);
-        public static final double HandoffHigh = inchesToMeters(11.0);
-        public static final double HandoffLow = inchesToMeters(3.0);
-        
-              
-            }
-
-
-
-
-
-        
+        public static final class Elevator {
+                public static final double AUTO_L1 = inchesToMeters(18.0);
+                public static final double AUTO_L2 = inchesToMeters(7.0);
+                public static final double AUTO_L3 = inchesToMeters(25.0);
+                public static final double AUTO_L4 = inchesToMeters(50.0);
+                public static final double AUTO_SCORE_L2 = inchesToMeters(6.0);
+                public static final double AUTO_SCORE_L3 = inchesToMeters(23.0);
+                public static final double AUTO_SCORE_L4 = inchesToMeters(48.0);
+                public static final double HANDOFF_HIGH = inchesToMeters(11.0);
+                public static final double HANDOFF_LOW = inchesToMeters(3.0);
+                public static final double ALGAE_HIGH = inchesToMeters(32);
+                public static final double ALGAE_LOW = inchesToMeters(15.0);
+                public static final double PROCESSOR = inchesToMeters(0.0);
+                public static final double NET = inchesToMeters(55.0);
+        }
 
         public static final class Autonomous {
                 public static final int STAGNATE_BOOST = 35;
@@ -1980,8 +1978,8 @@ public final class Constants {
                         public static final double INTAKE_ACCELERATION = 500.0;
                         public static final double INTAKE_CRUISE_VELOCITY = 400.0;
                         public static final double INTAKE_MOTION_PROFILE_SCALAR = 1.0;
-                        public static final double INTAKE_DOWN = 0.36163; // rotations
-                        public static final double INTAKE_UP = -0.014; // rotations
+                        public static final double INTAKE_DOWN = -18.2; // rotations
+                        public static final double INTAKE_UP = 0; // rotations
                         public static final double INTAKE_ROLLER_MAX_SPEED = 1.0; // percent
                         public static final double INTAKE_ROLLER_HOLDING_SPEED = 0.1; // percent
                         public static final double INTAKE_ROLLER_TORQUE = 80.0; // amps
@@ -2443,7 +2441,7 @@ public final class Constants {
                 }
 
                 // intake
-                public static final double INTAKE_PIVOT_GEAR_RATIO = 50.0;
+                public static final double INTAKE_PIVOT_GEAR_RATIO = 45.0;
         }
 
         // Can info such as IDs
@@ -2464,33 +2462,16 @@ public final class Constants {
                 public static final int BACK_LEFT_MODULE_CANCODER_ID = 3;
                 public static final int BACK_RIGHT_MODULE_CANCODER_ID = 4;
 
-                // Lights
-                public static final int CANDLE_ID_0 = 0;
-                public static final int CANDLE_ID_1 = 1;
-                public static final int CANDLE_ID_2 = 2;
-
                 // Elevator
                 public static final int LEFT_ELEVATOR_MOTOR_ID = 9;
                 public static final int RIGHT_ELEVATOR_MOTOR_ID = 10;
 
-                // Pivot
-                public static final int PIVOT_MOTOR_ID = 11;
-                public static final int PIVOT_CANCODER_ID = 5;
-
-                // Twist
-                public static final int TWIST_MOTOR_ID = 12;
-                public static final int TWIST_CANCODER_ID = 6;
-
                 // Manipulator
-
                 public static final int MANIPULATOR_MOTOR_ID = 13;
 
-                // Climber
-                public static final int CLIMBER_PIVOT_MOTOR_ID = 15;
-
                 // Intake
-                public static final int INTAKE_ROLLER_MOTOR_ID = 10;
-                public static final int INTAKE_PIVOT_MOTOR_ID = 11;
+                public static final int INTAKE_ROLLER_MOTOR_ID = 17;
+                public static final int INTAKE_PIVOT_MOTOR_ID = 16;
                 public static final int INTAKE_BEAM_BREAK_PORT = 0;
 
                 // Straightenator

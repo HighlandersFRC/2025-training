@@ -75,6 +75,8 @@ public class Robot extends LoggedRobot {
         }
     };
 
+    boolean bPressed = false;
+    boolean bManualPressed = false;
     HashMap<String, BooleanSupplier> conditionMap = new HashMap<String, BooleanSupplier>() {
         {
             put("Note in Robot", () -> true);
@@ -110,6 +112,8 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         Constants.periodic();
         CommandScheduler.getInstance().run();
+
+        superstructure.algaeMode = m_robotContainer.algaeMode;
     }
 
     @Override
@@ -162,6 +166,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
+        elevator.rezeroElevator();
         double autoInitTime = Timer.getFPGATimestamp();
         m_robotContainer.superstructure.setWantedState(SuperState.IDLE);
         if (OI.isBlueSide()) {
@@ -183,6 +188,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        elevator.rezeroElevator();
         arm.zeroOnEnable();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
@@ -194,11 +200,23 @@ public class Robot extends LoggedRobot {
     @Override
     public void teleopPeriodic() {
 
-        if (OI.driverRT.getAsBoolean()) {
-            straightenator.setWantedState(Straightenator.StraightenatorState.DEFAULT);
+        if (OI.driverY.getAsBoolean()) {
+            if (bManualPressed) {
+                m_robotContainer.manualMode = !m_robotContainer.manualMode;
+                bManualPressed = false;
+            }
         } else {
-            straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+            bManualPressed = true;
         }
+        if (OI.driverB.getAsBoolean()) {
+            if (bPressed) {
+                m_robotContainer.algaeMode = !m_robotContainer.algaeMode;
+                bPressed = false;
+            }
+        } else {
+            bPressed = true;
+        }
+        Logger.recordOutput("Current Mode", superstructure.getAlgaeMode());
 
         // if (OI.driverX.getAsBoolean() && !handoffSequenceActive) {
         // arm.setWantedState(ArmState.L4_SCORE);
@@ -229,6 +247,8 @@ public class Robot extends LoggedRobot {
         // superstructure.setWantedState(SuperState.HANDOFF);
         // }
         // }
+        Logger.recordOutput("Algae Mode", m_robotContainer.algaeMode);
+        Logger.recordOutput("Manual Mode", m_robotContainer.manualMode);
     }
 
     @Override

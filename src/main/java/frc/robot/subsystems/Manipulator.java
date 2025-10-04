@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 
 import javax.lang.model.util.ElementScanner14;
 
+import org.ejml.dense.row.decompose.hessenberg.HessenbergSimilarDecomposition_ZDRM;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -48,7 +50,7 @@ public class Manipulator extends SubsystemBase {
     manipulatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     manipulatorConfig.CurrentLimits.StatorCurrentLimit = 80;
     manipulatorConfig.CurrentLimits.SupplyCurrentLimit = 80;
-    manipulatorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    manipulatorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     manipulatorMotor.getConfigurator().apply(manipulatorConfig);
     manipulatorMotor.setNeutralMode(NeutralModeValue.Brake);
   }
@@ -73,12 +75,7 @@ public class Manipulator extends SubsystemBase {
     } else
       switch (wantedState) {
         case CORAL_INTAKE:
-          if (OI.driverLT.getAsBoolean()) {
-            return ManipulatorState.OUTAKE;
-          } else if (lastCoralValue) {
-            return ManipulatorState.DEFAULT;
-          } else
-            return ManipulatorState.CORAL_INTAKE;
+          return ManipulatorState.CORAL_INTAKE;
         case ALGAE_INTAKE:
           return ManipulatorState.ALGAE_INTAKE;
         case OUTAKE:
@@ -86,10 +83,7 @@ public class Manipulator extends SubsystemBase {
         case OFF:
           return ManipulatorState.OFF;
         case DEFAULT:
-          if (OI.driverLT.getAsBoolean()) {
-            return ManipulatorState.OUTAKE;
-          } else
-            return ManipulatorState.DEFAULT;
+          return ManipulatorState.DEFAULT;
         default:
           if (OI.driverLT.getAsBoolean()) {
             return ManipulatorState.OUTAKE;
@@ -117,8 +111,8 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 10.0
-        && Math.abs(manipulatorMotor.getTorqueCurrent().getValueAsDouble()) > 21.0) {
+    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 6.0
+        && Math.abs(manipulatorMotor.getTorqueCurrent().getValueAsDouble()) > 2.0) {
       if (firstTimeCoral) {
         firstTimeCoral = false;
         coralTime = Timer.getFPGATimestamp();
@@ -152,10 +146,10 @@ public class Manipulator extends SubsystemBase {
     } else {
       switch (systemState) {
         case CORAL_INTAKE:
-          setIntakeTorque(20, 0.3);
+          setIntakeTorque(15, 0.3);
           break;
         case ALGAE_INTAKE:
-          setIntakeTorque(67, 0.3);
+          setIntakeTorque(67, 0.6);
           break;
         case OUTAKE:
           setIntakeTorque(-30, 0.5);
@@ -169,10 +163,12 @@ public class Manipulator extends SubsystemBase {
       }
     }
 
-    org.littletonrobotics.junction.Logger.recordOutput("Manipulator State", systemState);
+    org.littletonrobotics.junction.Logger.recordOutput("Manipulator State",
+        systemState);
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Acceleration",
         manipulatorMotor.getAcceleration().getValueAsDouble());
-    org.littletonrobotics.junction.Logger.recordOutput("Manipulator Velocity", motorVelocity);
+    org.littletonrobotics.junction.Logger.recordOutput("Manipulator Velocity",
+        motorVelocity);
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Torque",
         manipulatorMotor.getTorqueCurrent().getValueAsDouble());
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Has Coral",

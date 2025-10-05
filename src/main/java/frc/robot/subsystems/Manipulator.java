@@ -111,7 +111,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 6.0
+    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 8.0
         && Math.abs(manipulatorMotor.getTorqueCurrent().getValueAsDouble()) > 2.0) {
       if (firstTimeCoral) {
         firstTimeCoral = false;
@@ -133,6 +133,24 @@ public class Manipulator extends SubsystemBase {
       lastCoralValue = false;
       return false;
     }
+  }
+
+  public boolean hasCoralSticky() {
+    if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.1) {
+      hasCoralSticky = true;
+    } else if (!hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.3) {
+      hasCoralSticky = false;
+    }
+    return hasCoralSticky;
+  }
+
+  public boolean hasCoralSemiSticky() {
+    if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.05) {
+      hasCoralSticky = true;
+    } else if (!hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.05) {
+      hasCoralSticky = false;
+    }
+    return hasCoralSticky;
   }
 
   @Override
@@ -172,7 +190,6 @@ public class Manipulator extends SubsystemBase {
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Torque",
         manipulatorMotor.getTorqueCurrent().getValueAsDouble());
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Has Coral",
-        hasCoral());
-    hasCoral();
+        hasCoralSticky());
   }
 }

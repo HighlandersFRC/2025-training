@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.fasterxml.jackson.databind.ser.BeanSerializer;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.OI;
@@ -151,7 +152,7 @@ public class Superstructure extends SubsystemBase {
         handleAutoL4Place();
         break;
       case HANDOFF:
-        if (straightenator.isFar()) {
+        if (straightenator.isFar() && !manipulator.hasCoralSemiSticky()) {
           handleHandOffLowState();
           if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 1.0) {
             handleHandoffState();
@@ -240,7 +241,20 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.HANDOFF;
         break;
       case AUTO_L4_PLACE:
-        currentSuperState = SuperState.AUTO_L4_PLACE;
+        Pose2d closest = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
+        java.util.logging.Logger.getGlobal().finer(
+            "Drive: " + drive.hitSetPoint(closest));
+        java.util.logging.Logger.getGlobal().finer(
+            "Elevator: " + (elevator.getElevatorPosition() > Constants.SetPoints.ElevatorPosition.kAUTOL4.meters));
+        if ((drive.hitSetPoint(closest))
+            && elevator.getElevatorPosition() > Constants
+                .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5)
+            || OI.getDriverLB()) {
+          currentSuperState = SuperState.AUTO_L4_SCORE;
+          wantedSuperState = SuperState.AUTO_L4_SCORE;
+        } else {
+          currentSuperState = SuperState.AUTO_L4_PLACE;
+        }
         break;
       case AUTO_L1_SCORE:
         currentSuperState = SuperState.AUTO_L1_SCORE;
@@ -261,7 +275,7 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.IDLE;
         break;
       case INTAKING:
-        if (straightenator.isFar()) {
+        if (straightenator.isFar() && !manipulator.hasCoralSemiSticky()) {
           currentSuperState = SuperState.HANDOFF;
         } else
           currentSuperState = SuperState.INTAKING;
@@ -312,6 +326,7 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
     arm.setWantedState(ArmState.VERTICAL);
     manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
+    intake.setWantedState(IntakeState.DEFAULT);
   }
 
   public void handleHandoffState() {
@@ -319,7 +334,7 @@ public class Superstructure extends SubsystemBase {
     arm.setWantedState(ArmState.HANDOFF);
     manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
-    intake.setWantedState(IntakeState.IDLE);
+    intake.setWantedState(IntakeState.DOWN);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
   }
 
@@ -328,8 +343,8 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.HANDOFF_LOW);
     arm.setWantedState(ArmState.HANDOFF);
     manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
-    intake.setWantedState(IntakeState.IDLE);
-
+    intake.setWantedState(IntakeState.DOWN);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
   }
 
   // public void handleDefaultState() {
@@ -341,7 +356,9 @@ public class Superstructure extends SubsystemBase {
   // }
 
   public void handleAutoL1Score() {
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     elevator.setWantedState(ElevatorState.AUTO_L1);
+    intake.setWantedState(IntakeState.DOWN);
     if (elevator.getElevatorPosition() < Constants.inchesToMeters(9.0)) {
       arm.setWantedState(ArmState.HANDOFF);
     } else {
@@ -350,44 +367,56 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleAutoL2Place() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
     arm.setWantedState(ArmState.L2_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleAutoL2Score() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
     manipulator.setWantedState(ManipulatorState.OUTAKE);
     arm.setWantedState(ArmState.L2_SCORE);
   }
 
   public void handleAutoL3Place() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_L3);
     arm.setWantedState(ArmState.L3_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleAutoL3Score() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
     manipulator.setWantedState(ManipulatorState.OUTAKE);
     arm.setWantedState(ArmState.L3_SCORE);
   }
 
   public void handleAutoL4Place() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_L4);
     arm.setWantedState(ArmState.L4_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
 
+    if (elevator.getElevatorPosition() > Constants
+        .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5) && arm.getArmDegrees() > 20) {
+
+      drive.setWantedState(DriveState.L4_REEF);
+    }
+
   }
 
   public void handleAutoL4Score() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
     manipulator.setWantedState(ManipulatorState.OUTAKE);
-    arm.setWantedState(ArmState.HANDOFF);
-
-    if (arm.isReadyForHandoff()) {
-      setWantedState(SuperState.HANDOFF);
-    }
+    arm.setWantedState(ArmState.HORIZONTAL);
+    if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
+      drive.setWantedState(DriveState.REEF_MORE);
+    } else
+      drive.setWantedState(DriveState.DEFAULT);
   }
 
   public void handleL1Score() {
@@ -400,46 +429,55 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleL2Place() {
-    elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+    intake.setWantedState(IntakeState.DOWN);
+    elevator.setWantedState(ElevatorState.AUTO_L2);
     arm.setWantedState(ArmState.L2_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleL2Score() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
     arm.setWantedState(ArmState.L2_SCORE);
   }
 
   public void handleL3Place() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_L3);
     arm.setWantedState(ArmState.L3_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
   public void handleL3Score() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
     arm.setWantedState(ArmState.L3_SCORE);
   }
 
   public void handleL4Place() {
-    elevator.setWantedState(ElevatorState.AUTO_L4);
-    arm.setWantedState(ArmState.L4_PLACE);
-    manipulator.setWantedState(ManipulatorState.DEFAULT);
+    // intake.setWantedState(IntakeState.DOWN);
+    // elevator.setWantedState(ElevatorState.AUTO_L4);
+    // arm.setWantedState(ArmState.L4_PLACE);
+    // manipulator.setWantedState(ManipulatorState.DEFAULT);
 
   }
 
   public void handleL4Score() {
-    elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
-    arm.setWantedState(ArmState.HORIZONTAL);
+    // intake.setWantedState(IntakeState.DOWN);
+    // elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
+    // arm.setWantedState(ArmState.HORIZONTAL);
+
   }
 
   public void handleAlgaeHigh() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.ALGAE_HIGH);
     arm.setWantedState(ArmState.HORIZONTAL);
     manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
   }
 
   public void handleAlgaeLow() {
+    intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.ALGAE_LOW);
     arm.setWantedState(ArmState.HORIZONTAL);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
@@ -459,8 +497,12 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleIntakingState() {
-    straightenator.setWantedState(StraightenatorState.DEFAULT);
-    intake.setWantedState(Intake.IntakeState.INTAKING);
+    straightenator.setWantedState(StraightenatorState.INTAKE);
+    if (straightenator.isClose() || manipulator.hasCoral()) {
+      intake.setWantedState(IntakeState.DOWN);
+    } else {
+      intake.setWantedState(Intake.IntakeState.INTAKING);
+    }
     // if (straightenator.isFar() && !manipulator.hasCoral()) {
     // arm.setWantedState(ArmState.HANDOFF);
     // if (arm.isReadyForHandoff()) {
@@ -471,7 +513,8 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleOuttakeState() {
-    intake.setWantedState(Intake.IntakeState.DEFAULT);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    intake.setWantedState(Intake.IntakeState.OUTTAKING);
   }
 
   public void handleIdleState() {

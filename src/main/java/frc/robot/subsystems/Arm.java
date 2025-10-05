@@ -41,7 +41,7 @@ public class Arm extends SubsystemBase {
 
   public Arm() {
     armMotor = new TalonFX(Constants.CANInfo.ARM_PIVOT_MOTOR_ID, new CANBus(Constants.CANInfo.CANBUS_NAME));
-    armMotor.setPosition(0);
+    // armMotor.setPosition(0);
   }
 
   public void zeroOnEnable() {
@@ -67,6 +67,8 @@ public class Arm extends SubsystemBase {
 
     armPID.setMaxOutput(10.0);
     armPID.setMinOutput(-10.0);
+
+    zeroOnEnable();
   }
 
   public double getArmRotations() {

@@ -38,28 +38,43 @@ public class Intake extends SubsystemBase {
   }
 
   public Intake() {
-    init();
   }
 
   public void init() {
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 60;
-    config.CurrentLimits.SupplyCurrentLimit = 60;
-    config.Slot0.kP = 4.068;
-    config.Slot0.kI = 0.0;
-    config.Slot0.kD = 0.7;
-    config.Slot1.kP = 4;
-    config.Slot1.kI = 0.0;
-    config.Slot1.kD = 0.3;
-    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    config.Slot0.kG = 0;
-    config.MotionMagic.MotionMagicAcceleration = Constants.SetPoints.IntakeSetpoints.INTAKE_ACCELERATION;
-    config.MotionMagic.MotionMagicCruiseVelocity = Constants.SetPoints.IntakeSetpoints.INTAKE_CRUISE_VELOCITY;
-    roller.getConfigurator().apply(config);
+    TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
+    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    rollerConfig.CurrentLimits.StatorCurrentLimit = 80;
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = 80;
+    rollerConfig.Slot0.kP = 4.068;
+    rollerConfig.Slot0.kI = 0.0;
+    rollerConfig.Slot0.kD = 0.7;
+    rollerConfig.Slot1.kP = 4;
+    rollerConfig.Slot1.kI = 0.0;
+    rollerConfig.Slot1.kD = 0.3;
+    rollerConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    rollerConfig.Slot0.kG = 0;
+    rollerConfig.MotionMagic.MotionMagicAcceleration = Constants.SetPoints.IntakeSetpoints.INTAKE_ACCELERATION;
+    rollerConfig.MotionMagic.MotionMagicCruiseVelocity = Constants.SetPoints.IntakeSetpoints.INTAKE_CRUISE_VELOCITY;
+
+    TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+    pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    pivotConfig.CurrentLimits.StatorCurrentLimit = 60;
+    pivotConfig.CurrentLimits.SupplyCurrentLimit = 60;
+    pivotConfig.Slot0.kP = 4.068;
+    pivotConfig.Slot0.kI = 0.0;
+    pivotConfig.Slot0.kD = 0.7;
+    pivotConfig.Slot1.kP = 4;
+    pivotConfig.Slot1.kI = 0.0;
+    pivotConfig.Slot1.kD = 0.3;
+    pivotConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    pivotConfig.Slot0.kG = 0;
+    pivotConfig.MotionMagic.MotionMagicAcceleration = Constants.SetPoints.IntakeSetpoints.INTAKE_ACCELERATION;
+    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = Constants.SetPoints.IntakeSetpoints.INTAKE_CRUISE_VELOCITY;
+    roller.getConfigurator().apply(rollerConfig);
     roller.setNeutralMode(NeutralModeValue.Brake);
-    pivot.getConfigurator().apply(config);
+    pivot.getConfigurator().apply(pivotConfig);
     pivot.setNeutralMode(NeutralModeValue.Brake);
     pivot.setPosition(0);
 
@@ -125,11 +140,11 @@ public class Intake extends SubsystemBase {
     switch (systemState) {
       case INTAKING:
         pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
-        setRollerCurrent(60, 0.75);
+        setRollerCurrent(80, 1);
         break;
       case OUTTAKING:
-        pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
-        setRollerCurrent(-20, 0.5);
+        // pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
+        setRollerCurrent(-80, 0.5);
         break;
       case IDLE:
         setRollerPercent(0);
@@ -140,9 +155,11 @@ public class Intake extends SubsystemBase {
         break;
       case DOWN:
         pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);
+        setRollerPercent(0);
         break;
       default:
         break;
     }
+    Logger.recordOutput("Intake State", systemState);
   }
 }

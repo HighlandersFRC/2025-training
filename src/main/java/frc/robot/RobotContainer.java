@@ -59,12 +59,16 @@ public class RobotContainer {
 
   HashMap<String, Supplier<Command>> commandMap = new HashMap<String, Supplier<Command>>() {
     {
-      put("Command1", () -> new Test("command1"));
-      put("Command2", () -> new Test("command2"));
-      put("Command3", () -> new Test("command3"));
-      put("Command4", () -> new Test("command4"));
-      put("Print", () -> new Test("Print"));
-      put("DriveOverride", () -> new DriveTrainOverride());
+      put("L4_Place", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L4_PLACE));
+      put("L3_Place", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L3_PLACE));
+      put("L2_Place", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L2_PLACE));
+      put("L1_Score", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L1_SCORE));
+      put("Net", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.NET));
+      put("L4_Score", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L4_SCORE));
+      put("L3_Score", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L3_SCORE));
+      put("L2_Score", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.L2_SCORE));
+      put("Reset", () -> new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT));
+      put("Zero", () -> new ZeroPigeon(peripherals));
     }
   };
 

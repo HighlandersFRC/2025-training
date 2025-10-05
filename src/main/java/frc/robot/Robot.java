@@ -24,6 +24,7 @@ import frc.robot.commands.Test;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Elevator.ElevatorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
@@ -44,13 +45,7 @@ import org.json.JSONTokener;
 
 public class Robot extends LoggedRobot {
     private final RobotContainer m_robotContainer;
-    private final Drive drive;
-    private final Peripherals peripherals;
-    private final Superstructure superstructure;
-    private final Elevator elevator;
-    private final Arm arm;
-    private final Straightenator straightenator;
-    private final Manipulator manipulator;
+
     private Command m_autonomousCommand;
     String m_fieldSide = "blue";
 
@@ -84,9 +79,6 @@ public class Robot extends LoggedRobot {
     };
 
     public Robot() {
-
-        Logger.recordMetadata("ChassisBot", "Chassis");
-
         if (isReal()) {
             Logger.addDataReceiver(new NT4Publisher());
         } else {
@@ -98,14 +90,6 @@ public class Robot extends LoggedRobot {
 
         Logger.start();
         m_robotContainer = new RobotContainer();
-        drive = m_robotContainer.drive;
-        peripherals = m_robotContainer.peripherals;
-        superstructure = m_robotContainer.superstructure;
-        elevator = m_robotContainer.elevator;
-        straightenator = m_robotContainer.straightenator;
-        arm = m_robotContainer.arm;
-        manipulator = m_robotContainer.manipulator;
-
     }
 
     @Override
@@ -113,15 +97,18 @@ public class Robot extends LoggedRobot {
         Constants.periodic();
         CommandScheduler.getInstance().run();
 
-        superstructure.algaeMode = m_robotContainer.algaeMode;
+        m_robotContainer.superstructure.algaeMode = m_robotContainer.algaeMode;
+        m_robotContainer.drive.algaeMode = m_robotContainer.algaeMode;
     }
 
     @Override
     public void robotInit() {
         OI.init();
         Constants.init();
-        elevator.init();
-        drive.init(m_fieldSide);
+        m_robotContainer.elevator.init();
+        m_robotContainer.drive.init(m_fieldSide);
+        m_robotContainer.arm.init();
+        m_robotContainer.intake.init();
         autoFiles = new File[Constants.paths.size()];
         autos = new Command[Constants.paths.size()];
         autoJSONs = new JSONObject[Constants.paths.size()];
@@ -133,27 +120,12 @@ public class Robot extends LoggedRobot {
                 autoJSONs[i] = new JSONObject(new JSONTokener(scanner));
                 autoPoints[i] = (JSONArray) autoJSONs[i].getJSONArray("paths").getJSONObject(0)
                         .getJSONArray("sampled_points");
-                autos[i] = new PolarAutoFollower(autoJSONs[i], drive, peripherals, commandMap, conditionMap);
+                autos[i] = new PolarAutoFollower(autoJSONs[i],
+                        m_robotContainer.drive, m_robotContainer.peripherals, commandMap, conditionMap);
             } catch (Exception e) {
                 System.out.println("ERROR LOADING PATH " + Constants.paths.get(i) + ":" + e);
             }
         }
-        SmartDashboard.putNumber("L2/3 Front X", Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_FRONT));
-        SmartDashboard.putNumber("L2/3 Front Y", Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_FRONT));
-        SmartDashboard.putNumber("L2/3 Back X", Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_BACK));
-        SmartDashboard.putNumber("L2/3 Back Y", Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_BACK));
-        SmartDashboard.putNumber("L4 Front X", Constants.metersToInches(Constants.Physical.L4_INTAKE_X_OFFSET_FRONT));
-        SmartDashboard.putNumber("L4 Front Y", Constants.metersToInches(Constants.Physical.L4_INTAKE_Y_OFFSET_FRONT));
-        SmartDashboard.putNumber("L4 Back X", Constants.metersToInches(Constants.Physical.L4_INTAKE_X_OFFSET_BACK));
-        SmartDashboard.putNumber("L4 Back Y", Constants.metersToInches(Constants.Physical.L4_INTAKE_Y_OFFSET_BACK));
-        SmartDashboard.putNumber("Algae Front X",
-                Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_FRONT_ALGAE));
-        SmartDashboard.putNumber("Algae Front Y",
-                Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_FRONT_ALGAE));
-        SmartDashboard.putNumber("Algae Back X",
-                Constants.metersToInches(Constants.Physical.INTAKE_X_OFFSET_BACK_ALGAE));
-        SmartDashboard.putNumber("Algae Back Y",
-                Constants.metersToInches(Constants.Physical.INTAKE_Y_OFFSET_BACK_ALGAE));
     }
 
     @Override
@@ -166,7 +138,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        elevator.rezeroElevator();
+        m_robotContainer.elevator.rezeroElevator();
         double autoInitTime = Timer.getFPGATimestamp();
         m_robotContainer.superstructure.setWantedState(SuperState.IDLE);
         if (OI.isBlueSide()) {
@@ -188,12 +160,11 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
-        elevator.rezeroElevator();
-        arm.zeroOnEnable();
+        m_robotContainer.elevator.rezeroElevator();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        superstructure.setWantedState(SuperState.HANDOFF);
+        m_robotContainer.superstructure.setWantedState(SuperState.HANDOFF);
 
     }
 
@@ -216,7 +187,7 @@ public class Robot extends LoggedRobot {
         } else {
             bPressed = true;
         }
-        Logger.recordOutput("Current Mode", superstructure.getAlgaeMode());
+        // Logger.recordOutput("Current Mode", superstructure.getAlgaeMode());
 
         // if (OI.driverX.getAsBoolean() && !handoffSequenceActive) {
         // arm.setWantedState(ArmState.L4_SCORE);

@@ -22,13 +22,8 @@ import frc.robot.Constants;
 import frc.robot.tools.math.Vector;
 
 public class Peripherals {
-    private PhotonCamera frontReefCam = new PhotonCamera("Left_Reef");
-    private PhotonCamera frontSwerveCam = new PhotonCamera("Front_Swerve");
-    private PhotonCamera backReefCam = new PhotonCamera("Back_Reef");
     private PhotonCamera backLeftReefCam = new PhotonCamera("Back_Left_Reef");
     private PhotonCamera backRightReefCam = new PhotonCamera("Back_Right_Reef");
-    private PhotonCamera frontBargeCam = new PhotonCamera("Front_Barge");
-    private PhotonCamera backBargeCam = new PhotonCamera("Back_Barge");
     private PhotonCamera gamePieceCamera = new PhotonCamera("Front_Game_Piece_Cam");
 
     AprilTagFieldLayout aprilTagFieldLayout;
@@ -79,32 +74,6 @@ public class Peripherals {
 
         setPigeonPitchOffset(getPigeonPitch());
 
-    }
-
-    public double getFrontReefCamYaw() {
-        double yaw = 0.0;
-        var result = frontReefCam.getLatestResult();
-        // Logger.recordOutput("has target", result.hasTargets());
-        if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            yaw = target.getYaw();
-        }
-        return yaw;
-    }
-
-    public double getFrontReefCamPitch() {
-        double pitch = 0.0;
-        var result = frontReefCam.getLatestResult();
-        if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            pitch = target.getPitch();
-        }
-
-        return pitch;
-    }
-
-    public void setBackCamPipline(int index) {
-        backReefCam.setPipelineIndex(index);
     }
 
     public void setGamePieceCamPipline(int index) {
@@ -264,28 +233,6 @@ public class Peripherals {
     // }
     // }
 
-    public PhotonPipelineResult getFrontReefCamResult() {
-        var result = frontReefCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            frontReefCamTrack = true;
-            return result.get(0);
-        } else {
-            frontReefCamTrack = false;
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getBackReefCamResult() {
-        var result = backReefCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            backReefCamTrack = true;
-            return result.get(0);
-        } else {
-            backReefCamTrack = false;
-            return new PhotonPipelineResult();
-        }
-    }
-
     public PhotonPipelineResult getBackLeftReefCamResult() {
         var result = backLeftReefCam.getAllUnreadResults();
         if (!result.isEmpty()) {
@@ -300,37 +247,6 @@ public class Peripherals {
         if (!result.isEmpty()) {
             return result.get(0);
         } else {
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getFrontSwerveCamResult() {
-        var result = frontSwerveCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            return result.get(0);
-        } else {
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getFrontBargeCamResult() {
-        var result = frontBargeCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            frontBargeCamTrack = true;
-            return result.get(0);
-        } else {
-            frontBargeCamTrack = false;
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getBackBargeCamResult() {
-        var result = backBargeCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            backBargeCamTrack = true;
-            return result.get(0);
-        } else {
-            backBargeCamTrack = false;
             return new PhotonPipelineResult();
         }
     }
@@ -369,10 +285,6 @@ public class Peripherals {
     // // return new Transform3d();
     // // }
     // }
-
-    public double getFrontReefCamLatency() {
-        return frontReefCam.getLatestResult().getTimestampSeconds();
-    }
 
     /**
      * Sets the IMU angle to 0

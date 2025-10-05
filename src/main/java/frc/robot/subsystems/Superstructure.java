@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.Robot;
+import frc.robot.commands.DriveTrainOverride;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Drive.DriveState;
 import frc.robot.subsystems.Elevator.ElevatorState;
@@ -54,6 +55,8 @@ public class Superstructure extends SubsystemBase {
     MANIPULATOR_OUTTAKE,
     OUTTAKE,
     INTAKING,
+    INTAKE_IDLE,
+    OUTTAKE_ONESIDE,
     IDLE
   }
 
@@ -106,6 +109,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void setWantedState(SuperState wantedState) {
+    System.out.println("Wanted State: " + wantedState);
     this.wantedSuperState = wantedState;
 
   }
@@ -134,6 +138,7 @@ public class Superstructure extends SubsystemBase {
         handleAutoL1Score();
         break;
       case AUTO_L2_PLACE:
+        System.out.println("Auto L2 Place");
         handleAutoL2Place();
         break;
       case AUTO_L2_SCORE:
@@ -208,6 +213,12 @@ public class Superstructure extends SubsystemBase {
       case ALGAE_HOME:
         handleAlgaeHome();
         break;
+      case INTAKE_IDLE:
+        intake.setWantedState(IntakeState.IDLE);
+        break;
+      case OUTTAKE_ONESIDE:
+        straightenator.setWantedState(Straightenator.StraightenatorState.OUTTAKE_ONESIDE);
+        break;
     }
   }
 
@@ -223,13 +234,41 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.OUTTAKE;
         break;
       case AUTO_L2_PLACE:
-        currentSuperState = SuperState.AUTO_L2_PLACE;
+        Pose2d closestl2 = drive.getReefL3ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
+        java.util.logging.Logger.getGlobal().finer(
+            "Drive: " + drive.hitSetPoint(closestl2));
+        java.util.logging.Logger.getGlobal().finer(
+            "Elevator: "
+                + (elevator.getElevatorPosition() > Constants.inchesToMeters(Constants.Elevator.AUTO_SCORE_L2) - 5));
+        if ((drive.hitSetPoint(closestl2))
+            && elevator.getElevatorPosition() > Constants
+                .inchesToMeters(Constants.Elevator.AUTO_SCORE_L2 - 5)
+            || OI.getDriverLB()) {
+          currentSuperState = SuperState.AUTO_L2_SCORE;
+          wantedSuperState = SuperState.AUTO_L2_SCORE;
+        } else {
+          currentSuperState = SuperState.AUTO_L2_PLACE;
+        }
         break;
       case AUTO_L2_SCORE:
         currentSuperState = SuperState.AUTO_L2_SCORE;
         break;
       case AUTO_L3_PLACE:
-        currentSuperState = SuperState.AUTO_L3_PLACE;
+        Pose2d closestl3 = drive.getReefL3ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
+        java.util.logging.Logger.getGlobal().finer(
+            "Drive: " + drive.hitSetPoint(closestl3));
+        java.util.logging.Logger.getGlobal().finer(
+            "Elevator: "
+                + (elevator.getElevatorPosition() > Constants.inchesToMeters(Constants.Elevator.AUTO_SCORE_L3) - 3));
+        if ((drive.hitSetPoint(closestl3))
+            && elevator.getElevatorPosition() > Constants
+                .inchesToMeters(Constants.Elevator.AUTO_SCORE_L3 - 3)
+            || OI.getDriverLB()) {
+          currentSuperState = SuperState.AUTO_L3_SCORE;
+          wantedSuperState = SuperState.AUTO_L3_SCORE;
+        } else {
+          currentSuperState = SuperState.AUTO_L3_PLACE;
+        }
         break;
       case AUTO_L3_SCORE:
         currentSuperState = SuperState.AUTO_L3_SCORE;
@@ -241,12 +280,12 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.HANDOFF;
         break;
       case AUTO_L4_PLACE:
-        Pose2d closest = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
+        Pose2d closestl4 = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
         java.util.logging.Logger.getGlobal().finer(
-            "Drive: " + drive.hitSetPoint(closest));
+            "Drive: " + drive.hitSetPoint(closestl4));
         java.util.logging.Logger.getGlobal().finer(
             "Elevator: " + (elevator.getElevatorPosition() > Constants.SetPoints.ElevatorPosition.kAUTOL4.meters));
-        if ((drive.hitSetPoint(closest))
+        if ((drive.hitSetPoint(closestl4))
             && elevator.getElevatorPosition() > Constants
                 .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5)
             || OI.getDriverLB()) {
@@ -307,6 +346,12 @@ public class Superstructure extends SubsystemBase {
       case ALGAE_HOME:
         currentSuperState = SuperState.ALGAE_HOME;
         break;
+      case INTAKE_IDLE:
+        currentSuperState = SuperState.INTAKE_IDLE;
+        break;
+      case OUTTAKE_ONESIDE:
+        currentSuperState = SuperState.OUTTAKE_ONESIDE;
+        break;
       default:
         currentSuperState = SuperState.DEFAULT;
         break;
@@ -331,9 +376,9 @@ public class Superstructure extends SubsystemBase {
 
   public void handleHandoffState() {
     drive.setWantedState(DriveState.DEFAULT);
-    arm.setWantedState(ArmState.HANDOFF);
-    manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+    arm.setWantedState(ArmState.HANDOFF);
+    manipulator.setWantedState(ManipulatorState.DEFAULT);
     intake.setWantedState(IntakeState.DOWN);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
   }
@@ -359,6 +404,7 @@ public class Superstructure extends SubsystemBase {
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     elevator.setWantedState(ElevatorState.AUTO_L1);
     intake.setWantedState(IntakeState.DOWN);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (elevator.getElevatorPosition() < Constants.inchesToMeters(9.0)) {
       arm.setWantedState(ArmState.HANDOFF);
     } else {
@@ -367,23 +413,39 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleAutoL2Place() {
-    intake.setWantedState(IntakeState.DOWN);
-    elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
     arm.setWantedState(ArmState.L2_PLACE);
+    intake.setWantedState(IntakeState.DOWN);
+    elevator.setWantedState(ElevatorState.AUTO_L2);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    if (elevator.getElevatorPosition() > Constants
+        .inchesToMeters(Constants.Elevator.AUTO_SCORE_L2 - 3) && arm.getArmDegrees() > Constants.Arm.L2_Place - 4) {
+      drive.setWantedState(DriveState.L3_REEF);
+    }
+
   }
 
   public void handleAutoL2Score() {
+    arm.setWantedState(ArmState.L2_SCORE);
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
     manipulator.setWantedState(ManipulatorState.OUTAKE);
-    arm.setWantedState(ArmState.L2_SCORE);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
+      drive.setWantedState(DriveState.REEF_MORE);
+    } else
+      drive.setWantedState(DriveState.DEFAULT);
   }
 
   public void handleAutoL3Place() {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_L3);
     arm.setWantedState(ArmState.L3_PLACE);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    if (elevator.getElevatorPosition() > Constants
+        .metersToInches(Constants.Elevator.AUTO_SCORE_L3 - 3) && arm.getArmDegrees() > Constants.Arm.L3_Place - 4) {
+      drive.setWantedState(DriveState.L3_REEF);
+    }
     manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
 
@@ -392,6 +454,11 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
     manipulator.setWantedState(ManipulatorState.OUTAKE);
     arm.setWantedState(ArmState.L3_SCORE);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
+      drive.setWantedState(DriveState.REEF_MORE);
+    } else
+      drive.setWantedState(DriveState.DEFAULT);
   }
 
   public void handleAutoL4Place() {
@@ -399,7 +466,7 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.AUTO_L4);
     arm.setWantedState(ArmState.L4_PLACE);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
-
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (elevator.getElevatorPosition() > Constants
         .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5) && arm.getArmDegrees() > 20) {
 
@@ -413,6 +480,7 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
     manipulator.setWantedState(ManipulatorState.OUTAKE);
     arm.setWantedState(ArmState.HORIZONTAL);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
       drive.setWantedState(DriveState.REEF_MORE);
     } else
@@ -421,7 +489,9 @@ public class Superstructure extends SubsystemBase {
 
   public void handleL1Score() {
     elevator.setWantedState(ElevatorState.AUTO_L1);
-    if (elevator.getElevatorPosition() < Constants.inchesToMeters(9.0)) {
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    intake.setWantedState(IntakeState.DOWN);
+    if (elevator.getElevatorPosition() < Constants.inchesToMeters(10.0)) {
       arm.setWantedState(ArmState.HANDOFF);
     } else {
       arm.setWantedState(ArmState.L1_PLACE);

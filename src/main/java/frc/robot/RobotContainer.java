@@ -48,10 +48,10 @@ public class RobotContainer {
   public final Superstructure superstructure = new Superstructure(drive, peripherals, elevator, straightenator, arm,
       manipulator, intake);
 
-  File[] autoFiles = new File[Constants.Autonomous.paths.length];
-  Command[] autos = new Command[Constants.Autonomous.paths.length];
-  JSONObject[] autoJSONs = new JSONObject[Constants.Autonomous.paths.length];
-  JSONArray[] autoPoints = new JSONArray[Constants.Autonomous.paths.length];
+  File[] autoFiles;
+  Command[] autos;
+  JSONObject[] autoJSONs;
+  JSONArray[] autoPoints;
   private Command autonomousCommand;
 
   public boolean algaeMode;
@@ -80,23 +80,19 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    for (int i = 0; i < Constants.Autonomous.paths.length; i++) {
+    autoFiles = new File[Constants.paths.size()];
+    autos = new Command[Constants.paths.size()];
+    autoJSONs = new JSONObject[Constants.paths.size()];
+    autoPoints = new JSONArray[Constants.paths.size()];
+    for (int i = 0; i < Constants.paths.size(); i++) {
       try {
-        autoFiles[i] = new File(
-            Filesystem.getDeployDirectory().getPath() + "/"
-                + Constants.Autonomous.paths[i]);
+        autoFiles[i] = new File(Filesystem.getDeployDirectory().getPath() + "/" + Constants.paths.get(i));
         FileReader scanner = new FileReader(autoFiles[i]);
         autoJSONs[i] = new JSONObject(new JSONTokener(scanner));
-        autoPoints[i] = (JSONArray) autoJSONs[i].getJSONArray("paths").getJSONObject(0)
-            .getJSONArray("sampled_points");
-        autos[i] = new PolarAutoFollower(autoJSONs[i], drive, peripherals, commandMap,
-            conditionMap);
-        java.util.logging.Logger.getGlobal()
-            .info("Loaded Path: " + Constants.Autonomous.paths[i]);
+        autoPoints[i] = (JSONArray) autoJSONs[i].getJSONArray("paths").getJSONObject(0).getJSONArray("sampled_points");
+        autos[i] = new PolarAutoFollower(autoJSONs[i], drive, peripherals, commandMap, conditionMap);
       } catch (Exception e) {
-        java.util.logging.Logger.getGlobal()
-            .severe("ERROR LOADING PATH " + Constants.Autonomous.paths[i] + ":"
-                + e);
+        System.out.println("ERROR LOADING PATH " + Constants.paths.get(i) + ":" + e);
       }
     }
   }
@@ -104,6 +100,14 @@ public class RobotContainer {
   Command auto;
 
   private void configureBindings() {
+
+    OI.driverRT
+        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.INTAKING))
+        .onFalse(new SetRobotStateSimple(superstructure, SuperState.INTAKE_IDLE));
+
+    OI.driverLT
+        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.OUTTAKE));
+
     OI.driverPOVRight
         .whileTrue(
             new ConditionalCommand(
@@ -113,24 +117,6 @@ public class RobotContainer {
         .onFalse(
             new ConditionalCommand(
                 new SetRobotStateSimple(superstructure, SuperState.L4_SCORE),
-                new InstantCommand(),
-                () -> manualMode));
-
-    OI.driverRT
-        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.INTAKING));
-
-    OI.driverLT
-        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.OUTTAKE));
-
-    OI.driverPOVLeft
-        .whileTrue(
-            new ConditionalCommand(
-                new SetRobotState(superstructure, SuperState.ALGAE_LOW),
-                new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_PLACE),
-                () -> algaeMode))
-        .onFalse(
-            new ConditionalCommand(
-                new SetRobotStateSimple(superstructure, SuperState.L2_SCORE),
                 new InstantCommand(),
                 () -> manualMode));
 
@@ -146,6 +132,18 @@ public class RobotContainer {
                 new InstantCommand(),
                 () -> manualMode));
 
+    OI.driverPOVLeft
+        .whileTrue(
+            new ConditionalCommand(
+                new SetRobotState(superstructure, SuperState.ALGAE_LOW),
+                new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_PLACE),
+                () -> algaeMode))
+        .onFalse(
+            new ConditionalCommand(
+                new SetRobotStateSimple(superstructure, SuperState.L2_SCORE),
+                new InstantCommand(),
+                () -> manualMode));
+
     OI.driverPOVUp
         .whileTrue(
             new ConditionalCommand(
@@ -158,14 +156,13 @@ public class RobotContainer {
 
     OI.driverLB
         .whileTrue(new SetRobotStateSimple(superstructure, SuperState.DEFAULT));
-
-    OI.driverPOVLeft
-        .whileTrue(new SetRobotStateSimple(superstructure, SuperState.DEFAULT));
+    OI.driverX.whileTrue(new SetRobotStateSimple(superstructure, SuperState.OUTTAKE_ONESIDE));
   }
 
   public Command getAutonomousCommand() {
     int selectedPath = Constants.Autonomous.getSelectedPathIndex();
-    if (selectedPath >= Constants.Autonomous.paths.length) {
+    System.out.println("Selected Path Index: " + selectedPath);
+    if (selectedPath >= Constants.paths.size()) {
       selectedPath = -1;
     }
     if (selectedPath == -1) {
@@ -174,7 +171,7 @@ public class RobotContainer {
     } else {
       this.drive.autoInit(autoPoints[selectedPath]);
       java.util.logging.Logger.getGlobal()
-          .info("Selected Path: " + Constants.Autonomous.paths[selectedPath]);
+          .info("Selected Path: " + Constants.paths.get(selectedPath));
       return this.autos[selectedPath];
     }
   }

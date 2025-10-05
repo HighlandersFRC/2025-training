@@ -243,9 +243,9 @@ public class Drive extends SubsystemBase {
 
     // l4 auto pids
     private double scalar = 0.9;
-    private double kkXP4A = 4.30 * scalar;
+    private double kkXP4A = 3.60 * scalar;
     private double kkXI4A = 0.00 * scalar;
-    private double kkXD4A = 1.70 * scalar;
+    private double kkXD4A = 2.70 * scalar;
 
     private double kkYP4A = kkXP4A;
     private double kkYI4A = kkXI4A;
@@ -256,9 +256,9 @@ public class Drive extends SubsystemBase {
     private double kkThetaD4A = 0.971;
 
     // l23 pid values
-    private double kkXP23 = 4.00;
+    private double kkXP23 = 3.60;
     private double kkXI23 = 0.00;
-    private double kkXD23 = 1.60;
+    private double kkXD23 = 2.70;
 
     private double kkYP23 = kkXP23;
     private double kkYI23 = kkXI23;
@@ -1571,7 +1571,7 @@ public class Drive extends SubsystemBase {
 
         if (OI.driverController.getLeftBumper()) {
             // activate speedy spin
-            // turnLimit = 1; //TODO: find a different keybind for this
+            // turnLimit = 1;
         }
 
         // this is correct, X is forward in field, so originalX should be the y on the
@@ -2228,7 +2228,7 @@ public class Drive extends SubsystemBase {
         Number[] velocityArray = new Number[] {
                 finalX,
                 -finalY,
-                finalTheta,
+                -finalTheta,
                 targetIndex,
         };
         double linearVelMag = Math.hypot(
@@ -2610,6 +2610,14 @@ public class Drive extends SubsystemBase {
                     origionalSetpointPose = getReefL4ClosestSetpoint(getMT2Odometry(), false);
                 }
                 setpoint = getReefL4ClosestSetpoint(getMT2Odometry(), OI.getDriverA());
+                driveToPoint(setpoint);
+                break;
+            case L3_REEF:
+                if (firstTimeReef) {
+                    firstTimeReef = false;
+                    origionalSetpointPose = getReefL3ClosestSetpoint(getMT2Odometry(), false);
+                }
+                setpoint = getReefL3ClosestSetpoint(getMT2Odometry(), OI.getDriverA());
                 driveToPoint(setpoint);
                 break;
             case REEF_MORE:

@@ -26,7 +26,7 @@ public class Straightenator extends SubsystemBase {
   private StraightenatorState wantedState = StraightenatorState.DEFAULT;
   private StraightenatorState systemState = StraightenatorState.DEFAULT;
 
-  private final double voltageThreshold = 35;
+  private final double voltageThreshold = 40;
   TalonFXConfiguration leftConfig = new TalonFXConfiguration();
   TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
@@ -35,6 +35,9 @@ public class Straightenator extends SubsystemBase {
   public Straightenator() {
     leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+    leftConfig.CurrentLimits.StatorCurrentLimit = 60;
+    rightConfig.CurrentLimits.SupplyCurrentLimit = 60;
     left_straightenator.getConfigurator().apply(leftConfig);
     right_straightenator.getConfigurator().apply(rightConfig);
   }
@@ -47,6 +50,7 @@ public class Straightenator extends SubsystemBase {
     INTAKE,
     INTAKE_LEFT,
     INTAKE_RIGHT,
+    OUTTAKE_ONESIDE,
     OUTTAKE,
     IDLE
   }
@@ -106,7 +110,8 @@ public class Straightenator extends SubsystemBase {
         return StraightenatorState.INTAKE_RIGHT;
       case OUTTAKE:
         return StraightenatorState.OUTTAKE;
-
+      case OUTTAKE_ONESIDE:
+        return StraightenatorState.OUTTAKE_ONESIDE;
       default:
         return StraightenatorState.DEFAULT;
     }
@@ -172,6 +177,8 @@ public class Straightenator extends SubsystemBase {
           break;
         case OUTTAKE:
           moveWithTorque(-20, 0.3);
+        case OUTTAKE_ONESIDE:
+          moveWithPercent(-0.4, 0);
         default:
           break;
       }

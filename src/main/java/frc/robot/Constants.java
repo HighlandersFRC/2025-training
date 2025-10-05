@@ -79,16 +79,16 @@ public final class Constants {
         public static final class Arm {
 
                 public static final double L4_Score = 0.0;
-                public static final double L4_Place = 40.0;
+                public static final double L4_Place = 43.0;
                 public static final double L3_Score = 5.0;
                 public static final double L3_Place = 45.0;
                 public static final double L2_Score = 5.0;
                 public static final double L2_Place = 45.0;
                 public static final double L1_Place = -25.0;
-                public static final double HANDOFF = -90.0;
+                public static final double HANDOFF = -91.0;
                 public static final double DEFAULT = -90.0;
                 public static final double HORIZONTAL = 5.0;
-                public static final double VERTICAL = 90.0;
+                public static final double VERTICAL = 95.0;
                 public static final double NET = 135.0;
                 public static final double IDLE = 0.0;
         }
@@ -96,14 +96,14 @@ public final class Constants {
         public static final class Elevator {
                 public static final double AUTO_L1 = inchesToMeters(18.0);
                 public static final double AUTO_L2 = inchesToMeters(7.0);
-                public static final double AUTO_L3 = inchesToMeters(25.0);
+                public static final double AUTO_L3 = inchesToMeters(24.25);
                 public static final double AUTO_L4 = inchesToMeters(50.0);
                 public static final double AUTO_SCORE_L2 = inchesToMeters(6.0);
-                public static final double AUTO_SCORE_L3 = inchesToMeters(23.0);
+                public static final double AUTO_SCORE_L3 = inchesToMeters(22.25);
                 public static final double AUTO_SCORE_L4 = inchesToMeters(48.0);
                 public static final double HANDOFF_HIGH = inchesToMeters(11.0);
                 public static final double HANDOFF_LOW = inchesToMeters(3.0);
-                public static final double ALGAE_HIGH = inchesToMeters(32);
+                public static final double ALGAE_HIGH = inchesToMeters(33);
                 public static final double ALGAE_LOW = inchesToMeters(15.0);
                 public static final double PROCESSOR = inchesToMeters(0.0);
                 public static final double NET = inchesToMeters(55.0);
@@ -129,34 +129,14 @@ public final class Constants {
                 // Feed Forward Multiplier
                 public static final double FEED_FORWARD_MULTIPLIER = 0.5;
                 public static final double ACCURATE_FOLLOWER_FEED_FORWARD_MULTIPLIER = 1;
-                public static final String[] paths = new String[] {
-                                "2AlgaeCenter.polarauto",
-                                "2+1PieceFeeder.polarauto",
-                                "3PieceFeederSmart.polarauto",
-                                "4PieceFeederGroundSmart.polarauto",
-                                "TushPush.polarauto",
-                };
                 public static final double AUTO_PLACE_DISTANCE = 5;
 
                 public static int getSelectedPathIndex() {
-                        if (OI.autoChooserConnected()) {
-                                if (OI.autoChooser.getRawButton(1)) {
-                                        return 0;
+                        String selectedAuto = OI.autoSendableChooser.getSelected();
+                        for (int i = 0; i < Constants.paths.size(); i++) {
+                                if (selectedAuto.equals(Constants.paths.get(i))) {
+                                        return i;
                                 }
-                                if (OI.autoChooser.getRawButton(2)) {
-                                        return 1;
-                                }
-                                if (OI.autoChooser.getRawButton(3)) {
-                                        return 2;
-                                }
-                                if (OI.autoChooser.getRawButton(4)) {
-                                        return 3;
-                                }
-                                if (OI.autoChooser.getRawButton(5)) {
-                                        return 4;
-                                }
-                        } else {
-                                return (int) Math.round(SmartDashboard.getNumber("ROBOT AUTO OVERIDE", -1));
                         }
                         return -1;
                 }
@@ -165,7 +145,7 @@ public final class Constants {
 
         public static void periodic() {
                 int index = Autonomous.getSelectedPathIndex();
-                if (index == -1 || index > Constants.Autonomous.paths.length) {
+                if (index == -1 || index > Constants.paths.size()) {
                 } else {
                 }
                 index = getSelectedPathIndex();
@@ -3552,10 +3532,10 @@ public final class Constants {
                 public static final double MODULE_OFFSET = inchesToMeters(2.625);
                 public static final double ROBOT_RADIUS = Math.hypot(ROBOT_LENGTH / 2 - WHEEL_TO_FRAME_DISTANCE,
                                 ROBOT_WIDTH / 2 - WHEEL_TO_FRAME_DISTANCE);
-                public static double INTAKE_X_OFFSET_FRONT = inchesToMeters(23.8);
-                public static double INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double INTAKE_X_OFFSET_BACK = inchesToMeters(23.8);
-                public static double INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
+                public static double INTAKE_X_OFFSET_FRONT = inchesToMeters(27.0);
+                public static double INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.5);
+                public static double INTAKE_X_OFFSET_BACK = inchesToMeters(27.0);
+                public static double INTAKE_Y_OFFSET_BACK = inchesToMeters(0.5);
 
                 public static double INTAKE_X_OFFSET_FRONT_ALGAE = inchesToMeters(23.0 + 5.0);
                 public static double INTAKE_Y_OFFSET_FRONT_ALGAE = inchesToMeters(3.8);
@@ -3577,10 +3557,10 @@ public final class Constants {
                 public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(23.45);
                 public static double L2_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
 
-                public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(26.1);
-                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(26.1);
-                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(0.0);
+                public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.6);
+                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(1.0);
+                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(25.6);
+                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(1.0);
 
                 public static final double GRAVITY_ACCEL_MS2 = 9.806;
         }

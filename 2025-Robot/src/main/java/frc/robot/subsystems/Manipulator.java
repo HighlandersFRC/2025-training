@@ -243,78 +243,78 @@ public class Manipulator extends SubsystemBase {
     Logger.recordOutput("Manipulator Has coral", hasCoral());
     Logger.recordOutput("Intake Item", armItem);
     // Logger.recordOutput("Has Coral", hasCoral());
-    switch (systemState) {
-      case CORAL_INTAKE:
-        switch (armItem) {
-          case CORAL:
-            // if (timeSinceItemSwitch > 1.0) {
-            setIntakeTorque(30, 1.0);
-            // } else {
-            // setIntakePercent(1.0);
-            // }
-            break;
-          default:
-            setIntakePercent(1.0);
-            break;
-        }
-        break;
-      case ALGAE_INTAKE:
-        // System.out.println("algae running");
-        switch (armItem) {
-          case ALGAE:
-            // if (timeSinceItemSwitch > 1.0) {
-            setIntakeTorque(55, 0.8);
-            // } else {
-            // setIntakePercent(1.0);
-            // }
-            break;
-          default:
-            setIntakeTorque(60, 0.8);
-            break;
-        }
-        break;
-      case OUTAKE:
-        switch (armItem) {
-          // case CORAL:
-          // setIntakePercent(-0.5);
-          // break;
-          // case ALGAE:
-          // setIntakePercent(0.5);
-          // break;
-          default:
-            if (algaeMode) {
-              if (OI.driverPOVUp.getAsBoolean()) {
-                setIntakePercent(-0.4);
-              } else {
-                setIntakePercent(-0.35);
-              }
-            } else {
-              if (OI.driverPOVLeft.getAsBoolean()) {
-                setIntakePercent(-0.5);
-              } else if (OI.driverPOVDown.getAsBoolean()) {
-                setIntakePercent(-0.4);
-              } else if (OI.driverPOVUp.getAsBoolean()) {
-                setIntakePercent(-0.25);
-              } else if (OI.driverPOVRight.getAsBoolean()) {
-                setIntakePercent(-0.5);
-              } else {
-                setIntakePercent(-1.0);
+    // switch (systemState) {
+    // case CORAL_INTAKE:
+    // switch (armItem) {
+    // case CORAL:
+    // // if (timeSinceItemSwitch > 1.0) {
+    // setIntakeTorque(30, 1.0);
+    // // } else {
+    // // setIntakePercent(1.0);
+    // // }
+    // break;
+    // default:
+    // setIntakePercent(1.0);
+    // break;
+    // }
+    // break;
+    // case ALGAE_INTAKE:
+    // // System.out.println("algae running");
+    // switch (armItem) {
+    // case ALGAE:
+    // // if (timeSinceItemSwitch > 1.0) {
+    // setIntakeTorque(55, 0.8);
+    // // } else {
+    // // setIntakePercent(1.0);
+    // // }
+    // break;
+    // default:
+    // setIntakeTorque(60, 0.8);
+    // break;
+    // }
+    // break;
+    // case OUTAKE:
+    // switch (armItem) {
+    // // case CORAL:
+    // // setIntakePercent(-0.5);
+    // // break;
+    // // case ALGAE:
+    // // setIntakePercent(0.5);
+    // // break;
+    // default:
+    // if (algaeMode) {
+    // if (OI.driverPOVUp.getAsBoolean()) {
+    // setIntakePercent(-0.4);
+    // } else {
+    // setIntakePercent(-0.35);
+    // }
+    // } else {
+    // if (OI.driverPOVLeft.getAsBoolean()) {
+    // setIntakePercent(-0.5);
+    // } else if (OI.driverPOVDown.getAsBoolean()) {
+    // setIntakePercent(-0.4);
+    // } else if (OI.driverPOVUp.getAsBoolean()) {
+    // setIntakePercent(-0.25);
+    // } else if (OI.driverPOVRight.getAsBoolean()) {
+    // setIntakePercent(-0.5);
+    // } else {
+    // setIntakePercent(-1.0);
 
-              }
-            }
-            break;
-        }
-        break;
-      case OFF:
-        setIntakePercent(0.0);
-        break;
-      default:
-        // System.out.println("Motor Current: " + intakeMotor.getTorqueCurrent());
-        if (algaeMode) {
-          setIntakeTorque(67, 0.4);
-        } else {
-          setIntakeTorque(20, 0.2);
-        }
-    }
+    // }
+    // }
+    // break;
+    // }
+    // break;
+    // case OFF:
+    // setIntakePercent(0.0);
+    // break;
+    // default:
+    // // System.out.println("Motor Current: " + intakeMotor.getTorqueCurrent());
+    // if (algaeMode) {
+    // setIntakeTorque(67, 0.4);
+    // } else {
+    // setIntakeTorque(20, 0.2);
+    // }
+    // }
   }
 }

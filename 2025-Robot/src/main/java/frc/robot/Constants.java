@@ -3549,9 +3549,9 @@ public final class Constants {
                 public static final double ROBOT_RADIUS = Math.hypot(ROBOT_LENGTH / 2 - WHEEL_TO_FRAME_DISTANCE,
                                 ROBOT_WIDTH / 2 - WHEEL_TO_FRAME_DISTANCE);
                 public static double INTAKE_X_OFFSET_FRONT = inchesToMeters(23.5);
-                public static double INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.7);
-                public static double INTAKE_X_OFFSET_BACK = inchesToMeters(25.3);
-                public static double INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.7);
+                public static double INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
+                public static double INTAKE_X_OFFSET_BACK = inchesToMeters(23.3);
+                public static double INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
 
                 public static double INTAKE_X_OFFSET_FRONT_ALGAE = inchesToMeters(26.0);
                 public static double INTAKE_Y_OFFSET_FRONT_ALGAE = inchesToMeters(-1.5);
@@ -3569,14 +3569,14 @@ public final class Constants {
                 public static double L1_INTAKE_Y_OFFSET_BACK_MORE = inchesToMeters(-7.6);
 
                 public static double L2_INTAKE_X_OFFSET_FRONT = inchesToMeters(22.9);
-                public static double L2_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.7);
-                public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(24.4);
-                public static double L2_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.7);
+                public static double L2_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
+                public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(22.4);
+                public static double L2_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
 
                 public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.1);
-                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.7);
-                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(27.1);
-                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.7);
+                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
+                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(25.1);
+                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
 
                 public static final double GRAVITY_ACCEL_MS2 = 9.806;
         }
@@ -4026,21 +4026,16 @@ public final class Constants {
 
         // Gear ratios and conversions
         public static final class Ratios {
-
-                // twist
-                public static final double TWIST_GEAR_RATIO_ROTOR = 28.8;
-                public static final double TWIST_GEAR_RATIO_ENCODER = 5.0 / 4.0;
-
                 // pivot
-                public static final double PIVOT_GEAR_RATIO = 95.238;
+                public static final double PIVOT_GEAR_RATIO = 23 * 64 / 24;
 
                 // drive
                 public static final double DRIVE_GEAR_RATIO = 6.12;
                 public static final double STEER_GEAR_RATIO = 21.43;
 
                 // elevator
-                public static final double ELEVATOR_FIRST_STAGE = Constants.inchesToMeters(23.25);
-                public static final double ELEVATOR_MOTOR_ROTATIONS_FOR_FIRST_STAGE = 20.425781;
+                public static final double ELEVATOR_FIRST_STAGE = Constants.inchesToMeters(20);
+                public static final double ELEVATOR_MOTOR_ROTATIONS_FOR_FIRST_STAGE = 18.067;
                 public static final double ELEVATOR_MOTOR_ROTATIONS_PER_METER = ELEVATOR_MOTOR_ROTATIONS_FOR_FIRST_STAGE
                                 * (1 / ELEVATOR_FIRST_STAGE);
 
@@ -4053,7 +4048,7 @@ public final class Constants {
                 }
 
                 // intake
-                public static final double INTAKE_PIVOT_GEAR_RATIO = 30.0;
+                public static final double INTAKE_PIVOT_GEAR_RATIO = 45.0;
         }
 
         // Can info such as IDs
@@ -4084,23 +4079,20 @@ public final class Constants {
                 public static final int FOLLOWER_ELEVATOR_MOTOR_ID = 10;
 
                 // Pivot
-                public static final int PIVOT_MOTOR_ID = 11;
-                public static final int PIVOT_CANCODER_ID = 5;
-
-                // Twist
-                public static final int TWIST_MOTOR_ID = 12;
-                public static final int TWIST_CANCODER_ID = 6;
+                public static final int PIVOT_MOTOR_ID = 15;
 
                 // Manipulator
-                public static final int MANIPULATOR_MOTOR_ID = 13;
-
-                // Climber
-                public static final int CLIMBER_PIVOT_MOTOR_ID = 15;
+                public static final int MANIPULATOR_MOTOR_ID = 14;
 
                 // Intake
-                public static final int INTAKE_ROLLER_MOTOR_ID = 16;
-                public static final int INTAKE_PIVOT_MOTOR_ID = 17;
+                public static final int INTAKE_ROLLER_MOTOR_ID = 17;
+                public static final int INTAKE_PIVOT_MOTOR_ID = 16;
                 public static final int INTAKE_BEAM_BREAK_PORT = 0;
+
+                // stragithenator motors
+                public static final int STRAIGHTENATOR_LEFT_MOTOR_ID = 12;
+                public static final int STRAIGHTENATOR_RIGHT_MOTOR_ID = 13;
+
         }
 
         // Misc. controller values

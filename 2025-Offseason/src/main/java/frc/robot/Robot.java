@@ -74,7 +74,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer.peripherals.init();
     m_robotContainer.drive.init(m_fieldSide);
     m_robotContainer.elevator.init();
-    m_robotContainer.pivot.init();
+    m_robotContainer.arm.init();
     m_robotContainer.manipulator.init();
     m_robotContainer.intake.init();
 
@@ -102,7 +102,6 @@ public class Robot extends LoggedRobot {
     Constants.periodic();
     m_robotContainer.peripherals.periodic();
     m_logHandler.write();
-    Logger.recordOutput("finished", m_robotContainer.superstructure.placedCoralL4());
 
   }
 

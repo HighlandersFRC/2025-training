@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AutoCoralGroundPickupFollower;
+// import frc.robot.commands.AutoCoralGroundPickupFollower;
 import frc.robot.commands.AutoPlaceL2Follower;
 import frc.robot.commands.AutoPlaceL4Follower;
 import frc.robot.commands.DoNothing;
@@ -31,12 +31,13 @@ import frc.robot.commands.SetRobotStateOnce;
 import frc.robot.commands.SetRobotStateSimple;
 import frc.robot.commands.SetRobotStateSimpleOnce;
 import frc.robot.commands.ZeroAngleMidMatch;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Peripherals;
-import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Straightenator;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.SuperState;
 
@@ -56,10 +57,11 @@ public class RobotContainer {
     Elevator elevator = new Elevator();
     Drive drive = new Drive(peripherals, elevator);
     Manipulator manipulator = new Manipulator();
-    Pivot pivot = new Pivot();
+    Arm arm = new Arm();
     Intake intake = new Intake();
-    Superstructure superstructure = new Superstructure(drive, elevator, manipulator, pivot,
-            peripherals, intake);
+    Straightenator straightenator = new Straightenator();
+    Superstructure superstructure = new Superstructure(drive, peripherals, elevator, straightenator, arm, manipulator,
+            intake);
 
     public boolean algaeMode = false;
     boolean manualMode = false;
@@ -72,8 +74,7 @@ public class RobotContainer {
             put("AutoPlaceL4", () -> new AutoPlaceL4Follower(superstructure, drive, 3.3));
             put("AutoFeeder", () -> new FeederPickupFollower(superstructure, drive));
             put("FeederIntake", () -> new FeederPickup(superstructure));
-            put("Outake", () -> new SetRobotStateSimple(superstructure, SuperState.OUTAKE));
-            put("L1", () -> new SetRobotStateSimple(superstructure, SuperState.AUTO_L1_PLACE));
+            put("Outake", () -> new SetRobotStateSimple(superstructure, SuperState.MANIPULATOR_OUTTAKE));
             put("Idle", () -> new SetRobotStateSimple(superstructure, SuperState.IDLE));
             put("Full Send", () -> new FullSendFollower(drive, null, false));
             put("IntakeLollipop", () -> new SetRobotState(superstructure, SuperState.LOLLIOP_PICKUP));

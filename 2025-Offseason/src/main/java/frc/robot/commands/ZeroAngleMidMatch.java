@@ -16,6 +16,7 @@ public class ZeroAngleMidMatch extends Command {
 
     @Override
     public void initialize() {
+        System.out.println("Zeroing Gyro Mid-Match");
     }
 
     @Override
@@ -25,6 +26,7 @@ public class ZeroAngleMidMatch extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        System.out.println("Finished Zeroing Gyro Mid-Match");
     }
 
     @Override

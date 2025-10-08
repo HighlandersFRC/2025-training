@@ -365,6 +365,7 @@ public class Peripherals {
 
     public void periodic() {
         Logger.recordOutput("Pigeon Pitch", getPigeonPitchAdjusted());
+        Logger.recordOutput("Pigeon Yaw", getPigeonAngle());
 
         // Use to take snapshots of camera stream (Output means processed stream, input
         // means raw stream)

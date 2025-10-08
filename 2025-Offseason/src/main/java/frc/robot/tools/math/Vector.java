@@ -135,4 +135,9 @@ public class Vector {
     public Vector perpendicular() {
         return new Vector(-j, i);
     }
+
+    @Override
+    public String toString() {
+        return "Vector(" + i + ", " + j + ")";
+    }
 }

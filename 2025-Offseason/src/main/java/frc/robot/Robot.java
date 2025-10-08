@@ -141,7 +141,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     m_robotContainer.elevator.teleopInit();
-    m_robotContainer.superstructure.setWantedState(SuperState.ZERO);
+    m_robotContainer.superstructure.setWantedState(SuperState.DEFAULT);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

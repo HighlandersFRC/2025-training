@@ -2393,6 +2393,7 @@ public class Drive extends SubsystemBase {
      *          robot's movement based on joystick inputs.
      */
     public void teleopDrive() {
+        System.out.println("Teleop Drive");
         double oiRX = OI.getDriverRightX();
         double oiLX = OI.getDriverLeftX();
         double oiRY = OI.getDriverRightY();
@@ -2402,14 +2403,6 @@ public class Drive extends SubsystemBase {
             oiLX = OI.getOperatorLeftX();
             oiRY = OI.getOperatorRightY();
             oiLY = OI.getOperatorLeftY();
-        }
-        double speedMultiplier = (((60 - Constants.metersToInches(elevator.getElevatorPosition())) * 0.4 / 50) + 0.6);
-
-        if (elevator.getElevatorPosition() > Constants.inchesToMeters(10)) {
-            oiRX = oiRX * speedMultiplier;
-            oiLX = oiLX * speedMultiplier;
-            oiRY = oiRY * speedMultiplier;
-            oiLY = oiLY * speedMultiplier;
         }
         double turnLimit = 0.17;
 
@@ -2442,6 +2435,7 @@ public class Drive extends SubsystemBase {
         double ySpeed = yPower * Constants.Physical.TOP_SPEED;
 
         Vector controllerVector = new Vector(xSpeed, ySpeed);
+        System.out.println(controllerVector);
         if (getFieldSide().equals("red")) {
             controllerVector.setI(-xSpeed);
             controllerVector.setJ(-ySpeed);
@@ -2929,31 +2923,39 @@ public class Drive extends SubsystemBase {
 
     }
 
-    public void orbitDrive(Pose2d end, Pose2d pre, Pose2d current) {
-        // end: C, pre: B, current: A
-        Translation2d p = end.minus(pre).getTranslation(); // a vector in direction BC
-        Translation2d d = pre.minus(current).getTranslation(); // a vector in direction AB
-        Rotation2d alpha = p.getAngle().minus(d.getAngle()); // find angle between BC and AB
-        Rotation2d direction = d.getAngle().minus(alpha);
-        double velocity = getSpeedUsingPhysics(end.minus(current).getTranslation().getNorm(), 0);
-        double xVel = velocity * Math.cos(direction.getRadians());
-        double yVel = velocity * Math.sin(direction.getRadians());
-        Vector velocityVector = new Vector(xVel, yVel);
-        thetaaPID4.setSetPoint(end.getRotation().getRadians());
-        double desiredThetaChange = thetaaPID4.getResult(); // TODO: Test if this PID is good.
-        autoDrive(velocityVector, desiredThetaChange);
-    }
+    // public void orbitDrive(Pose2d end, Pose2d pre, Pose2d current) {
+    // // end: C, pre: B, current: A
+    // Translation2d p = end.minus(pre).getTranslation(); // a vector in direction
+    // BC
+    // Translation2d d = pre.minus(current).getTranslation(); // a vector in
+    // direction AB
+    // Rotation2d alpha = p.getAngle().minus(d.getAngle()); // find angle between BC
+    // and AB
+    // Rotation2d direction = d.getAngle().minus(alpha);
+    // double velocity =
+    // getSpeedUsingPhysics(end.minus(current).getTranslation().getNorm(), 0);
+    // double xVel = velocity * Math.cos(direction.getRadians());
+    // double yVel = velocity * Math.sin(direction.getRadians());
+    // Vector velocityVector = new Vector(xVel, yVel);
+    // thetaaPID4.setSetPoint(end.getRotation().getRadians());
+    // double desiredThetaChange = thetaaPID4.getResult(); // TODO: Test if this PID
+    // is good.
+    // autoDrive(velocityVector, desiredThetaChange);
+    // }
 
-    public double getSpeedUsingPhysics(double distance, double finalVel) {
-        // Max Velocity at which the robot can slow down given the Max Deceleration
-        // (-Constants.Physical.MAX_ACCELERATION)
-        return Math.sqrt(finalVel * finalVel - (2 * (-Constants.Physical.MAX_ACCELERATION) * distance));
-    }
+    // public double getSpeedUsingPhysics(double distance, double finalVel) {
+    // // Max Velocity at which the robot can slow down given the Max Deceleration
+    // // (-Constants.Physical.MAX_ACCELERATION)
+    // return Math.sqrt(finalVel * finalVel - (2 *
+    // (-Constants.Physical.MAX_ACCELERATION) * distance));
+    // }
 
-    public double clampToForwardAccelerationLimit(double currentVelocity, double wantedAcceleration) {
-        return Math.min(wantedAcceleration,
-                Constants.Physical.MAX_ACCELERATION * (1 - (currentVelocity / Constants.Physical.TOP_SPEED)));
-    }
+    // public double clampToForwardAccelerationLimit(double currentVelocity, double
+    // wantedAcceleration) {
+    // return Math.min(wantedAcceleration,
+    // Constants.Physical.MAX_ACCELERATION * (1 - (currentVelocity /
+    // Constants.Physical.TOP_SPEED)));
+    // }
 
     public void driveToXTheta(double x, double theta) {
         java.util.logging.Logger.getGlobal().finer(theta + "");
@@ -3761,6 +3763,7 @@ public class Drive extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("Extra Pigeon Angle", peripherals.getPigeonAngle());
         Logger.recordOutput("Robot Velocity", getRobotSpeed());
+        Logger.recordOutput("backright ", backRight.getWheelPosition());
         // Pose2d target = getGamePiecePosition();
         // System.out.println(Math.toDegrees(getThetaToCenterReef()));
         // Translation2d t1 = new Translation2d(getMT2OdometryX(), getMT2OdometryY());
@@ -3817,12 +3820,7 @@ public class Drive extends SubsystemBase {
 
         switch (systemState) {
             case DEFAULT:
-                if (OI.driverA.getAsBoolean() && !(OI.driverPOVDown.getAsBoolean() || OI.driverPOVLeft.getAsBoolean()
-                        || OI.driverPOVUp.getAsBoolean() || OI.driverPOVRight.getAsBoolean())) {
-                    robotCentricDrive(195.0);
-                } else {
-                    teleopDrive();
-                }
+                teleopDrive();
                 break;
             case IDLE:
                 break;

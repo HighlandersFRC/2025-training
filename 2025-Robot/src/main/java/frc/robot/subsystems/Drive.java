@@ -2790,7 +2790,9 @@ public class Drive extends SubsystemBase {
     double x = targetPoint.getX();
     double y = targetPoint.getY();
     double theta = targetPoint.getRotation().getRadians();
+    System.out.println("pre standardize theta: " + Math.toDegrees(theta));
     theta = Constants.standardizeAngleToOther(theta, getMT2OdometryAngle());
+    System.out.println("post standardize theta: " + Math.toDegrees(theta));
 
     double xVelNoFF = 0.0;
     double yVelNoFF = 0.0;
@@ -3795,12 +3797,7 @@ public class Drive extends SubsystemBase {
 
     switch (systemState) {
       case DEFAULT:
-        if (OI.driverA.getAsBoolean() && !(OI.driverPOVDown.getAsBoolean() || OI.driverPOVLeft.getAsBoolean()
-            || OI.driverPOVUp.getAsBoolean() || OI.driverPOVRight.getAsBoolean())) {
-          robotCentricDrive(195.0);
-        } else {
-          teleopDrive();
-        }
+        teleopDrive();
         break;
       case IDLE:
         break;

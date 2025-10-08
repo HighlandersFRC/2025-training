@@ -4255,10 +4255,8 @@ public final class Constants {
          */
         public static double standardizeAngleToOther(double angle, double otherAngle) {
                 double delta = angle - otherAngle;
-
-                delta = ((delta + Math.PI) % (Math.PI * 2)) - Math.PI; // Standardize to [-pi, pi)
-                double standardizedAngle = otherAngle + delta;
-                return standardizedAngle;
+                delta = Math.IEEEremainder(delta, 2 * Math.PI); // gives value in [-π, π]
+                return otherAngle + delta;
         }
 
         /**

@@ -150,12 +150,6 @@ public class Robot extends LoggedRobot {
     } else {
       m_fieldSide = "red";
     }
-
-    // Leave uncommented to use field relative theta system. Instead we are flipping
-    // joystick values on red side.
-    // if (this.m_fieldSide == "red") {
-    // this.m_robotContainer.drive.setPigeonAfterAuto();
-    // }
     java.util.logging.Logger.getGlobal().info("field side" + m_fieldSide);
 
     this.m_robotContainer.drive.setFieldSide(m_fieldSide);

@@ -38,6 +38,11 @@ public class Superstructure extends SubsystemBase {
         AUTO_L3_SCORE,
         AUTO_L4_PLACE,
         AUTO_L4_SCORE,
+        L2_ALGAE_PICKUP,
+        L3_ALGAE_PICKUP,
+        AUTO_PROCESSOR,
+        AUTO_ALGAE_PICKUP,
+        AUTO_NET,
         L1_SCORE,
         L2_SCORE,
         L2_PLACE,
@@ -161,6 +166,16 @@ public class Superstructure extends SubsystemBase {
             case AUTO_L4_PLACE:
                 handleAutoL4Place();
                 break;
+            case L2_ALGAE_PICKUP: // TODO: ts as well gng
+                break;
+            case L3_ALGAE_PICKUP: // TODO: and this
+                break;
+            case AUTO_PROCESSOR: // TODO: and this
+                break;
+            case AUTO_ALGAE_PICKUP: // TODO: and this
+                break;
+            case AUTO_NET: // TODO: and this
+                break;
             case HANDOFF:
                 if (straightenator.isFar() && !manipulator.hasCoralSemiSticky()) {
                     handleHandOffLowState();
@@ -283,6 +298,21 @@ public class Superstructure extends SubsystemBase {
                 break;
             case AUTO_L4_SCORE:
                 currentSuperState = SuperState.AUTO_L4_SCORE;
+                break;
+            case L2_ALGAE_PICKUP:
+                currentSuperState = SuperState.L2_ALGAE_PICKUP;
+                break;
+            case L3_ALGAE_PICKUP:
+                currentSuperState = SuperState.L3_ALGAE_PICKUP;
+                break;
+            case AUTO_PROCESSOR:
+                currentSuperState = SuperState.AUTO_PROCESSOR;
+                break;
+            case AUTO_ALGAE_PICKUP:
+                currentSuperState = SuperState.AUTO_ALGAE_PICKUP;
+                break;
+            case AUTO_NET:
+                currentSuperState = SuperState.AUTO_NET;
                 break;
             case HANDOFF:
                 currentSuperState = SuperState.HANDOFF;

@@ -109,8 +109,10 @@ public class Elevator extends SubsystemBase {
         right_elevator.setPosition(0.0);
     }
 
-    public void autoInit() {
+    public void autoInit() { // TODO: implement ts
+    }
 
+    public void teleopInit() {// TODO: implement ts
     }
 
     public void rezeroElevator() {

@@ -22,22 +22,14 @@ import frc.robot.Constants;
 import frc.robot.tools.math.Vector;
 
 public class Peripherals {
-    private PhotonCamera frontReefCam = new PhotonCamera("Front_Reef");
-    private PhotonCamera frontSwerveCam = new PhotonCamera("Front_Swerve");
-    private PhotonCamera backReefCam = new PhotonCamera("Back_Reef");
     private PhotonCamera backLeftReefCam = new PhotonCamera("Back_Left_Reef");
     private PhotonCamera backRightReefCam = new PhotonCamera("Back_Right_Reef");
-    private PhotonCamera frontBargeCam = new PhotonCamera("Front_Barge");
-    private PhotonCamera backBargeCam = new PhotonCamera("Back_Barge");
     private PhotonCamera gamePieceCamera = new PhotonCamera("Front_Game_Piece_Cam");
 
     AprilTagFieldLayout aprilTagFieldLayout;
 
     private Pigeon2 pigeon = new Pigeon2(0, "Canivore");
-    private Pigeon2 pigeonExtra = new Pigeon2(1, "Canivore");
-
     private Pigeon2Configuration pigeonConfig = new Pigeon2Configuration();
-    private Pigeon2Configuration pigeonExtraConfig = new Pigeon2Configuration();
     Transform3d robotToCam = new Transform3d(
             new Translation3d(Constants.inchesToMeters(1.75), Constants.inchesToMeters(11.625),
                     Constants.inchesToMeters(33.5)),
@@ -70,49 +62,18 @@ public class Peripherals {
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam);
         // Set the mount pose configuration for the IMU
-        pigeonConfig.MountPose.MountPosePitch = 0.3561480641365051;
-        pigeonConfig.MountPose.MountPoseRoll = -0.10366992652416229;
-        pigeonConfig.MountPose.MountPoseYaw = -0.24523599445819855;
-
-        pigeonExtraConfig.MountPose.MountPosePitch = 2.9378318786621094;
-        pigeonExtraConfig.MountPose.MountPoseRoll = -1.7237101793289185;
-        pigeonExtraConfig.MountPose.MountPoseYaw = -1.0769075155258179;
+        pigeonConfig.MountPose.MountPosePitch = 0.009637217968702316;
+        pigeonConfig.MountPose.MountPoseRoll = -0.24828127026557922;
+        pigeonConfig.MountPose.MountPoseYaw = 88.95125579833984;
 
         // Apply the IMU configuration
         pigeon.getConfigurator().apply(pigeonConfig);
-        pigeonExtra.getConfigurator().apply(pigeonExtraConfig);
 
         // Zero the IMU angle
         zeroPigeon();
 
         setPigeonPitchOffset(getPigeonPitch());
 
-    }
-
-    public double getFrontReefCamYaw() {
-        double yaw = 0.0;
-        var result = frontReefCam.getLatestResult();
-        // Logger.recordOutput("has target", result.hasTargets());
-        if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            yaw = target.getYaw();
-        }
-        return yaw;
-    }
-
-    public double getFrontReefCamPitch() {
-        double pitch = 0.0;
-        var result = frontReefCam.getLatestResult();
-        if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            pitch = target.getPitch();
-        }
-
-        return pitch;
-    }
-
-    public void setBackCamPipline(int index) {
-        backReefCam.setPipelineIndex(index);
     }
 
     public void setGamePieceCamPipline(int index) {
@@ -272,28 +233,6 @@ public class Peripherals {
     // }
     // }
 
-    public PhotonPipelineResult getFrontReefCamResult() {
-        var result = frontReefCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            frontReefCamTrack = true;
-            return result.get(0);
-        } else {
-            frontReefCamTrack = false;
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getBackReefCamResult() {
-        var result = backReefCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            backReefCamTrack = true;
-            return result.get(0);
-        } else {
-            backReefCamTrack = false;
-            return new PhotonPipelineResult();
-        }
-    }
-
     public PhotonPipelineResult getBackLeftReefCamResult() {
         var result = backLeftReefCam.getAllUnreadResults();
         if (!result.isEmpty()) {
@@ -308,37 +247,6 @@ public class Peripherals {
         if (!result.isEmpty()) {
             return result.get(0);
         } else {
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getFrontSwerveCamResult() {
-        var result = frontSwerveCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            return result.get(0);
-        } else {
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getFrontBargeCamResult() {
-        var result = frontBargeCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            frontBargeCamTrack = true;
-            return result.get(0);
-        } else {
-            frontBargeCamTrack = false;
-            return new PhotonPipelineResult();
-        }
-    }
-
-    public PhotonPipelineResult getBackBargeCamResult() {
-        var result = backBargeCam.getAllUnreadResults();
-        if (!result.isEmpty()) {
-            backBargeCamTrack = true;
-            return result.get(0);
-        } else {
-            backBargeCamTrack = false;
             return new PhotonPipelineResult();
         }
     }
@@ -378,10 +286,6 @@ public class Peripherals {
     // // }
     // }
 
-    public double getFrontReefCamLatency() {
-        return frontReefCam.getLatestResult().getTimestampSeconds();
-    }
-
     /**
      * Sets the IMU angle to 0
      */
@@ -396,7 +300,6 @@ public class Peripherals {
      */
     public void setPigeonAngle(double degrees) {
         pigeon.setYaw(degrees);
-        pigeonExtra.setYaw(degrees);
     }
 
     /**
@@ -406,10 +309,6 @@ public class Peripherals {
      */
     public double getPigeonAngle() {
         return pigeon.getYaw().getValueAsDouble();
-    }
-
-    public double getPigeonExtraAngle() {
-        return pigeonExtra.getYaw().getValueAsDouble();
     }
 
     /**

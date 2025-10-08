@@ -2790,9 +2790,9 @@ public class Drive extends SubsystemBase {
     double x = targetPoint.getX();
     double y = targetPoint.getY();
     double theta = targetPoint.getRotation().getRadians();
-    System.out.println("pre standardize theta: " + Math.toDegrees(theta));
+    // System.out.println("pre standardize theta: " + Math.toDegrees(theta));
     theta = Constants.standardizeAngleToOther(theta, getMT2OdometryAngle());
-    System.out.println("post standardize theta: " + Math.toDegrees(theta));
+    // System.out.println("post standardize theta: " + Math.toDegrees(theta));
 
     double xVelNoFF = 0.0;
     double yVelNoFF = 0.0;

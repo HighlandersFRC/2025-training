@@ -8,10 +8,13 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.tools.TriggerButton;
 
 public class OI {
+    public static SendableChooser<String> fieldSide = new SendableChooser<String>();
     public static XboxController driverController = new XboxController(0);
     public static XboxController operatorController = new XboxController(1);
 
@@ -81,6 +84,13 @@ public class OI {
     public static Joystick autoChooser = new Joystick(2);
 
     public static JoystickButton autoChooserIsBlue = new JoystickButton(autoChooser, 8);
+
+    static {
+        fieldSide.addOption("red", "red");
+        fieldSide.addOption("blue", "blue");
+        fieldSide.setDefaultOption("blue", "blue");
+        SmartDashboard.putData(fieldSide);
+    }
 
     public static void printAutoChooserInputs() {
         java.util.logging.Logger.getGlobal().info("Driver Controller Connected: " + driverController.isConnected());
@@ -243,11 +253,7 @@ public class OI {
     }
 
     public static boolean isBlueSide() {
-        if (autoChooserConnected()) {
-            return autoChooser.getRawButton(8);
-        } else {
-            return DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
-        }
+        return fieldSide.getSelected().equals("blue");
     }
 
     public static boolean is4PieceFarBottom231Auto() {

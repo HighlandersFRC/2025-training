@@ -99,6 +99,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Algae Mode", m_robotContainer.algaeMode);
     Logger.recordOutput("Manual Mode", m_robotContainer.manualMode);
     Logger.recordOutput("IMU", m_robotContainer.peripherals.getPigeonAngle());
+    Logger.recordOutput("Field Side", m_fieldSide);
     Constants.periodic();
     m_robotContainer.peripherals.periodic();
     m_logHandler.write();

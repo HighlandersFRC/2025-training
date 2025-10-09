@@ -243,6 +243,11 @@ public class Superstructure extends SubsystemBase {
           elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
           manipulator.setWantedState(ManipulatorState.DEFAULT);
         }
+        if (straightenator.isFar() || manipulator.hasCoral()) {
+          straightenator.setWantedState(StraightenatorState.IDLE);
+        } else {
+          straightenator.setWantedState(StraightenatorState.INTAKE);
+        }
         intake.setWantedState(IntakeState.IDLE);
         break;
       case OUTTAKE_ONESIDE:
@@ -560,11 +565,11 @@ public class Superstructure extends SubsystemBase {
   public void handleAutoL4Score() {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
-    manipulator.setWantedState(ManipulatorState.OUTAKE);
     pivot.setWantedState(PivotState.HORIZONTAL);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (pivot.getPivotDegrees() < Constants.Pivot.HORIZONTAL + 2) {
       drive.setWantedState(DriveState.REEF_MORE);
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }
@@ -649,7 +654,11 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleIntakingState() {
-    straightenator.setWantedState(StraightenatorState.INTAKE);
+    if (straightenator.isFar() || manipulator.hasCoral()) {
+      straightenator.setWantedState(StraightenatorState.IDLE);
+    } else {
+      straightenator.setWantedState(StraightenatorState.INTAKE);
+    }
     if (straightenator.isClose() || manipulator.hasCoral()) {
       intake.setWantedState(IntakeState.DOWN);
     } else {

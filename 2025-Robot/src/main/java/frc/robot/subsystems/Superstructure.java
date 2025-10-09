@@ -163,13 +163,25 @@ public class Superstructure extends SubsystemBase {
         handleAutoL4Place();
         break;
       case HANDOFF:
-        if (straightenator.isFar() && !manipulator.hasCoralSemiSticky()) {
+        if (straightenator.isFar() && !manipulator.hasCoral()) {
           handleHandOffLowState();
-          if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
-            handleHandoffState();
-          }
-        } else
+          // if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
+          //   handleHandoffState();
+          // }
+        } else {
           handleHandoffState();
+        }
+
+        // if (!manipulator.hasCoral()) {
+        //   if (straightenator.isFar()) {
+        //     handleHandOffLowState();
+        //   } else if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
+        //     handleHandoffState();
+        //   }
+        // } else {
+        //   handleHandoffState();
+        // }
+
         break;
       default:
         handleHandoffState();
@@ -220,6 +232,17 @@ public class Superstructure extends SubsystemBase {
         handleAlgaeHome();
         break;
       case INTAKE_IDLE:
+
+        if (straightenator.isFar() && !manipulator.hasCoral()) {
+          elevator.setWantedState(ElevatorState.HANDOFF_LOW);
+          manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
+          // if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
+          //   handleHandoffState();
+          // }
+        } else {
+          elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+          manipulator.setWantedState(ManipulatorState.DEFAULT);
+        }
         intake.setWantedState(IntakeState.IDLE);
         break;
       case OUTTAKE_ONESIDE:
@@ -631,6 +654,19 @@ public class Superstructure extends SubsystemBase {
       intake.setWantedState(IntakeState.DOWN);
     } else {
       intake.setWantedState(IntakeState.INTAKING);
+    }
+
+    if (straightenator.isFar() && !manipulator.hasCoral()) {
+      System.out.println("333");
+      elevator.setWantedState(ElevatorState.HANDOFF_LOW);
+      manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
+      // if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
+      //   handleHandoffState();
+      // }
+    } else {
+      System.out.println("4444444");
+      elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+      manipulator.setWantedState(ManipulatorState.DEFAULT);
     }
     // if (straightenator.isFar() && !manipulator.hasCoral()) {
     // pivot.setWantedState(PivotState.HANDOFF);

@@ -111,7 +111,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 8.0
+    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 4.0
         && Math.abs(manipulatorMotor.getTorqueCurrent().getValueAsDouble()) > 2.0) {
       if (firstTimeCoral) {
         firstTimeCoral = false;
@@ -155,6 +155,7 @@ public class Manipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // System.out.println(hasCoral());
     systemState = handleStateTransition();
 
     double motorVelocity = getIntakeRPS();
@@ -176,7 +177,7 @@ public class Manipulator extends SubsystemBase {
           setIntakeTorque(0, 0);
           break;
         default:
-          setIntakeTorque(10, 0.01);
+          setIntakeTorque(15, 0.1);
           break;
       }
     }
@@ -190,6 +191,6 @@ public class Manipulator extends SubsystemBase {
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Torque",
         manipulatorMotor.getTorqueCurrent().getValueAsDouble());
     org.littletonrobotics.junction.Logger.recordOutput("Manipulator Has Coral",
-        hasCoralSticky());
+        hasCoral());
   }
 }

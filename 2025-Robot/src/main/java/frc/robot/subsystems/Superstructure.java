@@ -123,6 +123,8 @@ public class Superstructure extends SubsystemBase {
     return pathCompleted;
   }
 
+  private double backUpTime = Timer.getFPGATimestamp();
+
   private void applyStates() {
     switch (currentSuperState) {
       case DEFAULT:
@@ -265,12 +267,19 @@ public class Superstructure extends SubsystemBase {
             || OI.getDriverLB()) {
           currentSuperState = SuperState.AUTO_L2_SCORE;
           wantedSuperState = SuperState.AUTO_L2_SCORE;
+          backUpTime = Timer.getFPGATimestamp();
         } else {
           currentSuperState = SuperState.AUTO_L2_PLACE;
+          backUpTime = Timer.getFPGATimestamp();
         }
         break;
       case AUTO_L2_SCORE:
-        currentSuperState = SuperState.AUTO_L2_SCORE;
+        if (Timer.getFPGATimestamp() - backUpTime > 1.0) {
+          wantedSuperState = SuperState.DEFAULT;
+          currentSuperState = SuperState.DEFAULT;
+        } else {
+          currentSuperState = SuperState.AUTO_L2_SCORE;
+        }
         break;
       case AUTO_L3_PLACE:
         Pose2d closestl3 = drive.getReefL3ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
@@ -285,8 +294,10 @@ public class Superstructure extends SubsystemBase {
             || OI.getDriverLB()) {
           currentSuperState = SuperState.AUTO_L3_SCORE;
           wantedSuperState = SuperState.AUTO_L3_SCORE;
+          backUpTime = Timer.getFPGATimestamp();
         } else {
           currentSuperState = SuperState.AUTO_L3_PLACE;
+          backUpTime = Timer.getFPGATimestamp();
         }
         break;
       case AUTO_L3_SCORE:
@@ -461,10 +472,12 @@ public class Superstructure extends SubsystemBase {
     pivot.setWantedState(PivotState.L2_SCORE);
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
-    manipulator.setWantedState(ManipulatorState.OUTAKE);
+    // if (Timer.getFPGATimestamp() - backUpTime > 0.5) {]\[
+    ]
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (pivot.getPivotDegrees() < Constants.Pivot.HORIZONTAL + 2) {
       drive.setWantedState(DriveState.REEF_MORE);
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }

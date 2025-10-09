@@ -780,7 +780,7 @@ public final class Constants {
                                 double adjustY = inchesToMeters(6.469);
                                 double adjustXL1 = inchesToMeters(30.738);
                                 double adjustYL1 = inchesToMeters(6.469);
-                                double adjustXMore = inchesToMeters(70.738);
+                                double adjustXMore = inchesToMeters(41.67);
                                 double adjustYMore = inchesToMeters(6.469);
                                 double adjustAlgaeX = inchesToMeters(45.738);
                                 double adjustAlgaeY = inchesToMeters(0.0);
@@ -3560,9 +3560,9 @@ public final class Constants {
                 public static double L1_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
                 public static double L1_INTAKE_X_OFFSET_BACK = inchesToMeters(35.3);
                 public static double L1_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
-                public static double L1_INTAKE_X_OFFSET_FRONT_MORE = inchesToMeters(24.5);
+                public static double L1_INTAKE_X_OFFSET_FRONT_MORE = inchesToMeters(24.9);
                 public static double L1_INTAKE_Y_OFFSET_FRONT_MORE = inchesToMeters(0.0);
-                public static double L1_INTAKE_X_OFFSET_BACK_MORE = inchesToMeters(24.5);
+                public static double L1_INTAKE_X_OFFSET_BACK_MORE = inchesToMeters(24.9);
                 public static double L1_INTAKE_Y_OFFSET_BACK_MORE = inchesToMeters(-0.0);
                 public static double L2_INTAKE_X_OFFSET_FRONT = inchesToMeters(24.67);
                 public static double L2_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
@@ -3642,7 +3642,7 @@ public final class Constants {
                 public static final double ELEVATOR_OVER_POSITION_M = inchesToMeters(20);
                 public static final double ELEVATOR_NET_POSITION_M = inchesToMeters(65);
                 public static final double ELEVATOR_L2_ALGAE_POSITION_M = inchesToMeters(15.7);
-                public static final double ELEVATOR_L3_ALGAE_POSITION_M = inchesToMeters(33.0);
+                public static final double ELEVATOR_L3_ALGAE_POSITION_M = inchesToMeters(37.6741);
                 public static final double ELEVATOR_PROCESSOR_POSITION_M = inchesToMeters(6.5);
                 public static final double ELEVATOR_LOLLIPOP_POSITION_M = inchesToMeters(0.0);
                 public static final double ELEVATOR_PRE_HANDOFF_POSITION_M = inchesToMeters(39.0);

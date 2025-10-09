@@ -136,7 +136,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean hasCoralSticky() {
-    if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.1) {
+    if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.2) {
       hasCoralSticky = true;
     } else if (!hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.3) {
       hasCoralSticky = false;
@@ -145,9 +145,9 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean hasCoralSemiSticky() {
-    if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.05) {
+    if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.1) {
       hasCoralSticky = true;
-    } else if (!hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.05) {
+    } else if (!hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.1) {
       hasCoralSticky = false;
     }
     return hasCoralSticky;
@@ -167,10 +167,10 @@ public class Manipulator extends SubsystemBase {
           setIntakeTorque(15, 0.3);
           break;
         case ALGAE_INTAKE:
-          setIntakeTorque(40, 1.0);
+          setIntakeTorque(67.41, 1.0);
           break;
         case OUTAKE:
-          setIntakeTorque(-30, 0.5);
+          setIntakeTorque(-60, 1.0);
           break;
         case OFF:
           setIntakeTorque(0, 0);

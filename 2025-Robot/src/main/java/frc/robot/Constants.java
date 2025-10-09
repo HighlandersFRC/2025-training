@@ -3581,6 +3581,38 @@ public final class Constants {
                 public static final double GRAVITY_ACCEL_MS2 = 9.806;
         }
 
+        public static final class Pivot {
+                public static final double L4_Score = 0.0;
+                public static final double L4_Place = 43.0;
+                public static final double L3_Score = 5.0;
+                public static final double L3_Place = 45.0;
+                public static final double L2_Score = 5.0;
+                public static final double L2_Place = 45.0;
+                public static final double L1_Place = -25.0;
+                public static final double HANDOFF = -91.0;
+                public static final double DEFAULT = -90.0;
+                public static final double HORIZONTAL = 5.0;
+                public static final double VERTICAL = 95.0;
+                public static final double NET = 135.0;
+                public static final double IDLE = 0.0;
+        }
+
+        public static final class Elevator {
+                public static final double AUTO_L1 = inchesToMeters(18.0);
+                public static final double AUTO_L2 = inchesToMeters(7.0);
+                public static final double AUTO_L3 = inchesToMeters(24.25);
+                public static final double AUTO_L4 = inchesToMeters(50.0);
+                public static final double AUTO_SCORE_L2 = inchesToMeters(6.0);
+                public static final double AUTO_SCORE_L3 = inchesToMeters(22.25);
+                public static final double AUTO_SCORE_L4 = inchesToMeters(48.0);
+                public static final double HANDOFF_HIGH = inchesToMeters(11.0);
+                public static final double HANDOFF_LOW = inchesToMeters(3.0);
+                public static final double ALGAE_HIGH = inchesToMeters(33);
+                public static final double ALGAE_LOW = inchesToMeters(15.0);
+                public static final double PROCESSOR = inchesToMeters(0.0);
+                public static final double NET = inchesToMeters(55.0);
+        }
+
         // Subsystem setpoint constants
         public static final class SetPoints {
                 public static class IntakeSetpoints {
@@ -4092,6 +4124,8 @@ public final class Constants {
                 // stragithenator motors
                 public static final int STRAIGHTENATOR_LEFT_MOTOR_ID = 12;
                 public static final int STRAIGHTENATOR_RIGHT_MOTOR_ID = 13;
+                public static final int FAR_BEAM_BREAK_SENSOR = 0;
+                public static final int CLOSE_BEAM_BREAK_SENSOR = 2;
 
         }
 

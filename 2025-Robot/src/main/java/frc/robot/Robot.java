@@ -102,7 +102,7 @@ public class Robot extends LoggedRobot {
     Constants.periodic();
     m_robotContainer.peripherals.periodic();
     m_logHandler.write();
-    Logger.recordOutput("finished", m_robotContainer.superstructure.placedCoralL4());
+    // Logger.recordOutput("finished", m_robotContainer.superstructure.placedCoralL4());
 
   }
 
@@ -129,7 +129,7 @@ public class Robot extends LoggedRobot {
       m_fieldSide = "red";
     }
     this.m_robotContainer.drive.setFieldSide(m_fieldSide);
-    this.m_robotContainer.elevator.autoInit();
+    // this.m_robotContainer.elevator.autoInit();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     java.util.logging.Logger.getGlobal().info("Auto init time" + (Timer.getFPGATimestamp() - autoInitTime));
     m_autonomousCommand.schedule();
@@ -141,7 +141,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.elevator.teleopInit();
+    // m_robotContainer.elevator.teleopInit();
     m_robotContainer.superstructure.setWantedState(SuperState.ZERO);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

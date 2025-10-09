@@ -309,7 +309,12 @@ public class Superstructure extends SubsystemBase {
         }
         break;
       case AUTO_L4_SCORE:
-        currentSuperState = SuperState.AUTO_L4_SCORE;
+        if (Timer.getFPGATimestamp() - backUpTime > 1.0) {
+          wantedSuperState = SuperState.DEFAULT;
+          currentSuperState = SuperState.DEFAULT;
+        } else {
+          currentSuperState = SuperState.AUTO_L4_SCORE;
+        }
         break;
       case HANDOFF:
         currentSuperState = SuperState.HANDOFF;
@@ -326,8 +331,10 @@ public class Superstructure extends SubsystemBase {
             || OI.getDriverLB()) {
           currentSuperState = SuperState.AUTO_L4_SCORE;
           wantedSuperState = SuperState.AUTO_L4_SCORE;
+          backUpTime = Timer.getFPGATimestamp();
         } else {
           currentSuperState = SuperState.AUTO_L4_PLACE;
+          backUpTime = Timer.getFPGATimestamp();
         }
         break;
       case AUTO_L1_SCORE:

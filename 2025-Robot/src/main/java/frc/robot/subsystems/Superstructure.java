@@ -301,7 +301,12 @@ public class Superstructure extends SubsystemBase {
         }
         break;
       case AUTO_L3_SCORE:
-        currentSuperState = SuperState.AUTO_L3_SCORE;
+        if (Timer.getFPGATimestamp() - backUpTime > 1.0) {
+          wantedSuperState = SuperState.DEFAULT;
+          currentSuperState = SuperState.DEFAULT;
+        } else {
+          currentSuperState = SuperState.AUTO_L3_SCORE;
+        }
         break;
       case AUTO_L4_SCORE:
         currentSuperState = SuperState.AUTO_L4_SCORE;
@@ -472,8 +477,9 @@ public class Superstructure extends SubsystemBase {
     pivot.setWantedState(PivotState.L2_SCORE);
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
-    // if (Timer.getFPGATimestamp() - backUpTime > 0.5) {]\[
-    ]
+    // if (Timer.getFPGATimestamp() - backUpTime > 0.5) {
+    //   manipulator.setWantedState(ManipulatorState.OUTAKE);
+    // }
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (pivot.getPivotDegrees() < Constants.Pivot.HORIZONTAL + 2) {
       drive.setWantedState(DriveState.REEF_MORE);
@@ -498,11 +504,11 @@ public class Superstructure extends SubsystemBase {
   public void handleAutoL3Score() {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
-    manipulator.setWantedState(ManipulatorState.OUTAKE);
     pivot.setWantedState(PivotState.L3_SCORE);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (pivot.getPivotDegrees() < Constants.Pivot.HORIZONTAL + 2) {
       drive.setWantedState(DriveState.REEF_MORE);
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }

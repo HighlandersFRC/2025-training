@@ -302,7 +302,7 @@ public class Superstructure extends SubsystemBase {
         }
         break;
       case AUTO_L2_SCORE:
-        if (Timer.getFPGATimestamp() - backUpTime > 1.0) {
+        if (Timer.getFPGATimestamp() - backUpTime > 0.5) {
           wantedSuperState = SuperState.DEFAULT;
           currentSuperState = SuperState.DEFAULT;
         } else {
@@ -329,7 +329,7 @@ public class Superstructure extends SubsystemBase {
         }
         break;
       case AUTO_L3_SCORE:
-        if (Timer.getFPGATimestamp() - backUpTime > 1.0) {
+        if (Timer.getFPGATimestamp() - backUpTime > 0.5) {
           wantedSuperState = SuperState.DEFAULT;
           currentSuperState = SuperState.DEFAULT;
         } else {
@@ -337,7 +337,7 @@ public class Superstructure extends SubsystemBase {
         }
         break;
       case AUTO_L4_SCORE:
-        if (Timer.getFPGATimestamp() - backUpTime > 1.0) {
+        if (Timer.getFPGATimestamp() - backUpTime > 0.5) {
           wantedSuperState = SuperState.DEFAULT;
           currentSuperState = SuperState.DEFAULT;
         } else {

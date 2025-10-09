@@ -39,12 +39,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getZeroed() {
-    if (Math.abs(pivot.getStatorCurrent().getValueAsDouble()) > 10.0
-        && Math.abs(pivot.getVelocity().getValueAsDouble()) < 5.0) {
-      return true;
-    } else {
-      return false;
-    }
+    return true;
   }
 
   public Intake() {
@@ -167,10 +162,6 @@ public class Intake extends SubsystemBase {
         break;
       case ZERO:
         setRollerPercent(0);
-        pivotWithTorque(40, 0.1);
-        if (getZeroed()) {
-          pivot.setPosition(0.0);
-        }
         break;
       case DOWN:
         pivotToPosition(Constants.SetPoints.IntakeSetpoints.INTAKE_DOWN);

@@ -94,7 +94,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     Logger.recordOutput("MT2 Odometry", m_robotContainer.drive.getMT2Odometry());
     m_robotContainer.superstructure.algaeMode = m_robotContainer.algaeMode;
-    m_robotContainer.manipulator.updateAlgaeMode(m_robotContainer.algaeMode);
+    // m_robotContainer.manipulator.updateAlgaeMode(m_robotContainer.algaeMode);
     m_robotContainer.drive.algaeMode = m_robotContainer.algaeMode;
     Logger.recordOutput("Algae Mode", m_robotContainer.algaeMode);
     Logger.recordOutput("Manual Mode", m_robotContainer.manualMode);

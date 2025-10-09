@@ -3543,40 +3543,35 @@ public final class Constants {
                                                                                   // and max acceleration. Add a max
                                                                                   // deceleration if needed.
 
-                public static final double ROBOT_LENGTH = inchesToMeters(32);
+                public static final double ROBOT_LENGTH = inchesToMeters(26);
                 public static final double ROBOT_WIDTH = inchesToMeters(26);
                 public static final double MODULE_OFFSET = inchesToMeters(2.625);
                 public static final double ROBOT_RADIUS = Math.hypot(ROBOT_LENGTH / 2 - WHEEL_TO_FRAME_DISTANCE,
                                 ROBOT_WIDTH / 2 - WHEEL_TO_FRAME_DISTANCE);
-                public static double INTAKE_X_OFFSET_FRONT = inchesToMeters(23.5);
-                public static double INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double INTAKE_X_OFFSET_BACK = inchesToMeters(23.3);
-                public static double INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
-
-                public static double INTAKE_X_OFFSET_FRONT_ALGAE = inchesToMeters(26.0);
-                public static double INTAKE_Y_OFFSET_FRONT_ALGAE = inchesToMeters(-1.5);
-                public static double INTAKE_X_OFFSET_BACK_ALGAE = inchesToMeters(28.0);
-                public static double INTAKE_Y_OFFSET_BACK_ALGAE = inchesToMeters(-4.1);
-
-                public static double L1_INTAKE_X_OFFSET_FRONT = inchesToMeters(33.3);
-                public static double L1_INTAKE_Y_OFFSET_FRONT = inchesToMeters(7.6);
+                public static double INTAKE_X_OFFSET_FRONT = inchesToMeters(27.0);
+                public static double INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.5);
+                public static double INTAKE_X_OFFSET_BACK = inchesToMeters(27.0);
+                public static double INTAKE_Y_OFFSET_BACK = inchesToMeters(0.5);
+                public static double INTAKE_X_OFFSET_FRONT_ALGAE = inchesToMeters(23.0 + 5.0);
+                public static double INTAKE_Y_OFFSET_FRONT_ALGAE = inchesToMeters(3.8);
+                public static double INTAKE_X_OFFSET_BACK_ALGAE = inchesToMeters(23.0 + 5.0);
+                public static double INTAKE_Y_OFFSET_BACK_ALGAE = inchesToMeters(-0.0);
+                public static double L1_INTAKE_X_OFFSET_FRONT = inchesToMeters(35.3);
+                public static double L1_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
                 public static double L1_INTAKE_X_OFFSET_BACK = inchesToMeters(35.3);
-                public static double L1_INTAKE_Y_OFFSET_BACK = inchesToMeters(-7.6);
-
-                public static double L1_INTAKE_X_OFFSET_FRONT_MORE = inchesToMeters(22.5);
-                public static double L1_INTAKE_Y_OFFSET_FRONT_MORE = inchesToMeters(7.6);
-                public static double L1_INTAKE_X_OFFSET_BACK_MORE = inchesToMeters(24.0);
-                public static double L1_INTAKE_Y_OFFSET_BACK_MORE = inchesToMeters(-7.6);
-
-                public static double L2_INTAKE_X_OFFSET_FRONT = inchesToMeters(22.9);
+                public static double L1_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
+                public static double L1_INTAKE_X_OFFSET_FRONT_MORE = inchesToMeters(24.5);
+                public static double L1_INTAKE_Y_OFFSET_FRONT_MORE = inchesToMeters(0.0);
+                public static double L1_INTAKE_X_OFFSET_BACK_MORE = inchesToMeters(24.5);
+                public static double L1_INTAKE_Y_OFFSET_BACK_MORE = inchesToMeters(-0.0);
+                public static double L2_INTAKE_X_OFFSET_FRONT = inchesToMeters(24.67);
                 public static double L2_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(22.4);
+                public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(24.41);
                 public static double L2_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
-
-                public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.1);
-                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(25.1);
-                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
+                public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.6);
+                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(1.0);
+                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(25.6);
+                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(1.0);
 
                 public static final double GRAVITY_ACCEL_MS2 = 9.806;
         }
@@ -3619,12 +3614,12 @@ public final class Constants {
                         public static final double INTAKE_ACCELERATION = 500.0;
                         public static final double INTAKE_CRUISE_VELOCITY = 400.0;
                         public static final double INTAKE_MOTION_PROFILE_SCALAR = 1.0;
-                        public static final double INTAKE_DOWN = 0.36163; // rotations
-                        public static final double INTAKE_UP = -0.014; // rotations
+                        public static final double INTAKE_DOWN = -18.2; // rotations
+                        public static final double INTAKE_UP = 0; // rotations
                         public static final double INTAKE_ROLLER_MAX_SPEED = 1.0; // percent
                         public static final double INTAKE_ROLLER_HOLDING_SPEED = 0.1; // percent
-                        public static final double INTAKE_ROLLER_TORQUE = 40.0; // amps
-                        public static final double INTAKE_HOLDING_TORQUE = 20.0; // amps
+                        public static final double INTAKE_ROLLER_TORQUE = 80.0; // amps
+                        public static final double INTAKE_HOLDING_TORQUE = 60.0; // amps
                 }
 
                 public static final double ELEVATOR_BOTTOM_POSITION_M = 0.0;

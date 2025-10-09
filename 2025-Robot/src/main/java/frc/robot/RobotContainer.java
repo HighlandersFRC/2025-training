@@ -100,7 +100,7 @@ public class RobotContainer {
 
         HashMap<String, BooleanSupplier> conditionMap = new HashMap<String, BooleanSupplier>() {
                 {
-                        put("HasCoral", () -> manipulator.hasCoralSticky());
+                        // put("HasCoral", () -> manipulator.hasCoralSticky() || intake.hasCoral());
                 }
         };
 
@@ -394,7 +394,7 @@ public class RobotContainer {
                                                                                 SuperState.AUTO_L1_SCORE),
                                                                 () -> algaeMode));
 
-                OI.driverMenuButton
+                OI.driverViewButton
                                 .whileTrue(new ZeroAngleMidMatch(drive));
                 OI.driverMenuButton.onTrue(new SetRobotStateSimpleOnce(superstructure, SuperState.ZERO));
 

@@ -163,12 +163,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public boolean getZeroed() {
-    if (Math.abs(pivotMotor.getStatorCurrent().getValueAsDouble()) > 10.0
-        && Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 5.0) {
-      return true;
-    } else {
-      return false;
-    }
+    return true;
   }
 
   private double zeroTime = 0.0;
@@ -181,10 +176,7 @@ public class Pivot extends SubsystemBase {
         pivotPID.setSetPoint(getPivotDegrees());
         break;
       case ZERO:
-        moveWithTorque(-30, 0.2);
-        if (getZeroed()) {
-          setPivotEncoderPosition(0.0);
-        }
+        pivotPID.setSetPoint(getPivotDegrees());
         break;
       case L4_SCORE:
         setPivotDegrees(Constants.Pivot.L4_Score);

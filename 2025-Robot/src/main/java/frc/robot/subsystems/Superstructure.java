@@ -163,7 +163,7 @@ public class Superstructure extends SubsystemBase {
       case HANDOFF:
         if (straightenator.isFar() && !manipulator.hasCoralSemiSticky()) {
           handleHandOffLowState();
-          if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 1.0) {
+          if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
             handleHandoffState();
           }
         } else
@@ -634,9 +634,9 @@ public class Superstructure extends SubsystemBase {
     setManipulatorHasCoral(manipulator.hasCoral());
 
     Logger.recordOutput("SuperStructure State", currentSuperState);
-    System.out
-        .println("Zero Intake: " + intake.getZeroed() + " Zero Elevator: " + elevator.getZeroed() + " Pivot Zeroed: "
-            + pivot.getZeroed());
+    // System.out
+    //     .println("Zero Intake: " + intake.getZeroed() + " Zero Elevator: " + elevator.getZeroed() + " Pivot Zeroed: "
+    //         + pivot.getZeroed());
     currentSuperState = handleStateTransitions();
     applyStates();
   }

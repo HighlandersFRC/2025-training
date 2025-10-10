@@ -3,9 +3,12 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -15,6 +18,8 @@ import frc.robot.tools.TriggerButton;
 
 public class OI {
     public static SendableChooser<String> fieldSide = new SendableChooser<String>();
+    public static SendableChooser<String> leftRight = new SendableChooser<String>();
+    public static SendableChooser<String> auto = new SendableChooser<String>();
     public static XboxController driverController = new XboxController(0);
     public static XboxController operatorController = new XboxController(1);
 
@@ -90,6 +95,15 @@ public class OI {
         fieldSide.addOption("blue", "blue");
         fieldSide.setDefaultOption("blue", "blue");
         SmartDashboard.putData(fieldSide);
+        leftRight.addOption("processor", "processor");
+        leftRight.addOption("net", "net");
+        leftRight.setDefaultOption("net", "net");
+        SmartDashboard.putData(leftRight);
+        for (String path : Constants.Autonomous.paths) {
+            auto.addOption(path, path);
+        }
+        auto.setDefaultOption("None", "None");
+        SmartDashboard.putData(auto);
     }
 
     public static void printAutoChooserInputs() {
@@ -101,6 +115,10 @@ public class OI {
         for (int i = 1; i <= 16; i++) {
             java.util.logging.Logger.getGlobal().info("Auto Chooser Button " + i + " : " + autoChooser.getRawButton(i));
         }
+    }
+
+    public static String getSelectedPath() {
+        return auto.getSelected();
     }
 
     public static double getDriverLeftX() {
@@ -241,7 +259,7 @@ public class OI {
     }
 
     public static boolean isProcessorSide() {
-        return autoChooser.getRawButton(6);
+        return leftRight.getSelected().equals("processor");
     }
 
     public static boolean isRecalculateMode() {

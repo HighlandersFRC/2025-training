@@ -59,7 +59,8 @@ public class Superstructure extends SubsystemBase {
     INTAKE_IDLE,
     OUTTAKE_ONESIDE,
     PICKUP_PIECE,
-    IDLE
+    IDLE,
+    OUTAKE_IDLE
   }
 
   private SuperState wantedSuperState = SuperState.IDLE;
@@ -188,6 +189,9 @@ public class Superstructure extends SubsystemBase {
         break;
       case IDLE:
         handleIdleState();
+        break;
+      case OUTAKE_IDLE:
+        handleOutakeIdleState();
         break;
       case MOVE_TO_POINT:
         // drive.setWantedState(DriveState.MOVE_TO_POINT);
@@ -692,12 +696,67 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleIdleState() {
-    drive.setWantedState(DriveState.DEFAULT);
+    drive.setWantedState(DriveState.IDLE);
     elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
     pivot.setWantedState(PivotState.HANDOFF);
     manipulator.setWantedState(ManipulatorState.DEFAULT);
     intake.setWantedState(IntakeState.DOWN);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+  }
+
+  public void handleOutakeIdleState() {
+    drive.setWantedState(DriveState.IDLE);
+    elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+    pivot.setWantedState(PivotState.HANDOFF);
+    manipulator.setWantedState(ManipulatorState.OUTAKE);
+    intake.setWantedState(IntakeState.DOWN);
+    straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+  }
+
+  public boolean hasCoral() {
+    return manipulator.hasCoral();
+  }
+
+  public boolean placedCoralL4() {
+    // return
+    // drive.hitSetPoint(drive.getReefL4ClosestSetpoint(drive.getMT2Odometry())[0],
+    // drive.getReefL4ClosestSetpoint(drive.getMT2Odometry())[1],
+    // drive.getReefL4ClosestSetpoint(drive.getMT2Odometry()).getRotation().getRadians())
+    // &&
+    // elevator.getElevatorPosition() > 53 / 39.37
+    // &&
+
+    // Pivot has abs to account for placing backwards
+    // double[] setpoint = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(),
+    // false);
+    Pose2d setpoint = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), false);
+    Logger.recordOutput("auto l4 setpoint", setpoint);
+    java.util.logging.Logger.getGlobal().fine((Math
+        .abs(Math.abs(pivot.getPivotPosition())
+            - Constants.SetPoints.PivotPosition.kAUTOL4SCORE.rotations) < (10.0 / 360.0)
+        && drive.hitSetPointGenerous(
+            setpoint))
+        + "");
+    return (Math
+        .abs(Math.abs(pivot.getPivotPosition())
+            - Constants.SetPoints.PivotPosition.kAUTOL4SCORE.rotations) < (10.0 / 360.0)
+        && drive.hitSetPointGenerous(
+            setpoint));
+  }
+
+  public boolean placedCoralL2() {
+    // return
+    // drive.hitSetPoint(drive.getReefL4ClosestSetpoint(drive.getMT2Odometry())[0],
+    // drive.getReefL4ClosestSetpoint(drive.getMT2Odometry())[1],
+    // drive.getReefL4ClosestSetpoint(drive.getMT2Odometry()).getRotation().getRadians())
+    // &&
+    // elevator.getElevatorPosition() > 53 / 39.37
+    // &&
+
+    // Pivot has abs to account for placing backwards
+    return Math
+        .abs(Math.abs(pivot.getPivotPosition())
+            - Constants.SetPoints.PivotPosition.kAUTOL2SCORE.rotations) < (5.0 / 360.0);
   }
 
   @Override

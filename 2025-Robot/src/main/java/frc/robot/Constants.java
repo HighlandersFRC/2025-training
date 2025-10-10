@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class Constants {
@@ -36,33 +38,31 @@ public final class Constants {
                 // Feed Forward Multiplier
                 public static final double FEED_FORWARD_MULTIPLIER = 0.8044;
                 public static final double ACCURATE_FOLLOWER_FEED_FORWARD_MULTIPLIER = 1;
-                public static final String[] paths = new String[] {
-                                "2AlgaeCenter.polarauto",
-                                "2+1PieceFeeder.polarauto",
-                                "3PieceFeederSmart.polarauto",
-                                "4PieceFeederGroundSmart.polarauto",
-                                "odometry test.polarauto",
-                };
+                public static String[] paths;
+
+                static {
+                        ArrayList<String> autoPaths = new ArrayList<>();
+                        File[] dir = Filesystem.getDeployDirectory().listFiles();
+                        for (File file : dir) {
+                                if (file.getName().contains(".polarauto")) {
+                                        autoPaths.add(file.getName());
+                                }
+                        }
+                        paths = new String[autoPaths.size()];
+                        for (int i = 0; i < autoPaths.size(); i++) {
+                                paths[i] = autoPaths.get(i);
+                        }
+                }
 
                 public static int getSelectedPathIndex() {
-                        if (OI.autoChooserConnected()) {
-                                if (OI.autoChooser.getRawButton(1)) {
-                                        return 0;
+                        String path = OI.getSelectedPath();
+                        if (path.equals("None")) {
+                                return -1;
+                        }
+                        for (int i = 0; i < paths.length; i++) {
+                                if (path.equals(paths[i])) {
+                                        return i;
                                 }
-                                if (OI.autoChooser.getRawButton(2)) {
-                                        return 1;
-                                }
-                                if (OI.autoChooser.getRawButton(3)) {
-                                        return 2;
-                                }
-                                if (OI.autoChooser.getRawButton(4)) {
-                                        return 3;
-                                }
-                                if (OI.autoChooser.getRawButton(5)) {
-                                        return 4;
-                                }
-                        } else {
-                                return (int) Math.round(SmartDashboard.getNumber("ROBOT AUTO OVERIDE", -1));
                         }
                         return -1;
                 }

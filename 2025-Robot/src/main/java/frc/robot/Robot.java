@@ -69,6 +69,7 @@ public class Robot extends LoggedRobot {
     this.m_fieldSide = "blue";
     SmartDashboard.putNumber("Shooter Angle Degrees (tuning)", 0);
     SmartDashboard.putNumber("Shooter RPM (input)", 0);
+    System.out.println("OI Starting " + OI.getDriverLTPercent());
     m_robotContainer = new RobotContainer();
 
     m_robotContainer.peripherals.init();

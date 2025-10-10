@@ -68,14 +68,14 @@ public class RobotContainer {
         HashMap<String, Supplier<Command>> commandMap = new HashMap<String, Supplier<Command>>() {
                 {
                         put("AutoPlaceL2", () -> new AutoPlaceL2Follower(superstructure, drive, 3.3));
-                        put("AutoPlaceL4", () -> new AutoPlaceL4Follower(superstructure, drive, 3.3));
+                        put("AutoPlaceL4", () -> new AutoPlaceL4Follower(superstructure, drive, 1.5));
                         put("Outake", () -> new SetRobotStateSimple(superstructure, SuperState.OUTTAKE));
                         put("Idle", () -> new SetRobotStateSimple(superstructure, SuperState.IDLE));
                         put("Full Send", () -> new FullSendFollower(drive, null, false));
                         put("Net", () -> new SetRobotStateSimple(superstructure, SuperState.NET));
                         put("ReefAlgaeL2", () -> new SetRobotState(superstructure, SuperState.ALGAE_LOW));
                         put("ReefAlgaeL3", () -> new SetRobotState(superstructure, SuperState.ALGAE_HIGH));
-                        put("AutoIntake", () -> new SetRobotStateSimple(superstructure, SuperState.INTAKE_IDLE));
+                        put("AutoIntake", () -> new SetRobotStateSimple(superstructure, SuperState.INTAKING));
                         put("ToggleAlgaeMode", () -> new SetAlgaeMode(m_container));
                 }
         };

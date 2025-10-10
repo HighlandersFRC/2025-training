@@ -3543,7 +3543,7 @@ public final class Constants {
                                                                                   // and max acceleration. Add a max
                                                                                   // deceleration if needed.
 
-                public static final double ROBOT_LENGTH = inchesToMeters(26);
+                public static final double ROBOT_LENGTH = inchesToMeters(32);
                 public static final double ROBOT_WIDTH = inchesToMeters(26);
                 public static final double MODULE_OFFSET = inchesToMeters(2.625);
                 public static final double ROBOT_RADIUS = Math.hypot(ROBOT_LENGTH / 2 - WHEEL_TO_FRAME_DISTANCE,

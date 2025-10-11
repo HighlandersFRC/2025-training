@@ -164,23 +164,25 @@ public class Superstructure extends SubsystemBase {
         handleAutoL4Place();
         break;
       case HANDOFF:
-        if (straightenator.isFar() && !manipulator.hasCoral()) {
+        if (straightenator.isFar() && !manipulator.hasCoralSemiSticky()) {
           handleHandOffLowState();
-          // if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
-          //   handleHandoffState();
+          // if (Constants.metersToInches(elevator.getElevatorPosition()) <
+          // Constants.Elevator.HANDOFF_LOW + 2.0) {
+          // handleHandoffState();
           // }
         } else {
           handleHandoffState();
         }
 
         // if (!manipulator.hasCoral()) {
-        //   if (straightenator.isFar()) {
-        //     handleHandOffLowState();
-        //   } else if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
-        //     handleHandoffState();
-        //   }
+        // if (straightenator.isFar()) {
+        // handleHandOffLowState();
+        // } else if (Constants.metersToInches(elevator.getElevatorPosition()) <
+        // Constants.Elevator.HANDOFF_LOW + 2.0) {
+        // handleHandoffState();
+        // }
         // } else {
-        //   handleHandoffState();
+        // handleHandoffState();
         // }
 
         break;
@@ -240,8 +242,9 @@ public class Superstructure extends SubsystemBase {
         if (straightenator.isFar() && !manipulator.hasCoral()) {
           elevator.setWantedState(ElevatorState.HANDOFF_LOW);
           manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
-          // if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
-          //   handleHandoffState();
+          // if (Constants.metersToInches(elevator.getElevatorPosition()) <
+          // Constants.Elevator.HANDOFF_LOW + 2.0) {
+          // handleHandoffState();
           // }
         } else {
           elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
@@ -517,7 +520,7 @@ public class Superstructure extends SubsystemBase {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
     // if (Timer.getFPGATimestamp() - backUpTime > 0.5) {
-    //   manipulator.setWantedState(ManipulatorState.OUTAKE);
+    // manipulator.setWantedState(ManipulatorState.OUTAKE);
     // }
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (pivot.getPivotDegrees() < Constants.Pivot.HORIZONTAL + 2) {
@@ -673,8 +676,9 @@ public class Superstructure extends SubsystemBase {
       System.out.println("333");
       elevator.setWantedState(ElevatorState.HANDOFF_LOW);
       manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
-      // if (Constants.metersToInches(elevator.getElevatorPosition()) < Constants.Elevator.HANDOFF_LOW + 2.0) {
-      //   handleHandoffState();
+      // if (Constants.metersToInches(elevator.getElevatorPosition()) <
+      // Constants.Elevator.HANDOFF_LOW + 2.0) {
+      // handleHandoffState();
       // }
     } else {
       System.out.println("4444444");
@@ -765,8 +769,9 @@ public class Superstructure extends SubsystemBase {
 
     Logger.recordOutput("SuperStructure State", currentSuperState);
     // System.out
-    //     .println("Zero Intake: " + intake.getZeroed() + " Zero Elevator: " + elevator.getZeroed() + " Pivot Zeroed: "
-    //         + pivot.getZeroed());
+    // .println("Zero Intake: " + intake.getZeroed() + " Zero Elevator: " +
+    // elevator.getZeroed() + " Pivot Zeroed: "
+    // + pivot.getZeroed());
     currentSuperState = handleStateTransitions();
     applyStates();
   }

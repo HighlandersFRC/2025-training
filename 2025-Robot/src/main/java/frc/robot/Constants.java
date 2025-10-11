@@ -281,8 +281,9 @@ public final class Constants {
 
                 // // right when facing the reef side is positive
                 // // negative makes robot go more to the left
-                public static final double A_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
-                public static final double B_BRANCH_OFFSET_SIDE = inchesToMeters(1.5);
+                public static final double A_BRANCH_OFFSET_SIDE = inchesToMeters(0.0); // TODO: make red and blue
+                                                                                       // seperate
+                public static final double B_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
                 public static final double C_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
                 public static final double D_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
                 public static final double E_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
@@ -290,8 +291,8 @@ public final class Constants {
                 public static final double G_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
                 public static final double H_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
                 public static final double I_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
-                public static final double J_BRANCH_OFFSET_SIDE = inchesToMeters(-2.0);
-                public static final double K_BRANCH_OFFSET_SIDE = inchesToMeters(-1.0);
+                public static final double J_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
+                public static final double K_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
                 public static final double L_BRANCH_OFFSET_SIDE = inchesToMeters(0.0);
 
                 public static final double A_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
@@ -302,8 +303,8 @@ public final class Constants {
                 public static final double F_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
                 public static final double G_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
                 public static final double H_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
-                public static final double I_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(1.5);
-                public static final double J_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(-2.0);
+                public static final double I_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
+                public static final double J_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
                 public static final double K_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
                 public static final double L_BRANCH_OFFSET_SIDE_L3 = inchesToMeters(0.0);
 
@@ -315,8 +316,8 @@ public final class Constants {
                 public static final double F_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
                 public static final double G_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
                 public static final double H_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
-                public static final double I_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(1.5);
-                public static final double J_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(-2.0);
+                public static final double I_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
+                public static final double J_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
                 public static final double K_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
                 public static final double L_BRANCH_OFFSET_SIDE_L2 = inchesToMeters(0.0);
                 // public static final double A_BRANCH_OFFSET = PERFECT_BRANCH_OFFSET_L4 -

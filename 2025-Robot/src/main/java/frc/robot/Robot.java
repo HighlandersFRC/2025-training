@@ -103,8 +103,11 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Field Side", m_fieldSide);
     Constants.periodic();
     m_robotContainer.peripherals.periodic();
+    m_robotContainer.straightenator.periodic();
     m_logHandler.write();
-    // Logger.recordOutput("finished", m_robotContainer.superstructure.placedCoralL4());
+
+    // Logger.recordOutput("finished",
+    // m_robotContainer.superstructure.placedCoralL4());
 
   }
 

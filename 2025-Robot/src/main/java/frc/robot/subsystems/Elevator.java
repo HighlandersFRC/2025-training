@@ -142,7 +142,7 @@ public class Elevator extends SubsystemBase {
     // if (isZeroed) {
     this.wantedState = wantedState;
     // } else {
-    //   this.wantedState = ElevatorState.ZERO;
+    // this.wantedState = ElevatorState.ZERO;
     // }
   }
 
@@ -157,10 +157,10 @@ public class Elevator extends SubsystemBase {
         // if (isZeroed) {
         return ElevatorState.DEFAULT;
       // } else
-      //   return ElevatorState.ZERO;
+      // return ElevatorState.ZERO;
       case ZERO:
         // if (isZeroed) {
-        //   return ElevatorState.DEFAULT;
+        // return ElevatorState.DEFAULT;
         // } else
         return ElevatorState.ZERO;
       case OVER:
@@ -264,6 +264,9 @@ public class Elevator extends SubsystemBase {
         break;
       case AUTO_SCORE_L4:
         moveElevatorToPosition(Constants.Elevator.AUTO_SCORE_L4);
+        break;
+      case GROUND_ALGAE_INTAKE:
+        moveElevatorToPosition(Constants.Elevator.GROUND_ALGAE_INTAKE);
         break;
       case ZERO:
         moveWithTorque(-30, 0.25);

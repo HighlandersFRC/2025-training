@@ -58,6 +58,7 @@ public class Superstructure extends SubsystemBase {
     INTAKING,
     INTAKE_IDLE,
     OUTTAKE_ONESIDE,
+    GROUND_ALGAE_INTAKE,
     PICKUP_PIECE,
     IDLE,
     OUTAKE_IDLE
@@ -140,6 +141,9 @@ public class Superstructure extends SubsystemBase {
         break;
       case OUTTAKE:
         handleOuttakeState();
+        break;
+      case GROUND_ALGAE_INTAKE:
+        handleGroundAlgaeIntake();
         break;
       case AUTO_L1_SCORE:
         handleAutoL1Score();
@@ -420,6 +424,9 @@ public class Superstructure extends SubsystemBase {
       case PROCESSOR:
         currentSuperState = SuperState.PROCESSOR;
         break;
+      case GROUND_ALGAE_INTAKE:
+        currentSuperState = SuperState.GROUND_ALGAE_INTAKE;
+        break;
       case ALGAE_HOME:
         currentSuperState = SuperState.ALGAE_HOME;
         break;
@@ -656,8 +663,14 @@ public class Superstructure extends SubsystemBase {
 
   public void handleProcessor() {
     elevator.setWantedState(ElevatorState.PROCESSOR);
-    pivot.setWantedState(PivotState.HANDOFF);
-    manipulator.setWantedState(ManipulatorState.DEFAULT);
+    pivot.setWantedState(PivotState.PROCESSOR);
+    manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
+  }
+
+  public void handleGroundAlgaeIntake() {
+    elevator.setWantedState(ElevatorState.GROUND_ALGAE_INTAKE);
+    pivot.setWantedState(PivotState.GROUND_ALGAE_INTAKE);
+    manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
   }
 
   public void handleIntakingState() {

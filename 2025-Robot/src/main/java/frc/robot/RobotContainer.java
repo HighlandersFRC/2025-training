@@ -134,191 +134,195 @@ public class RobotContainer {
          * joysticks}.
          */
         // private void configureBindings() {
-        //         // COMPETITION CONTROLS
-        //         // Driver
-        //         OI.driverMenuButton.onTrue(new SetRobotStateSimpleOnce(superstructure, SuperState.ZERO));
-        //         OI.driverViewButton.whileTrue(new ZeroAngleMidMatch(
-        //                         drive)); // zero pidgeon and elevator
+        // // COMPETITION CONTROLS
+        // // Driver
+        // OI.driverMenuButton.onTrue(new SetRobotStateSimpleOnce(superstructure,
+        // SuperState.ZERO));
+        // OI.driverViewButton.whileTrue(new ZeroAngleMidMatch(
+        // drive)); // zero pidgeon and elevator
 
-        //         // OI.driverRT.whileTrue(new SetRobotState(superstructure,
-        //         // SuperState.GROUND_CORAL_PICKUP_FRONT));
-        //         OI.driverRT.whileTrue(
-        //                         new SetRobotStateOnce(superstructure, SuperState.GROUND_CORAL_PICKUP_FRONT));
-        //         // OI.driverRB.whileTrue(new SetRobotState(superstructure,
-        //         // SuperState.GROUND_CORAL_PICKUP_BACK));
-        //         OI.driverRB.whileTrue(new ConditionalCommand(new InstantCommand(),
-        //                         new ConditionalCommand(new SetRobotState(superstructure,
-        //                                         SuperState.GROUND_ALGAE_PICKUP_BACK),
-        //                                         new SetRobotState(superstructure, SuperState.GROUND_CORAL_PICKUP_BACK),
-        //                                         () -> (algaeMode)),
-        //                         () -> (superstructure.getCurrentSuperState() == SuperState.L4_PLACE || superstructure
-        //                                         .getCurrentSuperState() == SuperState.L3_PLACE
-        //                                         || superstructure.getCurrentSuperState() == SuperState.L2_PLACE)));
+        // // OI.driverRT.whileTrue(new SetRobotState(superstructure,
+        // // SuperState.GROUND_CORAL_PICKUP_FRONT));
+        // OI.driverRT.whileTrue(
+        // new SetRobotStateOnce(superstructure, SuperState.GROUND_CORAL_PICKUP_FRONT));
+        // // OI.driverRB.whileTrue(new SetRobotState(superstructure,
+        // // SuperState.GROUND_CORAL_PICKUP_BACK));
+        // OI.driverRB.whileTrue(new ConditionalCommand(new InstantCommand(),
+        // new ConditionalCommand(new SetRobotState(superstructure,
+        // SuperState.GROUND_ALGAE_PICKUP_BACK),
+        // new SetRobotState(superstructure, SuperState.GROUND_CORAL_PICKUP_BACK),
+        // () -> (algaeMode)),
+        // () -> (superstructure.getCurrentSuperState() == SuperState.L4_PLACE ||
+        // superstructure
+        // .getCurrentSuperState() == SuperState.L3_PLACE
+        // || superstructure.getCurrentSuperState() == SuperState.L2_PLACE)));
 
-        //         // OI.driverLT.whileTrue(new SetIntakeState(intake, IntakeState.OUTAKE));
-        //         // OI.driverLT.onFalse(new SetIntakeState(intake, IntakeState.DEFAULT));
+        // // OI.driverLT.whileTrue(new SetIntakeState(intake, IntakeState.OUTAKE));
+        // // OI.driverLT.onFalse(new SetIntakeState(intake, IntakeState.DEFAULT));
 
-        //         OI.driverLB.whileTrue(new ConditionalCommand(
-        //                         new InstantCommand(),
-        //                         new ConditionalCommand(
-        //                                         new SetRobotState(superstructure,
-        //                                                         SuperState.FEEDER),
-        //                                         new SetRobotState(superstructure,
-        //                                                         SuperState.FEEDER_AUTO),
-        //                                         () -> manualMode),
-        //                         () -> (superstructure.getCurrentSuperState() == SuperState.L4_PLACE || superstructure
-        //                                         .getCurrentSuperState() == SuperState.L3_PLACE
-        //                                         || superstructure.getCurrentSuperState() == SuperState.L2_PLACE
-        //                                         || superstructure
-        //                                                         .getCurrentSuperState() == SuperState.AUTO_L4_PLACE
-        //                                         || superstructure
-        //                                                         .getCurrentSuperState() == SuperState.AUTO_L3_PLACE
-        //                                         || superstructure.getCurrentSuperState() == SuperState.AUTO_L2_PLACE
-        //                                         || superstructure
-        //                                                         .getCurrentSuperState() == SuperState.SCORE_L2
-        //                                         || superstructure
-        //                                                         .getCurrentSuperState() == SuperState.SCORE_L3
-        //                                         || superstructure.getCurrentSuperState() == SuperState.SCORE_L4
-        //                                         || superstructure
-        //                                                         .getCurrentSuperState() == SuperState.AUTO_SCORE_L2
-        //                                         || superstructure
-        //                                                         .getCurrentSuperState() == SuperState.AUTO_SCORE_L3
-        //                                         || superstructure.getCurrentSuperState() == SuperState.AUTO_SCORE_L4
-        //                                         || algaeMode)));
+        // OI.driverLB.whileTrue(new ConditionalCommand(
+        // new InstantCommand(),
+        // new ConditionalCommand(
+        // new SetRobotState(superstructure,
+        // SuperState.FEEDER),
+        // new SetRobotState(superstructure,
+        // SuperState.FEEDER_AUTO),
+        // () -> manualMode),
+        // () -> (superstructure.getCurrentSuperState() == SuperState.L4_PLACE ||
+        // superstructure
+        // .getCurrentSuperState() == SuperState.L3_PLACE
+        // || superstructure.getCurrentSuperState() == SuperState.L2_PLACE
+        // || superstructure
+        // .getCurrentSuperState() == SuperState.AUTO_L4_PLACE
+        // || superstructure
+        // .getCurrentSuperState() == SuperState.AUTO_L3_PLACE
+        // || superstructure.getCurrentSuperState() == SuperState.AUTO_L2_PLACE
+        // || superstructure
+        // .getCurrentSuperState() == SuperState.SCORE_L2
+        // || superstructure
+        // .getCurrentSuperState() == SuperState.SCORE_L3
+        // || superstructure.getCurrentSuperState() == SuperState.SCORE_L4
+        // || superstructure
+        // .getCurrentSuperState() == SuperState.AUTO_SCORE_L2
+        // || superstructure
+        // .getCurrentSuperState() == SuperState.AUTO_SCORE_L3
+        // || superstructure.getCurrentSuperState() == SuperState.AUTO_SCORE_L4
+        // || algaeMode)));
 
-        //         // OI.driverMenuButton.whileTrue(new SetRobotState(superstructure,
-        //         // SuperState.DEFAULT));
+        // // OI.driverMenuButton.whileTrue(new SetRobotState(superstructure,
+        // // SuperState.DEFAULT));
 
-        //         // OI.driverA.onTrue(new SetRobotStateSimpleOnce(superstructure,
-        //         // SuperState.CLIMB));
-        //         // OI.driverA.whileTrue(
-        //         // new ConditionalCommand(new InstantCommand(),
-        //         // new SetRobotStateSimple(superstructure, SuperState.RUN_CLIMB_BACK),
-        //         // () -> (!manualMode)));
-        //         // OI.driverY.onTrue(new SetRobotStateSimpleOnce(superstructure,
-        //         // SuperState.DEPLOY_CLIMBER));
-        //         // OI.driverY.whileTrue(
-        //         // new ConditionalCommand(new SetRobotStateSimpleOnce(superstructure,
-        //         // SuperState.DEPLOY_CLIMBER),
-        //         // new SetClimberPivotTorque(climber, -80, 1.0), () -> (!manualMode)));
-        //         // OI.driverY.whileTrue(new SetClimberPivotTorque(climber, 60, 0.2));
-        //         // OI.driverA.whileTrue(new SetClimberPivotTorque(climber, -60, 0.2));
-        //         // OI.driverB.whileTrue(new SetClimberPivotTorque(climber, 20, 0.15));
+        // // OI.driverA.onTrue(new SetRobotStateSimpleOnce(superstructure,
+        // // SuperState.CLIMB));
+        // // OI.driverA.whileTrue(
+        // // new ConditionalCommand(new InstantCommand(),
+        // // new SetRobotStateSimple(superstructure, SuperState.RUN_CLIMB_BACK),
+        // // () -> (!manualMode)));
+        // // OI.driverY.onTrue(new SetRobotStateSimpleOnce(superstructure,
+        // // SuperState.DEPLOY_CLIMBER));
+        // // OI.driverY.whileTrue(
+        // // new ConditionalCommand(new SetRobotStateSimpleOnce(superstructure,
+        // // SuperState.DEPLOY_CLIMBER),
+        // // new SetClimberPivotTorque(climber, -80, 1.0), () -> (!manualMode)));
+        // // OI.driverY.whileTrue(new SetClimberPivotTorque(climber, 60, 0.2));
+        // // OI.driverA.whileTrue(new SetClimberPivotTorque(climber, -60, 0.2));
+        // // OI.driverB.whileTrue(new SetClimberPivotTorque(climber, 20, 0.15));
 
-        //         // ********OFFICIAL COMPETITION CONTROLS*********
-        //         // DO NOT DELETE
+        // // ********OFFICIAL COMPETITION CONTROLS*********
+        // // DO NOT DELETE
 
-        //         OI.driverPOVUp.whileTrue(
-        //                         new ConditionalCommand(
-        //                                         new SetRobotStateSimple(superstructure, SuperState.L1_PLACE),
-        //                                         new ConditionalCommand(
-        //                                                         new ConditionalCommand(
-        //                                                                         new SetRobotState(superstructure,
-        //                                                                                         SuperState.PROCESSOR),
-        //                                                                         new SetRobotStateComplicated(
-        //                                                                                         superstructure,
-        //                                                                                         SuperState.AUTO_PROCESSOR,
-        //                                                                                         SuperState.DEFAULT),
-        //                                                                         () -> manualMode),
-        //                                                         new SetRobotStateOnce(superstructure,
-        //                                                                         SuperState.AUTO_L1_PLACE),
-        //                                                         () -> algaeMode),
-        //                                         () -> (manualMode && !algaeMode)));
+        // OI.driverPOVUp.whileTrue(
+        // new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure, SuperState.L1_PLACE),
+        // new ConditionalCommand(
+        // new ConditionalCommand(
+        // new SetRobotState(superstructure,
+        // SuperState.PROCESSOR),
+        // new SetRobotStateComplicated(
+        // superstructure,
+        // SuperState.AUTO_PROCESSOR,
+        // SuperState.DEFAULT),
+        // () -> manualMode),
+        // new SetRobotStateOnce(superstructure,
+        // SuperState.AUTO_L1_PLACE),
+        // () -> algaeMode),
+        // () -> (manualMode && !algaeMode)));
 
-        //         OI.driverPOVUp.onFalse(
-        //                         new ConditionalCommand(new SetRobotStateSimple(superstructure, SuperState.DEFAULT),
-        //                                         new InstantCommand(), () -> (manualMode && !algaeMode)));
+        // OI.driverPOVUp.onFalse(
+        // new ConditionalCommand(new SetRobotStateSimple(superstructure,
+        // SuperState.DEFAULT),
+        // new InstantCommand(), () -> (manualMode && !algaeMode)));
 
-        //         OI.driverPOVLeft.whileTrue(new ConditionalCommand(
-        //                         new SetRobotStateSimple(superstructure, SuperState.L2_PLACE),
-        //                         new ConditionalCommand(new ConditionalCommand(
-        //                                         new SetRobotState(superstructure, SuperState.L2_ALGAE_PICKUP),
-        //                                         new SetRobotStateComplicated(superstructure,
-        //                                                         SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
-        //                                         () -> manualMode),
-        //                                         new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_PLACE),
-        //                                         () -> algaeMode),
-        //                         () -> (manualMode && !algaeMode)));
+        // OI.driverPOVLeft.whileTrue(new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure, SuperState.L2_PLACE),
+        // new ConditionalCommand(new ConditionalCommand(
+        // new SetRobotState(superstructure, SuperState.L2_ALGAE_PICKUP),
+        // new SetRobotStateComplicated(superstructure,
+        // SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
+        // () -> manualMode),
+        // new SetRobotStateSimple(superstructure, SuperState.AUTO_L2_PLACE),
+        // () -> algaeMode),
+        // () -> (manualMode && !algaeMode)));
 
-        //         OI.driverPOVLeft.onFalse(
-        //                         new ConditionalCommand(
-        //                                         new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT),
-        //                                         new ConditionalCommand(
-        //                                                         new SetRobotStateSimple(superstructure,
-        //                                                                         SuperState.SCORE_L2),
-        //                                                         new InstantCommand(), () -> (manualMode && !algaeMode)),
-        //                                         () -> (!manualMode && !algaeMode)));
+        // OI.driverPOVLeft.onFalse(
+        // new ConditionalCommand(
+        // new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT),
+        // new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure,
+        // SuperState.SCORE_L2),
+        // new InstantCommand(), () -> (manualMode && !algaeMode)),
+        // () -> (!manualMode && !algaeMode)));
 
-        //         OI.driverPOVDown.whileTrue(new ConditionalCommand(
-        //                         new SetRobotStateSimple(superstructure, SuperState.L3_PLACE),
-        //                         new ConditionalCommand(new ConditionalCommand(
-        //                                         new SetRobotState(superstructure, SuperState.L3_ALGAE_PICKUP),
-        //                                         new SetRobotStateComplicated(superstructure,
-        //                                                         SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
-        //                                         () -> manualMode),
-        //                                         new SetRobotStateSimple(superstructure, SuperState.AUTO_L3_PLACE),
-        //                                         () -> algaeMode),
-        //                         () -> (manualMode && !algaeMode)));
+        // OI.driverPOVDown.whileTrue(new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure, SuperState.L3_PLACE),
+        // new ConditionalCommand(new ConditionalCommand(
+        // new SetRobotState(superstructure, SuperState.L3_ALGAE_PICKUP),
+        // new SetRobotStateComplicated(superstructure,
+        // SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
+        // () -> manualMode),
+        // new SetRobotStateSimple(superstructure, SuperState.AUTO_L3_PLACE),
+        // () -> algaeMode),
+        // () -> (manualMode && !algaeMode)));
 
-        //         OI.driverPOVDown.onFalse(
-        //                         new ConditionalCommand(
-        //                                         new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT),
-        //                                         new ConditionalCommand(
-        //                                                         new SetRobotStateSimple(superstructure,
-        //                                                                         SuperState.SCORE_L3),
-        //                                                         new InstantCommand(), () -> (manualMode && !algaeMode)),
-        //                                         () -> (!manualMode && !algaeMode)));
+        // OI.driverPOVDown.onFalse(
+        // new ConditionalCommand(
+        // new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT),
+        // new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure,
+        // SuperState.SCORE_L3),
+        // new InstantCommand(), () -> (manualMode && !algaeMode)),
+        // () -> (!manualMode && !algaeMode)));
 
-        //         OI.driverPOVRight.whileTrue(new ConditionalCommand(
-        //                         new SetRobotStateSimple(superstructure, SuperState.L4_PLACE),
-        //                         new ConditionalCommand(
-        //                                         new ConditionalCommand(
-        //                                                         new SetRobotState(superstructure, SuperState.NET),
-        //                                                         new SetRobotStateSimple(superstructure,
-        //                                                                         SuperState.AUTO_NET),
-        //                                                         () -> manualMode),
-        //                                         new SetRobotStateSimple(superstructure, SuperState.AUTO_L4_PLACE),
-        //                                         () -> algaeMode),
-        //                         () -> (manualMode && !algaeMode)));
+        // OI.driverPOVRight.whileTrue(new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure, SuperState.L4_PLACE),
+        // new ConditionalCommand(
+        // new ConditionalCommand(
+        // new SetRobotState(superstructure, SuperState.NET),
+        // new SetRobotStateSimple(superstructure,
+        // SuperState.AUTO_NET),
+        // () -> manualMode),
+        // new SetRobotStateSimple(superstructure, SuperState.AUTO_L4_PLACE),
+        // () -> algaeMode),
+        // () -> (manualMode && !algaeMode)));
 
-        //         OI.driverPOVRight.onFalse(
-        //                         new ConditionalCommand(
-        //                                         new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT),
-        //                                         new ConditionalCommand(
-        //                                                         new SetRobotStateSimple(superstructure,
-        //                                                                         SuperState.SCORE_L4),
-        //                                                         new InstantCommand(), () -> (manualMode && !algaeMode)),
-        //                                         () -> (!manualMode)));
+        // OI.driverPOVRight.onFalse(
+        // new ConditionalCommand(
+        // new SetRobotStateSimpleOnce(superstructure, SuperState.DEFAULT),
+        // new ConditionalCommand(
+        // new SetRobotStateSimple(superstructure,
+        // SuperState.SCORE_L4),
+        // new InstantCommand(), () -> (manualMode && !algaeMode)),
+        // () -> (!manualMode)));
 
-        //         // OI.operatorLT.onFalse(new ConditionalCommand(new
-        //         // SetRobotStateSimple(superstructure, SuperState.SCORE_L4), , () ->
-        //         // superstructure.getCurrentSuperState() == SuperState.AUTO_SCORE_L4));
-        //         OI.operatorY.whileTrue(new ConditionalCommand(
-        //                         new SetRobotState(superstructure, SuperState.L3_ALGAE_PICKUP),
-        //                         new SetRobotStateComplicated(superstructure,
-        //                                         SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
-        //                         () -> manualMode));
+        // // OI.operatorLT.onFalse(new ConditionalCommand(new
+        // // SetRobotStateSimple(superstructure, SuperState.SCORE_L4), , () ->
+        // // superstructure.getCurrentSuperState() == SuperState.AUTO_SCORE_L4));
+        // OI.operatorY.whileTrue(new ConditionalCommand(
+        // new SetRobotState(superstructure, SuperState.L3_ALGAE_PICKUP),
+        // new SetRobotStateComplicated(superstructure,
+        // SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
+        // () -> manualMode));
 
-        //         OI.operatorX.whileTrue(new ConditionalCommand(
-        //                         new SetRobotState(superstructure,
-        //                                         SuperState.PROCESSOR),
-        //                         new SetRobotStateComplicated(
-        //                                         superstructure,
-        //                                         SuperState.AUTO_PROCESSOR,
-        //                                         SuperState.DEFAULT),
-        //                         () -> manualMode));
+        // OI.operatorX.whileTrue(new ConditionalCommand(
+        // new SetRobotState(superstructure,
+        // SuperState.PROCESSOR),
+        // new SetRobotStateComplicated(
+        // superstructure,
+        // SuperState.AUTO_PROCESSOR,
+        // SuperState.DEFAULT),
+        // () -> manualMode));
 
-        //         OI.operatorA.whileTrue(new ConditionalCommand(
-        //                         new SetRobotState(superstructure, SuperState.L2_ALGAE_PICKUP),
-        //                         new SetRobotStateComplicated(superstructure,
-        //                                         SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
-        //                         () -> manualMode));
+        // OI.operatorA.whileTrue(new ConditionalCommand(
+        // new SetRobotState(superstructure, SuperState.L2_ALGAE_PICKUP),
+        // new SetRobotStateComplicated(superstructure,
+        // SuperState.AUTO_ALGAE_PICKUP, SuperState.DEFAULT),
+        // () -> manualMode));
 
-        //         OI.operatorB.whileTrue(new ConditionalCommand(
-        //                         new SetRobotState(superstructure, SuperState.NET),
-        //                         new SetRobotStateComplicated(superstructure,
-        //                                         SuperState.AUTO_NET, SuperState.DEFAULT),
-        //                         () -> manualMode));
+        // OI.operatorB.whileTrue(new ConditionalCommand(
+        // new SetRobotState(superstructure, SuperState.NET),
+        // new SetRobotStateComplicated(superstructure,
+        // SuperState.AUTO_NET, SuperState.DEFAULT),
+        // () -> manualMode));
         // }
 
         private void configureBindings() {
@@ -387,6 +391,7 @@ public class RobotContainer {
 
                 OI.driverLB
                                 .whileTrue(new SetRobotStateSimple(superstructure, SuperState.DEFAULT));
+                OI.driverRB.whileTrue(new SetRobotStateSimple(superstructure, SuperState.GROUND_ALGAE_INTAKE));
                 OI.driverX.whileTrue(new SetRobotStateSimple(superstructure, SuperState.OUTTAKE_ONESIDE));
         }
 

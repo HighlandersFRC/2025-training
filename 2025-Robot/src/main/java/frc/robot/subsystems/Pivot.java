@@ -35,6 +35,8 @@ public class Pivot extends SubsystemBase {
     L2_PLACE,
     L1_PLACE,
     HORIZONTAL,
+    PROCESSOR,
+    GROUND_ALGAE_INTAKE,
     VERTICAL,
     NET,
     HANDOFF,
@@ -139,6 +141,10 @@ public class Pivot extends SubsystemBase {
         return PivotState.NET;
       case HANDOFF:
         return PivotState.HANDOFF;
+      case PROCESSOR:
+        return PivotState.PROCESSOR;
+      case GROUND_ALGAE_INTAKE:
+        return PivotState.GROUND_ALGAE_INTAKE;
       case VERTICAL:
         return PivotState.VERTICAL;
       default:
@@ -198,6 +204,12 @@ public class Pivot extends SubsystemBase {
         break;
       case L1_PLACE:
         setPivotDegrees(Constants.Pivot.L1_Place);
+        break;
+      case PROCESSOR:
+        setPivotDegrees(Constants.Pivot.PROCESSOR);
+        break;
+      case GROUND_ALGAE_INTAKE:
+        setPivotDegrees(Constants.Pivot.GROUND_ALGAE_INTAKE);
         break;
       case DEFAULT:
         setPivotDegrees(Constants.Pivot.DEFAULT);

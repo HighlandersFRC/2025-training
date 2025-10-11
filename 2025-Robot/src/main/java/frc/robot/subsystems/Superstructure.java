@@ -651,7 +651,7 @@ public class Superstructure extends SubsystemBase {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.ALGAE_LOW);
     pivot.setWantedState(PivotState.HORIZONTAL);
-    manipulator.setWantedState(ManipulatorState.DEFAULT);
+    manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
   }
 
   public void handleNet() {

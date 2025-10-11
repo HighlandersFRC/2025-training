@@ -3615,7 +3615,7 @@ public final class Constants {
                 public static final double ALGAE_HIGH = inchesToMeters(33);
                 public static final double ALGAE_LOW = inchesToMeters(15.0);
                 public static final double PROCESSOR = inchesToMeters(10.0);
-                public static final double NET = inchesToMeters(55.0);
+                public static final double NET = inchesToMeters(60.0);
         }
 
         // Subsystem setpoint constants

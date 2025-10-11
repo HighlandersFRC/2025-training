@@ -103,6 +103,15 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setPivotDegrees(double degrees) {
+    pivotPID.setPID(0.03, 0.0, 0.005);
+    pivotPID.setSetPoint(degrees);
+
+    Logger.recordOutput("Pivot Target Degrees", degrees);
+    Logger.recordOutput("Pivot Current Degrees", getPivotDegrees());
+  }
+
+  public void setPivotDegreesSlow(double degrees) {
+    pivotPID.setPID(0.02, 0.0, 0.009);
     pivotPID.setSetPoint(degrees);
 
     Logger.recordOutput("Pivot Target Degrees", degrees);
@@ -206,7 +215,7 @@ public class Pivot extends SubsystemBase {
         setPivotDegrees(Constants.Pivot.L1_Place);
         break;
       case PROCESSOR:
-        setPivotDegrees(Constants.Pivot.PROCESSOR);
+        setPivotDegreesSlow(Constants.Pivot.PROCESSOR);
         break;
       case GROUND_ALGAE_INTAKE:
         setPivotDegrees(Constants.Pivot.GROUND_ALGAE_INTAKE);
@@ -218,13 +227,13 @@ public class Pivot extends SubsystemBase {
         setPivotDegrees(Constants.Pivot.HANDOFF);
         break;
       case NET:
-        setPivotDegrees(Constants.Pivot.NET);
+        setPivotDegreesSlow(Constants.Pivot.NET);
         break;
       case HORIZONTAL:
         setPivotDegrees(Constants.Pivot.HORIZONTAL);
         break;
       case VERTICAL:
-        setPivotDegrees(Constants.Pivot.VERTICAL);
+        setPivotDegreesSlow(Constants.Pivot.VERTICAL);
         break;
     }
 

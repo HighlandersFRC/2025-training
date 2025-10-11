@@ -3571,14 +3571,14 @@ public final class Constants {
                 public static double L2_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
                 public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(25.0);
                 public static double L2_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
-                public static double L3_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.67);
+                public static double L3_INTAKE_X_OFFSET_FRONT = inchesToMeters(26.0);
                 public static double L3_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double L3_INTAKE_X_OFFSET_BACK = inchesToMeters(25.41);
+                public static double L3_INTAKE_X_OFFSET_BACK = inchesToMeters(26.0);
                 public static double L3_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
-                public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.6);
-                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(1.0);
-                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(25.6);
-                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(1.0);
+                public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(27.0);
+                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
+                public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(27.0);
+                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(0.0);
 
                 public static final double GRAVITY_ACCEL_MS2 = 9.806;
         }
@@ -3586,9 +3586,9 @@ public final class Constants {
         public static final class Pivot {
                 public static final double L4_Score = 0.0;
                 public static final double L4_Place = 43.0;
-                public static final double L3_Score = 5.0;
+                public static final double L3_Score = -10.0;
                 public static final double L3_Place = 45.0;
-                public static final double L2_Score = 5.0;
+                public static final double L2_Score = -5.0;
                 public static final double L2_Place = 45.0;
                 public static final double L1_Place = -25.0;
                 public static final double PROCESSOR = -27.0;

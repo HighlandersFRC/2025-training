@@ -3856,11 +3856,21 @@ public class Drive extends SubsystemBase {
           origionalSetpointPose = getReefClosestSetpoint(getMT2Odometry(), false);
         }
         setpoint = getReefClosestSetpoint(getMT2Odometry(), OI.getDriverA());
-        driveToPoint(setpoint);
+        if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
+          teleopDrive();
+        } else {
+          driveToPoint(setpoint);
+        }
         break;
       case REEF_MORE:
         setpoint = getReefMoreClosestSetpoint(getMT2Odometry());
-        driveToPoint(setpoint);
+
+        setpoint = getReefClosestSetpoint(getMT2Odometry(), OI.getDriverA());
+        if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
+          teleopDrive();
+        } else {
+          driveToPoint(setpoint);
+        }
         break;
       case BACK:
         if (autoPlacingFront) {
@@ -3879,7 +3889,13 @@ public class Drive extends SubsystemBase {
         // getReefL4ClosestSetpoint(getMT2Odometry(), OI.getDriverA()));
         // TODO: make this work
         setpoint = getReefL4ClosestSetpoint(getMT2Odometry(), OI.getDriverA());
-        driveToPoint(setpoint);
+
+        setpoint = getReefClosestSetpoint(getMT2Odometry(), OI.getDriverA());
+        if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
+          teleopDrive();
+        } else {
+          driveToPoint(setpoint);
+        }
         break;
       case L3_REEF:
         if (firstTimeReef) {
@@ -3887,7 +3903,13 @@ public class Drive extends SubsystemBase {
           origionalSetpointPose = getReefL3ClosestSetpoint(getMT2Odometry(), false);
         }
         setpoint = getReefL3ClosestSetpoint(getMT2Odometry(), OI.getDriverA());
-        driveToPoint(setpoint);
+
+        setpoint = getReefClosestSetpoint(getMT2Odometry(), OI.getDriverA());
+        if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
+          teleopDrive();
+        } else {
+          driveToPoint(setpoint);
+        }
         break;
       case PIECE_PICKUP:
         // Pose2d target = getGamePiecePosition();

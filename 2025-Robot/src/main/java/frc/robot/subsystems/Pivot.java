@@ -183,6 +183,10 @@ public class Pivot extends SubsystemBase {
 
   private double zeroTime = 0.0;
 
+  public PivotState getPivotState() {
+    return wantedState;
+  }
+
   @Override
   public void periodic() {
     systemState = handleStateTransition();

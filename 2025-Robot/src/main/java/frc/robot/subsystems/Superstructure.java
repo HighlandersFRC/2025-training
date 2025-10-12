@@ -526,6 +526,9 @@ public class Superstructure extends SubsystemBase {
     pivot.setWantedState(PivotState.L2_SCORE);
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
+    if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
+    }
     // if (Timer.getFPGATimestamp() - backUpTime > 0.5) {
     // manipulator.setWantedState(ManipulatorState.OUTAKE);
     // }
@@ -555,6 +558,9 @@ public class Superstructure extends SubsystemBase {
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
     pivot.setWantedState(PivotState.L3_SCORE);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
+    if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
+    }
     if (pivot.getPivotDegrees() < Constants.Pivot.HORIZONTAL + 2) {
       drive.setWantedState(DriveState.REEF_MORE);
       manipulator.setWantedState(ManipulatorState.OUTAKE);
@@ -771,9 +777,10 @@ public class Superstructure extends SubsystemBase {
     // &&
 
     // Pivot has abs to account for placing backwards
-    return Math
+    return (Math
         .abs(Math.abs(pivot.getPivotPosition())
-            - Constants.SetPoints.PivotPosition.kAUTOL2SCORE.rotations) < (5.0 / 360.0);
+            - Constants.SetPoints.PivotPosition.kAUTOL2SCORE.rotations) < (5.0 / 360.0)
+        && pivot.getPivotState() == PivotState.L2_SCORE);
   }
 
   @Override

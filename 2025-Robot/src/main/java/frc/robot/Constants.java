@@ -3567,9 +3567,9 @@ public final class Constants {
                 public static double L1_INTAKE_Y_OFFSET_FRONT_MORE = inchesToMeters(0.0);
                 public static double L1_INTAKE_X_OFFSET_BACK_MORE = inchesToMeters(24.9);
                 public static double L1_INTAKE_Y_OFFSET_BACK_MORE = inchesToMeters(-0.0);
-                public static double L2_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.0);
+                public static double L2_INTAKE_X_OFFSET_FRONT = inchesToMeters(25.4);
                 public static double L2_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
-                public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(25.0);
+                public static double L2_INTAKE_X_OFFSET_BACK = inchesToMeters(25.4);
                 public static double L2_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
                 public static double L3_INTAKE_X_OFFSET_FRONT = inchesToMeters(26.0);
                 public static double L3_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
@@ -3586,9 +3586,9 @@ public final class Constants {
         public static final class Pivot {
                 public static final double L4_Score = 0.0;
                 public static final double L4_Place = 43.0;
-                public static final double L3_Score = -10.0;
+                public static final double L3_Score = -15.0;
                 public static final double L3_Place = 45.0;
-                public static final double L2_Score = -5.0;
+                public static final double L2_Score = -10.0;
                 public static final double L2_Place = 45.0;
                 public static final double L1_Place = -25.0;
                 public static final double PROCESSOR = -27.0;

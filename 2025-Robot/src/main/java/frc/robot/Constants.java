@@ -3596,6 +3596,7 @@ public final class Constants {
                 public static final double HANDOFF = -91.0;
                 public static final double DEFAULT = -90.0;
                 public static final double HORIZONTAL = 5.0;
+                public static final double ALGAE_MORE = 15.0;
                 public static final double VERTICAL = 95.0;
                 public static final double NET = 135.0;
                 public static final double IDLE = 0.0;
@@ -3612,8 +3613,8 @@ public final class Constants {
                 public static final double GROUND_ALGAE_INTAKE = inchesToMeters(0.0);
                 public static final double HANDOFF_HIGH = inchesToMeters(11.0);
                 public static final double HANDOFF_LOW = inchesToMeters(3.0);
-                public static final double ALGAE_HIGH = inchesToMeters(33);
-                public static final double ALGAE_LOW = inchesToMeters(15.0);
+                public static final double ALGAE_HIGH = inchesToMeters(33.5);
+                public static final double ALGAE_LOW = inchesToMeters(14.5);
                 public static final double PROCESSOR = inchesToMeters(10.0);
                 public static final double NET = inchesToMeters(60.0);
         }

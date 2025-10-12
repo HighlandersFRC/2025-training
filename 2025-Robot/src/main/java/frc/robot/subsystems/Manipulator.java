@@ -135,6 +135,15 @@ public class Manipulator extends SubsystemBase {
     }
   }
 
+  public boolean hasAlgae() {
+    if (Math.abs(manipulatorMotor.getVelocity().getValueAsDouble()) < 8.0
+        && Math.abs(manipulatorMotor.getTorqueCurrent().getValueAsDouble()) > 10.0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean hasCoralSticky() {
     if (hasCoral() && Timer.getFPGATimestamp() - switchTime > 0.2) {
       hasCoralSticky = true;

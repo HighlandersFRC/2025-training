@@ -649,14 +649,22 @@ public class Superstructure extends SubsystemBase {
   public void handleAlgaeHigh() {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.ALGAE_HIGH);
-    pivot.setWantedState(PivotState.HORIZONTAL);
+    if (manipulator.hasAlgae()) {
+      pivot.setWantedState(PivotState.ALGAE_MORE);
+    } else {
+      pivot.setWantedState(PivotState.HORIZONTAL);
+    }
     manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
   }
 
   public void handleAlgaeLow() {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.ALGAE_LOW);
-    pivot.setWantedState(PivotState.HORIZONTAL);
+    if (manipulator.hasAlgae()) {
+      pivot.setWantedState(PivotState.ALGAE_MORE);
+    } else {
+      pivot.setWantedState(PivotState.HORIZONTAL);
+    }
     manipulator.setWantedState(ManipulatorState.ALGAE_INTAKE);
   }
 

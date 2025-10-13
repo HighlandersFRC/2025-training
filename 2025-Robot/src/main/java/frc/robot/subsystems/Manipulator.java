@@ -174,10 +174,10 @@ public class Manipulator extends SubsystemBase {
     } else {
       switch (systemState) {
         case CORAL_INTAKE:
-          setIntakeTorque(15, 0.3);
+          setIntakeTorque(50.0, 0.3);
           break;
         case ALGAE_INTAKE:
-          setIntakeTorque(67.41, 1.0);
+          setIntakeTorque(75.41, 1.0);
           break;
         case OUTAKE:
           // setIntakeTorque(-60, 1.0);
@@ -187,7 +187,7 @@ public class Manipulator extends SubsystemBase {
           setIntakeTorque(0, 0);
           break;
         default:
-          setIntakeTorque(15, 0.1);
+          setIntakeTorque(50.41, 0.1);
           break;
       }
     }

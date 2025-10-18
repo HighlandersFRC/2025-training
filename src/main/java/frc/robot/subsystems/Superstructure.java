@@ -511,6 +511,9 @@ public class Superstructure extends SubsystemBase {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L2);
     arm.setWantedState(ArmState.L2_SCORE);
+    if(arm.getArmDegrees() <= 41.0){
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
+    }
   }
 
   public void handleL3Place() {
@@ -524,6 +527,9 @@ public class Superstructure extends SubsystemBase {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L3);
     arm.setWantedState(ArmState.L3_SCORE);
+    if(arm.getArmDegrees() <= 41.0){
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
+    }
   }
 
   public void handleL4Place() {
@@ -537,7 +543,10 @@ public class Superstructure extends SubsystemBase {
   public void handleL4Score() {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
-    arm.setWantedState(ArmState.HORIZONTAL);
+    arm.setWantedState(ArmState.L4_SCORE);
+    if(arm.getArmDegrees() <= Constants.Arm.L4_Score + 3.0){
+      manipulator.setWantedState(ManipulatorState.OUTAKE);
+    }
 
   }
 

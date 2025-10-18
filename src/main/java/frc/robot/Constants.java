@@ -78,11 +78,11 @@ public final class Constants {
 
         public static final class Arm {
 
-                public static final double L4_Score = 0.0;
+                public static final double L4_Score = -20.0;
                 public static final double L4_Place = 43.0;
-                public static final double L3_Score = 5.0;
+                public static final double L3_Score = -10.0;
                 public static final double L3_Place = 45.0;
-                public static final double L2_Score = 5.0;
+                public static final double L2_Score = -10.0;
                 public static final double L2_Place = 45.0;
                 public static final double L1_Place = -25.0;
                 public static final double HANDOFF = -91.0;
@@ -95,16 +95,16 @@ public final class Constants {
 
         public static final class Elevator {
                 public static final double AUTO_L1 = inchesToMeters(18.0);
-                public static final double AUTO_L2 = inchesToMeters(7.0);
+                public static final double AUTO_L2 = inchesToMeters(8.0);
                 public static final double AUTO_L3 = inchesToMeters(24.25);
                 public static final double AUTO_L4 = inchesToMeters(50.0);
                 public static final double AUTO_SCORE_L2_HIGH = inchesToMeters(14.0);
-                public static final double AUTO_SCORE_L2 = inchesToMeters(6.0);
-                public static final double AUTO_SCORE_L3 = inchesToMeters(22.25);
+                public static final double AUTO_SCORE_L2 = inchesToMeters(5.0);
+                public static final double AUTO_SCORE_L3 = inchesToMeters(20.0);
                 public static final double AUTO_SCORE_L4 = inchesToMeters(48.0);
                 public static final double HANDOFF_HIGH = inchesToMeters(11.0);
                 public static final double HANDOFF_LOW = inchesToMeters(3.0);
-                public static final double ALGAE_HIGH = inchesToMeters(33);
+                public static final double ALGAE_HIGH = inchesToMeters(33.0);
                 public static final double ALGAE_LOW = inchesToMeters(15.0);
                 public static final double PROCESSOR = inchesToMeters(0.0);
                 public static final double NET = inchesToMeters(55.0);

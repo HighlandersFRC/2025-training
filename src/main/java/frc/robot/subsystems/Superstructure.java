@@ -280,20 +280,21 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.HANDOFF;
         break;
       case AUTO_L4_PLACE:
-        Pose2d closestl4 = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
-        java.util.logging.Logger.getGlobal().finer(
-            "Drive: " + drive.hitSetPoint(closestl4));
-        java.util.logging.Logger.getGlobal().finer(
-            "Elevator: " + (elevator.getElevatorPosition() > Constants.SetPoints.ElevatorPosition.kAUTOL4.meters));
-        if ((drive.hitSetPoint(closestl4))
-            && elevator.getElevatorPosition() > Constants
-                .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5)
-            || OI.getDriverLB()) {
-          currentSuperState = SuperState.AUTO_L4_SCORE;
-          wantedSuperState = SuperState.AUTO_L4_SCORE;
-        } else {
-          currentSuperState = SuperState.AUTO_L4_PLACE;
-        }
+        // Pose2d closestl4 = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
+        // java.util.logging.Logger.getGlobal().finer(
+        //     "Drive: " + drive.hitSetPoint(closestl4));
+        // java.util.logging.Logger.getGlobal().finer(
+        //     "Elevator: " + (elevator.getElevatorPosition() > Constants.SetPoints.ElevatorPosition.kAUTOL4.meters));
+        // if ((drive.hitSetPoint(closestl4))
+        //     && elevator.getElevatorPosition() > Constants
+        //         .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5)
+        //     || OI.getDriverLB()) {
+        //   currentSuperState = SuperState.AUTO_L4_SCORE;
+        //   wantedSuperState = SuperState.AUTO_L4_SCORE;
+        // } else {
+        //   currentSuperState = SuperState.AUTO_L4_PLACE;
+        // }
+        currentSuperState = SuperState.AUTO_L4_PLACE;
         break;
       case AUTO_L1_SCORE:
         currentSuperState = SuperState.AUTO_L1_SCORE;
@@ -348,6 +349,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case INTAKE_IDLE:
         currentSuperState = SuperState.INTAKE_IDLE;
+        elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
         break;
       case OUTTAKE_ONESIDE:
         currentSuperState = SuperState.OUTTAKE_ONESIDE;
@@ -533,9 +535,9 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void handleL4Score() {
-    // intake.setWantedState(IntakeState.DOWN);
-    // elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
-    // arm.setWantedState(ArmState.HORIZONTAL);
+    intake.setWantedState(IntakeState.DOWN);
+    elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
+    arm.setWantedState(ArmState.HORIZONTAL);
 
   }
 

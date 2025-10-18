@@ -164,7 +164,7 @@ public class Manipulator extends SubsystemBase {
     } else {
       switch (systemState) {
         case CORAL_INTAKE:
-          setIntakeTorque(15, 0.5);
+          setIntakeTorque(17, 0.5);
           break;
         case ALGAE_INTAKE:
           setIntakeTorque(40, 0.3);

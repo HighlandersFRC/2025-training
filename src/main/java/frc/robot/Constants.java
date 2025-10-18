@@ -98,6 +98,7 @@ public final class Constants {
                 public static final double AUTO_L2 = inchesToMeters(7.0);
                 public static final double AUTO_L3 = inchesToMeters(24.25);
                 public static final double AUTO_L4 = inchesToMeters(50.0);
+                public static final double AUTO_SCORE_L2_HIGH = inchesToMeters(14.0);
                 public static final double AUTO_SCORE_L2 = inchesToMeters(6.0);
                 public static final double AUTO_SCORE_L3 = inchesToMeters(22.25);
                 public static final double AUTO_SCORE_L4 = inchesToMeters(48.0);

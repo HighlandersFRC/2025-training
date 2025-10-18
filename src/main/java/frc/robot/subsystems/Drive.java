@@ -1415,7 +1415,7 @@ public class Drive extends SubsystemBase {
      *          robot's movement based on joystick inputs.
      */
     public void teleopDrive() {
-        double oiRX = -OI.getDriverRightX();
+        double oiRX = OI.getDriverRightX();
         double oiLX = OI.getDriverLeftX();
         double oiRY = OI.getDriverRightY();
         double oiLY = OI.getDriverLeftY();

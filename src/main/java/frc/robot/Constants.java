@@ -79,11 +79,11 @@ public final class Constants {
         public static final class Arm {
 
                 public static final double L4_Score = -20.0;
-                public static final double L4_Place = 43.0;
+                public static final double L4_Place = 45.0;
                 public static final double L3_Score = -10.0;
-                public static final double L3_Place = 45.0;
+                public static final double L3_Place = 47.0;
                 public static final double L2_Score = -10.0;
-                public static final double L2_Place = 45.0;
+                public static final double L2_Place = 47.0;
                 public static final double L1_Place = -25.0;
                 public static final double HANDOFF = -91.0;
                 public static final double DEFAULT = -90.0;

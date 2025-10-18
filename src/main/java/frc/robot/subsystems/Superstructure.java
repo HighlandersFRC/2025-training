@@ -584,6 +584,15 @@ public class Superstructure extends SubsystemBase {
     } else {
       intake.setWantedState(Intake.IntakeState.INTAKING);
     }
+    if (straightenator.isFar() && !manipulator.hasCoral()){
+      arm.setWantedState(ArmState.HANDOFF);
+      elevator.setWantedState(ElevatorState.HANDOFF_LOW);
+      manipulator.setWantedState(ManipulatorState.CORAL_INTAKE);
+    }
+
+    if(manipulator.hasCoral()){
+      elevator.setWantedState(ElevatorState.HANDOFF_HIGH);
+    }
     // if (straightenator.isFar() && !manipulator.hasCoral()) {
     // arm.setWantedState(ArmState.HANDOFF);
     // if (arm.isReadyForHandoff()) {

@@ -172,7 +172,7 @@ public class Superstructure extends SubsystemBase {
         handleIdleState();
         break;
       case MOVE_TO_POINT:
-        drive.setWantedState(DriveState.MOVE_TO_POINT);
+        //drive.setWantedState(DriveState.MOVE_TO_POINT);
         break;
       case ALGAE_HIGH:
         handleAlgaeHigh();
@@ -420,7 +420,7 @@ public class Superstructure extends SubsystemBase {
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (elevator.getElevatorPosition() > Constants
         .inchesToMeters(Constants.Elevator.AUTO_SCORE_L2 - 3) && arm.getArmDegrees() > Constants.Arm.L2_Place - 4) {
-      drive.setWantedState(DriveState.L3_REEF);
+      //drive.setWantedState(DriveState.L3_REEF);
     }
 
   }
@@ -432,7 +432,7 @@ public class Superstructure extends SubsystemBase {
     manipulator.setWantedState(ManipulatorState.OUTAKE);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
-      drive.setWantedState(DriveState.REEF_MORE);
+      // drive.setWantedState(DriveState.REEF_MORE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }
@@ -444,7 +444,7 @@ public class Superstructure extends SubsystemBase {
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (elevator.getElevatorPosition() > Constants
         .metersToInches(Constants.Elevator.AUTO_SCORE_L3 - 3) && arm.getArmDegrees() > Constants.Arm.L3_Place - 4) {
-      drive.setWantedState(DriveState.L3_REEF);
+      // drive.setWantedState(DriveState.L3_REEF);
     }
     manipulator.setWantedState(ManipulatorState.DEFAULT);
   }
@@ -456,7 +456,7 @@ public class Superstructure extends SubsystemBase {
     arm.setWantedState(ArmState.L3_SCORE);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
-      drive.setWantedState(DriveState.REEF_MORE);
+      // drive.setWantedState(DriveState.REEF_MORE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }
@@ -470,7 +470,7 @@ public class Superstructure extends SubsystemBase {
     if (elevator.getElevatorPosition() > Constants
         .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5) && arm.getArmDegrees() > 20) {
 
-      drive.setWantedState(DriveState.L4_REEF);
+      // drive.setWantedState(DriveState.L4_REEF);
     }
 
   }
@@ -482,7 +482,7 @@ public class Superstructure extends SubsystemBase {
     arm.setWantedState(ArmState.HORIZONTAL);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
-      drive.setWantedState(DriveState.REEF_MORE);
+      // drive.setWantedState(DriveState.REEF_MORE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }

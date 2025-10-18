@@ -544,7 +544,7 @@ public class Superstructure extends SubsystemBase {
     intake.setWantedState(IntakeState.DOWN);
     elevator.setWantedState(ElevatorState.AUTO_SCORE_L4);
     arm.setWantedState(ArmState.L4_SCORE);
-    if(arm.getArmDegrees() <= Constants.Arm.L4_Score + 3.0){
+    if(arm.getArmDegrees() <= 11.0){
       manipulator.setWantedState(ManipulatorState.OUTAKE);
     }
 

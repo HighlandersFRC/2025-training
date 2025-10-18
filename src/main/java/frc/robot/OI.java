@@ -3,9 +3,12 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -14,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.tools.TriggerButton;
 
 public class OI {
+    public static SendableChooser<String> fieldSide = new SendableChooser<String>();
+    public static SendableChooser<String> leftRight = new SendableChooser<String>();
+    public static SendableChooser<String> auto = new SendableChooser<String>();
     public static XboxController driverController = new XboxController(0);
     public static XboxController operatorController = new XboxController(1);
 
@@ -83,15 +89,21 @@ public class OI {
     public static Joystick autoChooser = new Joystick(2);
 
     public static JoystickButton autoChooserIsBlue = new JoystickButton(autoChooser, 8);
-    public static SendableChooser<String> autoSendableChooser = new SendableChooser<String>();
 
-    public static void init() {
-        autoSendableChooser.setDefaultOption("None", "None");
-        ;
-        for (String auto : Constants.paths) {
-            autoSendableChooser.addOption(auto, auto);
+    static {
+        fieldSide.addOption("red", "red");
+        fieldSide.addOption("blue", "blue");
+        fieldSide.setDefaultOption("blue", "blue");
+        SmartDashboard.putData(fieldSide);
+        leftRight.addOption("processor", "processor");
+        leftRight.addOption("net", "net");
+        leftRight.setDefaultOption("net", "net");
+        SmartDashboard.putData(leftRight);
+        for (String path : Constants.Autonomous.paths) {
+            auto.addOption(path, path);
         }
-        SmartDashboard.putData("Selected Auto", autoSendableChooser);
+        auto.setDefaultOption("None", "None");
+        SmartDashboard.putData(auto);
     }
 
     public static void printAutoChooserInputs() {
@@ -103,6 +115,10 @@ public class OI {
         for (int i = 1; i <= 16; i++) {
             java.util.logging.Logger.getGlobal().info("Auto Chooser Button " + i + " : " + autoChooser.getRawButton(i));
         }
+    }
+
+    public static String getSelectedPath() {
+        return auto.getSelected();
     }
 
     public static double getDriverLeftX() {
@@ -243,7 +259,7 @@ public class OI {
     }
 
     public static boolean isProcessorSide() {
-        return autoChooser.getRawButton(6);
+        return leftRight.getSelected().equals("processor");
     }
 
     public static boolean isRecalculateMode() {
@@ -255,11 +271,7 @@ public class OI {
     }
 
     public static boolean isBlueSide() {
-        if (autoChooserConnected()) {
-            return autoChooser.getRawButton(8);
-        } else {
-            return DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
-        }
+        return fieldSide.getSelected().equals("blue");
     }
 
     public static boolean is4PieceFarBottom231Auto() {

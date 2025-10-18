@@ -280,20 +280,20 @@ public class Superstructure extends SubsystemBase {
         currentSuperState = SuperState.HANDOFF;
         break;
       case AUTO_L4_PLACE:
-        // Pose2d closestl4 = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
-        // java.util.logging.Logger.getGlobal().finer(
-        //     "Drive: " + drive.hitSetPoint(closestl4));
-        // java.util.logging.Logger.getGlobal().finer(
-        //     "Elevator: " + (elevator.getElevatorPosition() > Constants.SetPoints.ElevatorPosition.kAUTOL4.meters));
-        // if ((drive.hitSetPoint(closestl4))
-        //     && elevator.getElevatorPosition() > Constants
-        //         .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5)
-        //     || OI.getDriverLB()) {
-        //   currentSuperState = SuperState.AUTO_L4_SCORE;
-        //   wantedSuperState = SuperState.AUTO_L4_SCORE;
-        // } else {
-        //   currentSuperState = SuperState.AUTO_L4_PLACE;
-        // }
+        Pose2d closestl4 = drive.getReefL4ClosestSetpoint(drive.getMT2Odometry(), OI.getDriverA());
+        java.util.logging.Logger.getGlobal().finer(
+            "Drive: " + drive.hitSetPoint(closestl4));
+        java.util.logging.Logger.getGlobal().finer(
+            "Elevator: " + (elevator.getElevatorPosition() > Constants.SetPoints.ElevatorPosition.kAUTOL4.meters));
+        if ((drive.hitSetPoint(closestl4))
+            && elevator.getElevatorPosition() > Constants
+                .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5)
+            || OI.getDriverLB()) {
+          currentSuperState = SuperState.AUTO_L4_SCORE;
+          wantedSuperState = SuperState.AUTO_L4_SCORE;
+        } else {
+          currentSuperState = SuperState.AUTO_L4_PLACE;
+        }
         currentSuperState = SuperState.AUTO_L4_PLACE;
         break;
       case AUTO_L1_SCORE:
@@ -472,7 +472,7 @@ public class Superstructure extends SubsystemBase {
     if (elevator.getElevatorPosition() > Constants
         .metersToInches(Constants.Elevator.AUTO_SCORE_L4 - 5) && arm.getArmDegrees() > 20) {
 
-      // drive.setWantedState(DriveState.L4_REEF);
+       drive.setWantedState(DriveState.L4_REEF);
     }
 
   }
@@ -484,7 +484,7 @@ public class Superstructure extends SubsystemBase {
     arm.setWantedState(ArmState.HORIZONTAL);
     straightenator.setWantedState(Straightenator.StraightenatorState.IDLE);
     if (arm.getArmDegrees() < Constants.Arm.HORIZONTAL + 2) {
-      // drive.setWantedState(DriveState.REEF_MORE);
+       drive.setWantedState(DriveState.REEF_MORE);
     } else
       drive.setWantedState(DriveState.DEFAULT);
   }

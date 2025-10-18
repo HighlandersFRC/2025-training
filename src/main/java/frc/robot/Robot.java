@@ -103,7 +103,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotInit() {
-        OI.init();
         Constants.init();
         m_robotContainer.elevator.init();
         m_robotContainer.drive.init(m_fieldSide);

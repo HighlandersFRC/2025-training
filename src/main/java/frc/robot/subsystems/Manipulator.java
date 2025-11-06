@@ -167,10 +167,10 @@ public class Manipulator extends SubsystemBase {
           setIntakeTorque(17, 0.5);
           break;
         case ALGAE_INTAKE:
-          setIntakeTorque(40, 0.3);
+          setIntakeTorque(75.41, 1.0);
           break;
         case OUTAKE:
-          setIntakeTorque(-30, 0.5);
+          setIntakePercent(-1.0);
           break;
         case OFF:
           setIntakeTorque(0, 0);

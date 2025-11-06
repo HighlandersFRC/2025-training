@@ -3576,9 +3576,9 @@ public final class Constants {
                 public static double L3_INTAKE_X_OFFSET_BACK = inchesToMeters(26.0);
                 public static double L3_INTAKE_Y_OFFSET_BACK = inchesToMeters(-0.0);
                 public static double L4_INTAKE_X_OFFSET_FRONT = inchesToMeters(27.0);
-                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(0.0);
+                public static double L4_INTAKE_Y_OFFSET_FRONT = inchesToMeters(-1.0);
                 public static double L4_INTAKE_X_OFFSET_BACK = inchesToMeters(27.0);
-                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(0.0);
+                public static double L4_INTAKE_Y_OFFSET_BACK = inchesToMeters(-1.0);
 
                 public static final double GRAVITY_ACCEL_MS2 = 9.806;
         }
@@ -3611,11 +3611,12 @@ public final class Constants {
                 public static final double AUTO_SCORE_L4 = inchesToMeters(48.0);
                 public static final double HANDOFF_HIGH = inchesToMeters(11.0);
                 public static final double HANDOFF_LOW = inchesToMeters(3.0);
-                public static final double ALGAE_HIGH = inchesToMeters(33.0);
-                public static final double ALGAE_LOW = inchesToMeters(15.0);
+                public static final double ALGAE_HIGH = inchesToMeters(33);
+                public static final double ALGAE_LOW = inchesToMeters(14.5);
                 public static final double PROCESSOR = inchesToMeters(0.0);
                 public static final double NET = inchesToMeters(55.0);
         }
+
         // Subsystem setpoint constants
         public static final class SetPoints {
                 public static class IntakeSetpoints {
@@ -4085,9 +4086,10 @@ public final class Constants {
                 // intake
                 public static final double INTAKE_PIVOT_GEAR_RATIO = 45.0;
         }
-        
+
         public static boolean isReady = false;
         public static final ArrayList<String> paths = new ArrayList<String>();
+
         // Can info such as IDs
         public static final class CANInfo {
                 public static final String CANBUS_NAME = "Canivore";
@@ -4133,7 +4135,6 @@ public final class Constants {
                 public static double PIVOT_LOWER_LIMIT = 0;
                 public static double PIVOT_UPPER_LIMIT = 10;
         }
-
 
         // Misc. controller values
         public static final class OperatorConstants {

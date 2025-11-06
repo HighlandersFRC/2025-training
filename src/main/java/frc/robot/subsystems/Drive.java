@@ -1561,9 +1561,11 @@ public class Drive extends SubsystemBase {
     if (getFieldSide() == "red") {
       for (int i = 0; i < Constants.Reef.redFrontPlacingPositionsMore.size(); i++) {
         currentDist = Math.hypot(
-            x - (Constants.Reef.redFrontPlacingPositionsMore.get(i).getX() + Constants.Reef.redBackPlacingPositionsMore
-                .get(i)
-                .getX()) / 2,
+            x - (Constants.Reef.redFrontPlacingPositionsMore.get(i).getX()
+                + Constants.Reef.redBackPlacingPositionsMore
+                    .get(i)
+                    .getX())
+                / 2,
             y - (Constants.Reef.redFrontPlacingPositionsMore.get(i).getY()
                 + Constants.Reef.redBackPlacingPositionsMore.get(i)
                     .getY())
@@ -3741,6 +3743,7 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput("Extra Pigeon Angle", peripherals.getPigeonExtraAngle());
     Logger.recordOutput("Robot Velocity", getRobotSpeed());
+    Logger.recordOutput("MT2 Odometry", getMT2Odometry());
     // Pose2d target = getGamePiecePosition();
     // System.out.println(Math.toDegrees(getThetaToCenterReef()));
     // Translation2d t1 = new Translation2d(getMT2OdometryX(), getMT2OdometryY());
@@ -3864,13 +3867,7 @@ public class Drive extends SubsystemBase {
         break;
       case REEF_MORE:
         setpoint = getReefMoreClosestSetpoint(getMT2Odometry());
-
-        setpoint = getReefClosestSetpoint(getMT2Odometry(), OI.getDriverA());
-        if (Math.abs(OI.getDriverLeftX()) > 0.2 || Math.abs(OI.getDriverLeftY()) > 0.2) {
-          teleopDrive();
-        } else {
-          driveToPoint(setpoint);
-        }
+        driveToPoint(setpoint);
         break;
       case BACK:
         if (autoPlacingFront) {
